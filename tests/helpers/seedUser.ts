@@ -1,46 +1,33 @@
 import { getPayload } from 'payload'
+
 import config from '../../src/payload.config.js'
+import { seedAdministratorRole } from '../../src/hooks/seedAdministratorRole.js'
 
 export const testUser = {
-  email: 'dev@payloadcms.com',
-  password: 'test',
+  name: 'E2E Administrator',
+  email: 'e2e-admin@example.test',
+  password: 'E2e-Test-Password-42',
 }
 
 /**
- * Seeds a test user for e2e admin tests.
+ * Seeds an activated Administrator for e2e admin tests.
+ * Account emails are skipped via request context, so nothing is sent.
  */
 export async function seedTestUser(): Promise<void> {
   const payload = await getPayload({ config })
+  const adminRole = await seedAdministratorRole(payload)
 
-  // Delete existing test user if any
-  await payload.delete({
-    collection: 'users',
-    where: {
-      email: {
-        equals: testUser.email,
-      },
-    },
-  })
+  await payload.delete({ collection: 'users', where: { email: { equals: testUser.email } }, overrideAccess: true })
 
-  // Create fresh test user
   await payload.create({
     collection: 'users',
-    data: testUser,
+    data: { ...testUser, role: Number(adminRole.id), status: 'active', _verified: true },
+    overrideAccess: true,
+    context: { skipAccountEmails: true },
   })
 }
 
-/**
- * Cleans up test user after tests
- */
 export async function cleanupTestUser(): Promise<void> {
   const payload = await getPayload({ config })
-
-  await payload.delete({
-    collection: 'users',
-    where: {
-      email: {
-        equals: testUser.email,
-      },
-    },
-  })
+  await payload.delete({ collection: 'users', where: { email: { equals: testUser.email } }, overrideAccess: true })
 }

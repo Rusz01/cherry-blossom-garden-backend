@@ -1,0 +1,556 @@
+// ---------------------------------------------------------------------------
+// Dashboard — an editorial workspace that uses the full content area.
+//
+//   header      date · title · role/email                [View website][New page]
+//   overview    one ruled strip of figures (4 → 2 → 1 columns)
+//   body        recently edited (≈ 2/3)  |  shortcuts + email activity (≈ 1/3)
+//
+// Layout responds to the *available* width via container queries on
+// `.arth-dash`, so it reflows correctly when the sidebar opens or collapses —
+// not just when the window resizes. No fixed widths, no max-width cap.
+// ---------------------------------------------------------------------------
+
+.arth-dash {
+  container: arth-dash / inline-size;
+  width: 100%;
+  min-width: 0;
+  color: var(--arth-text);
+}
+
+.arth-dash__inner {
+  // Same horizontal gutter as Payload's header and list views, so the
+  // dashboard lines up with the breadcrumb bar above it.
+  padding: var(--arth-s8) var(--gutter-h) var(--arth-s12);
+}
+
+/* Header ------------------------------------------------------------------- */
+.arth-dash__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--arth-s4) var(--arth-s8);
+  margin-bottom: var(--arth-s8);
+}
+
+.arth-dash__heading {
+  min-width: 0;
+}
+
+// Brand headings on arthanovastudio.com are DM Sans semibold.
+.arth-dash__title {
+  margin: var(--arth-s1) 0 var(--arth-s2);
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 18px + 0.6vw, 30px); // px base: Payload's admin root font-size is 13px
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--arth-text);
+  overflow-wrap: anywhere;
+}
+
+.arth-dash__date,
+.arth-dash__meta {
+  margin: 0;
+  font-size: var(--arth-fs-sm);
+  color: var(--arth-text-subtle);
+  overflow-wrap: anywhere;
+}
+
+.arth-dash__date {
+  min-height: 1.5em;
+}
+
+.arth-dash__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--arth-s2);
+}
+
+// Self-contained buttons (Payload's .btn carries layout margins we don't want here).
+.arth-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 var(--arth-s4);
+  border-radius: var(--arth-r-control);
+  font-size: var(--arth-fs-md);
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--arth-fast) var(--arth-ease),
+    box-shadow var(--arth-fast) var(--arth-ease);
+
+  &--primary {
+    background: var(--arth-ink);
+    color: #fff;
+
+    &:hover {
+      background: #000;
+    }
+  }
+
+  &--secondary {
+    background: var(--arth-paper);
+    color: var(--arth-text);
+    box-shadow: inset 0 0 0 1px var(--arth-line-strong);
+
+    &:hover {
+      background: var(--arth-sunken);
+      box-shadow: inset 0 0 0 1px var(--arth-line-hover);
+    }
+  }
+}
+
+html[data-theme='dark'] .arth-btn--primary {
+  background: #ededed;
+  color: var(--arth-ink);
+
+  &:hover {
+    background: #fff;
+  }
+}
+
+/* Overview strip ----------------------------------------------------------- */
+// One bordered band divided by hairlines (not separate cards).
+.arth-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0 0 var(--arth-s10);
+  border: 1px solid var(--arth-line);
+  border-radius: var(--arth-r-container);
+  overflow: hidden;
+}
+
+.arth-overview__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--arth-s5) var(--arth-s6);
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--arth-fast) var(--arth-ease);
+
+  // Divider rule: top border in a single column, left border in rows.
+  & + & {
+    border-top: 1px solid var(--arth-line);
+  }
+
+  &:hover {
+    background: var(--arth-sunken);
+
+    .arth-overview__label {
+      color: var(--arth-text);
+    }
+  }
+}
+
+.arth-overview__label {
+  font-size: var(--arth-fs-sm);
+  font-weight: 500;
+  color: var(--arth-text-muted);
+}
+
+.arth-overview__value {
+  margin: var(--arth-s2) 0 var(--arth-s1);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.arth-overview__note {
+  margin: 0;
+  font-size: var(--arth-fs-xs);
+  color: var(--arth-text-subtle);
+}
+
+/* Body ---------------------------------------------------------------------- */
+.arth-dash__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--arth-s10);
+  align-items: start;
+}
+
+.arth-dash__main,
+.arth-dash__aside {
+  min-width: 0;
+}
+
+.arth-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--arth-s3);
+  margin-bottom: var(--arth-s3);
+
+  &__title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--arth-fs-md);
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+
+  &__link {
+    font-size: var(--arth-fs-sm);
+    color: var(--arth-text-muted);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--arth-text);
+      text-decoration: underline;
+    }
+  }
+}
+
+/* Ledger table ------------------------------------------------------------- */
+.arth-ledger {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  font-size: var(--arth-fs-md);
+
+  th {
+    padding: var(--arth-s2) var(--arth-s4) var(--arth-s2) 0;
+    border-bottom: 1px solid var(--arth-line-strong);
+    font-size: var(--arth-fs-xs);
+    font-weight: 500;
+    text-align: left;
+    color: var(--arth-text-subtle);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: var(--arth-s3) var(--arth-s4) var(--arth-s3) 0;
+    border-bottom: 1px solid var(--arth-line);
+    vertical-align: middle;
+    color: var(--arth-text-2);
+  }
+
+  // Title column takes the slack; the others size to content.
+  th:first-child,
+  td:first-child {
+    width: 100%;
+  }
+
+  tbody tr {
+    transition: background-color var(--arth-fast) var(--arth-ease);
+
+    &:hover {
+      background: var(--arth-sunken);
+    }
+  }
+
+  &__title {
+    display: block;
+    color: var(--arth-text);
+    font-weight: 500;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__sub {
+    display: block;
+    margin-top: 1px;
+    font-size: var(--arth-fs-xs);
+    color: var(--arth-text-subtle);
+    overflow-wrap: anywhere;
+  }
+
+  &__num {
+    text-align: right !important;
+    padding-right: 0 !important;
+    white-space: nowrap;
+    font-size: var(--arth-fs-sm);
+    color: var(--arth-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Status: one small mark, neutral text ------------------------------------- */
+.arth-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--arth-fs-sm);
+  color: var(--arth-text-2);
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--arth-line-hover);
+  }
+
+  &--positive::before {
+    background: var(--arth-positive);
+  }
+
+  &--caution::before {
+    background: var(--arth-caution);
+  }
+
+  &--negative::before {
+    background: var(--arth-negative);
+  }
+}
+
+/* Aside --------------------------------------------------------------------- */
+.arth-dash__aside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--arth-s8);
+  align-content: start;
+}
+
+.arth-aside-section {
+  min-width: 0;
+}
+
+// Shortcut groups flow into as many columns as the space allows.
+.arth-shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--arth-s4) var(--arth-s6);
+}
+
+.arth-shortcuts {
+  &__title {
+    margin: 0 0 var(--arth-s1);
+    font-size: var(--arth-fs-xs);
+    font-weight: 500;
+    color: var(--arth-text-subtle);
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    display: block;
+    padding: 4px 0;
+    font-size: var(--arth-fs-md);
+    color: var(--arth-text-2);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--arth-text);
+      text-decoration: underline;
+    }
+  }
+}
+
+.arth-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--arth-line);
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding: var(--arth-s3) 0;
+    border-bottom: 1px solid var(--arth-line);
+  }
+
+  &__title {
+    font-size: var(--arth-fs-sm);
+    font-weight: 500;
+    color: var(--arth-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--arth-fs-xs);
+    color: var(--arth-text-subtle);
+
+    .arth-status {
+      font-size: var(--arth-fs-xs);
+      color: var(--arth-text-muted);
+    }
+  }
+}
+
+.arth-footnote {
+  margin: var(--arth-s3) 0 0;
+  font-size: var(--arth-fs-xs);
+  line-height: 1.5;
+  color: var(--arth-text-subtle);
+}
+
+/* States -------------------------------------------------------------------- */
+.arth-notice {
+  margin: 0;
+  padding: var(--arth-s4) 0;
+  border-top: 1px solid var(--arth-line);
+  border-bottom: 1px solid var(--arth-line);
+  font-size: var(--arth-fs-md);
+  color: var(--arth-text-muted);
+
+  a {
+    color: var(--arth-link);
+  }
+
+  &--error {
+    color: var(--arth-negative);
+  }
+}
+
+.arth-placeholder {
+  display: grid;
+  gap: var(--arth-s3);
+  padding: var(--arth-s4) 0;
+
+  span {
+    display: block;
+    height: 12px;
+    border-radius: var(--arth-r-mark);
+    background: var(--arth-chrome);
+    animation: arth-pulse 1.6s ease-in-out infinite;
+
+    &:nth-child(even) {
+      width: 72%;
+    }
+  }
+}
+
+@keyframes arth-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Responsive (container-driven) -------------------------------------------- */
+
+// Narrow: hide the "Edited" column; dates stay available via the row link.
+@container arth-dash (max-width: 559px) {
+  .arth-ledger thead th:nth-child(3),
+  .arth-ledger td.arth-ledger__num {
+    display: none;
+  }
+
+  .arth-dash__actions {
+    width: 100%;
+
+    .arth-btn {
+      flex: 1 1 0;
+    }
+  }
+
+  .arth-overview__cell {
+    padding: var(--arth-s4);
+  }
+}
+
+// Tablet: figures in two columns.
+@container arth-dash (min-width: 480px) {
+  .arth-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .arth-overview__cell {
+    & + & {
+      border-top: 0;
+    }
+
+    &:nth-child(even) {
+      border-left: 1px solid var(--arth-line);
+    }
+
+    &:nth-child(n + 3) {
+      border-top: 1px solid var(--arth-line);
+    }
+  }
+
+  // Shortcuts and email activity side by side under the ledger.
+  .arth-dash__aside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--arth-s8) var(--arth-s10);
+  }
+}
+
+// Desktop: four equal figures in a single row.
+@container arth-dash (min-width: 900px) {
+  .arth-overview {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .arth-overview__cell {
+    &:nth-child(n) {
+      border-top: 0;
+      border-left: 1px solid var(--arth-line);
+    }
+
+    &:first-child {
+      border-left: 0;
+    }
+  }
+
+  .arth-overview__value {
+    font-size: 32px;
+  }
+}
+
+// Wide: ledger ≈ two-thirds, aside ≈ one-third.
+@container arth-dash (min-width: 1100px) {
+  .arth-dash__body {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--arth-s12);
+  }
+
+  .arth-dash__aside {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .arth-aside-section + .arth-aside-section {
+    margin-top: var(--arth-s8);
+    padding-top: var(--arth-s8);
+    border-top: 1px solid var(--arth-line);
+  }
+}
+
+// Very wide (large monitors, ultrawide): the aside third is roomy enough to
+// hold shortcuts and email activity side by side, keeping line lengths short.
+@container arth-dash (min-width: 1900px) {
+  .arth-dash__body {
+    gap: var(--arth-s12) calc(var(--arth-s12) + var(--arth-s4));
+  }
+
+  .arth-dash__aside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--arth-s10);
+  }
+
+  .arth-aside-section + .arth-aside-section {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+}

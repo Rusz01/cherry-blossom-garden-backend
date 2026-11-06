@@ -67,18 +67,30 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    pages: Page;
     media: Media;
+    users: User;
+    roles: Role;
+    'email-logs': EmailLog;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    roles: {
+      assignedUsers: 'users';
+    };
+  };
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    roles: RolesSelect<false> | RolesSelect<true>;
+    'email-logs': EmailLogsSelect<false> | EmailLogsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -87,15 +99,29 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+    navigation: Navigation;
+    'seo-settings': SeoSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
+    'seo-settings': SeoSettingsSelect<false> | SeoSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      schedulePublish: TaskSchedulePublish;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -118,11 +144,390 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Website pages built from flexible content blocks. Drafts stay private until published.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * Short summary used in listings and as a fallback meta description.
+   */
+  excerpt?: string | null;
+  featuredImage?: (number | null) | Media;
+  /**
+   * Optional introduction rendered before the content blocks.
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  layout?:
+    | (
+        | HeroBlock
+        | RichTextBlock
+        | ImageBlock
+        | ImageTextBlock
+        | CallToActionBlock
+        | FeatureGridBlock
+        | FAQBlock
+        | TestimonialsBlock
+        | GalleryBlock
+      )[]
+    | null;
+  meta?: PageMeta;
+  /**
+   * URL path segment. Generated from the title when empty. Use “home” for the homepage.
+   */
+  slug?: string | null;
+  /**
+   * Set automatically on first publish.
+   */
+  publishedAt?: string | null;
+  author?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Images, documents and video. Max 20 MB per file.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  /**
+   * Describe what the image shows for screen-reader users and search engines (e.g. “Team reviewing a website prototype”).
+   */
+  alt: string;
+  /**
+   * Optional visible caption.
+   */
+  caption?: string | null;
+  /**
+   * Photographer or source, if attribution is required.
+   */
+  credit?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    card?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    feature?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    og?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock".
+ */
+export interface HeroBlock {
+  /**
+   * Small label above the heading.
+   */
+  eyebrow?: string | null;
+  heading: string;
+  subheading?: string | null;
+  media?: (number | null) | Media;
+  layout?: ('split' | 'centered') | null;
+  actions?:
+    | {
+        link: ButtonLink;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hero';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ButtonLink".
+ */
+export interface ButtonLink {
+  type?: ('internal' | 'custom') | null;
+  newTab?: boolean | null;
+  label: string;
+  reference?: (number | null) | Page;
+  url?: string | null;
+  appearance?: ('primary' | 'secondary' | 'link') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock".
+ */
+export interface RichTextBlock {
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  width?: ('narrow' | 'wide') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'richText';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBlock".
+ */
+export interface ImageBlock {
+  image: number | Media;
+  caption?: string | null;
+  size?: ('contained' | 'full') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'image';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock".
+ */
+export interface ImageTextBlock {
+  /**
+   * Small label above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image: number | Media;
+  imagePosition?: ('left' | 'right') | null;
+  action?: boolean | null;
+  link?: ButtonLink;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'imageText';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  heading: string;
+  text?: string | null;
+  style?: ('dark' | 'light') | null;
+  actions?:
+    | {
+        link: ButtonLink;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callToAction';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureGridBlock".
+ */
+export interface FeatureGridBlock {
+  /**
+   * Small label above the heading.
+   */
+  eyebrow?: string | null;
+  heading?: string | null;
+  intro?: string | null;
+  columns?: ('2' | '3' | '4') | null;
+  features?:
+    | {
+        title: string;
+        description?: string | null;
+        icon?:
+          | (
+              | 'sparkles'
+              | 'rocket'
+              | 'shield-check'
+              | 'trending-up'
+              | 'code'
+              | 'layers'
+              | 'zap'
+              | 'target'
+              | 'users'
+              | 'globe'
+              | 'settings'
+              | 'message-circle'
+            )
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQBlock".
+ */
+export interface FAQBlock {
+  heading?: string | null;
+  items?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Adds schema.org FAQPage JSON-LD for search and answer engines. Only use for genuine questions and answers visible on the page.
+   */
+  includeSchema?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock".
+ */
+export interface TestimonialsBlock {
+  heading?: string | null;
+  /**
+   * Only publish real testimonials you have permission to use.
+   */
+  items?:
+    | {
+        quote: string;
+        author: string;
+        role?: string | null;
+        avatar?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonials';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryBlock".
+ */
+export interface GalleryBlock {
+  heading?: string | null;
+  images: (number | Media)[];
+  columns?: ('2' | '3' | '4') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'gallery';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PageMeta".
+ */
+export interface PageMeta {
+  title?: string | null;
+  description?: string | null;
+  /**
+   * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Leave empty to use this page’s own URL. Set only when the content is duplicated elsewhere.
+   */
+  canonicalURL?: string | null;
+  noIndex?: boolean | null;
+  noFollow?: boolean | null;
+  /**
+   * schema.org type published as JSON-LD for this page.
+   */
+  schemaType?: ('WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage') | null;
+}
+/**
+ * Team members who can sign in to the CMS. Only Administrators can invite users or change roles.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  name: string;
+  /**
+   * Determines what this user can access. Only Administrators can change it.
+   */
+  role: number | Role;
+  /**
+   * Suspended users cannot sign in and lose all permissions immediately.
+   */
+  status: 'active' | 'suspended';
+  /**
+   * When the most recent activation email was issued. Links expire after 7 days.
+   */
+  activationSentAt?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -131,6 +536,8 @@ export interface User {
   salt?: string | null;
   hash?: string | null;
   resetPasswordRequestedAt?: string | null;
+  _verified?: boolean | null;
+  _verificationToken?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -144,23 +551,73 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Roles define what each team member can do. Administrator is a protected system role with full access.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "roles".
  */
-export interface Media {
+export interface Role {
   id: number;
-  alt: string;
+  name: string;
+  /**
+   * Generated from the name when the role is created.
+   */
+  slug?: string | null;
+  /**
+   * Explain who should receive this role and why.
+   */
+  description?: string | null;
+  /**
+   * System roles are created automatically and cannot be edited or deleted.
+   */
+  isSystem?: boolean | null;
+  collectionPermissions?:
+    | {
+        collection: 'pages' | 'media';
+        read?: boolean | null;
+        create?: boolean | null;
+        update?: boolean | null;
+        delete?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  globalPermissions?:
+    | {
+        global: 'site-settings' | 'navigation' | 'seo-settings';
+        read?: boolean | null;
+        update?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  assignedUsers?: {
+    docs?: (number | User)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+}
+/**
+ * Every email the CMS attempted to send. “Submitted” means Resend accepted it — not that it reached the inbox.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-logs".
+ */
+export interface EmailLog {
+  id: number;
+  subject?: string | null;
+  category?: ('welcome' | 'account-invitation' | 'email-verification' | 'password-reset' | 'system') | null;
+  status?: ('submitted' | 'failed' | 'not-configured' | 'captured') | null;
+  recipient?: string | null;
+  relatedUserId?: string | null;
+  attemptedAt?: string | null;
+  /**
+   * Resend email ID (look it up in the Resend dashboard).
+   */
+  providerMessageId?: string | null;
+  error?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -181,18 +638,122 @@ export interface PayloadKv {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'schedulePublish';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'schedulePublish') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'pages';
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'roles';
+        value: number | Role;
+      } | null)
+    | ({
+        relationTo: 'email-logs';
+        value: number | EmailLog;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -238,9 +799,270 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  excerpt?: T;
+  featuredImage?: T;
+  content?: T;
+  layout?:
+    | T
+    | {
+        hero?: T | HeroBlockSelect<T>;
+        richText?: T | RichTextBlockSelect<T>;
+        image?: T | ImageBlockSelect<T>;
+        imageText?: T | ImageTextBlockSelect<T>;
+        callToAction?: T | CallToActionBlockSelect<T>;
+        featureGrid?: T | FeatureGridBlockSelect<T>;
+        faq?: T | FAQBlockSelect<T>;
+        testimonials?: T | TestimonialsBlockSelect<T>;
+        gallery?: T | GalleryBlockSelect<T>;
+      };
+  meta?: T | PageMetaSelect<T>;
+  slug?: T;
+  publishedAt?: T;
+  author?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroBlock_select".
+ */
+export interface HeroBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  media?: T;
+  layout?: T;
+  actions?:
+    | T
+    | {
+        link?: T | ButtonLinkSelect<T>;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ButtonLink_select".
+ */
+export interface ButtonLinkSelect<T extends boolean = true> {
+  type?: T;
+  newTab?: T;
+  label?: T;
+  reference?: T;
+  url?: T;
+  appearance?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock_select".
+ */
+export interface RichTextBlockSelect<T extends boolean = true> {
+  content?: T;
+  width?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBlock_select".
+ */
+export interface ImageBlockSelect<T extends boolean = true> {
+  image?: T;
+  caption?: T;
+  size?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock_select".
+ */
+export interface ImageTextBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  content?: T;
+  image?: T;
+  imagePosition?: T;
+  action?: T;
+  link?: T | ButtonLinkSelect<T>;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock_select".
+ */
+export interface CallToActionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  text?: T;
+  style?: T;
+  actions?:
+    | T
+    | {
+        link?: T | ButtonLinkSelect<T>;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureGridBlock_select".
+ */
+export interface FeatureGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  intro?: T;
+  columns?: T;
+  features?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        icon?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQBlock_select".
+ */
+export interface FAQBlockSelect<T extends boolean = true> {
+  heading?: T;
+  items?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  includeSchema?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock_select".
+ */
+export interface TestimonialsBlockSelect<T extends boolean = true> {
+  heading?: T;
+  items?:
+    | T
+    | {
+        quote?: T;
+        author?: T;
+        role?: T;
+        avatar?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GalleryBlock_select".
+ */
+export interface GalleryBlockSelect<T extends boolean = true> {
+  heading?: T;
+  images?: T;
+  columns?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PageMeta_select".
+ */
+export interface PageMetaSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  image?: T;
+  canonicalURL?: T;
+  noIndex?: T;
+  noFollow?: T;
+  schemaType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  credit?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        card?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        feature?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        og?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  status?: T;
+  activationSentAt?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -249,6 +1071,8 @@ export interface UsersSelect<T extends boolean = true> {
   salt?: T;
   hash?: T;
   resetPasswordRequestedAt?: T;
+  _verified?: T;
+  _verificationToken?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -261,21 +1085,50 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "roles_select".
  */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
+export interface RolesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  isSystem?: T;
+  collectionPermissions?:
+    | T
+    | {
+        collection?: T;
+        read?: T;
+        create?: T;
+        update?: T;
+        delete?: T;
+        id?: T;
+      };
+  globalPermissions?:
+    | T
+    | {
+        global?: T;
+        read?: T;
+        update?: T;
+        id?: T;
+      };
+  assignedUsers?: T;
   updatedAt?: T;
   createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-logs_select".
+ */
+export interface EmailLogsSelect<T extends boolean = true> {
+  subject?: T;
+  category?: T;
+  status?: T;
+  recipient?: T;
+  relatedUserId?: T;
+  attemptedAt?: T;
+  providerMessageId?: T;
+  error?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -284,6 +1137,37 @@ export interface MediaSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -318,6 +1202,247 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Brand, contact and social details used across the website.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  siteName: string;
+  tagline?: string | null;
+  description?: string | null;
+  /**
+   * For light backgrounds.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * For dark backgrounds.
+   */
+  logoInverse?: (number | null) | Media;
+  /**
+   * Square PNG, at least 512×512. Falls back to /favicon.png.
+   */
+  favicon?: (number | null) | Media;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  address?: string | null;
+  socialLinks?:
+    | {
+        platform:
+          | 'linkedin'
+          | 'instagram'
+          | 'facebook'
+          | 'x'
+          | 'youtube'
+          | 'tiktok'
+          | 'github'
+          | 'behance'
+          | 'dribbble'
+          | 'other';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Header and footer menus.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  /**
+   * Drag to reorder. Hidden links are kept but not displayed.
+   */
+  headerLinks?:
+    | {
+        link: CMSLink;
+        visible?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  headerCta?: {
+    enabled?: boolean | null;
+    link?: CMSLink;
+  };
+  /**
+   * Drag to reorder. Hidden links are kept but not displayed.
+   */
+  footerLinks?:
+    | {
+        link: CMSLink;
+        visible?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Short line shown in the footer.
+   */
+  footerNote?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CMSLink".
+ */
+export interface CMSLink {
+  type?: ('internal' | 'custom') | null;
+  newTab?: boolean | null;
+  label: string;
+  reference?: (number | null) | Page;
+  url?: string | null;
+}
+/**
+ * Site-wide defaults for search engines, social sharing and structured data.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-settings".
+ */
+export interface SeoSetting {
+  id: number;
+  /**
+   * Use %s where the page title should go.
+   */
+  titleTemplate?: string | null;
+  /**
+   * Used when a page has no SEO title. Aim for 50–60 characters.
+   */
+  defaultTitle?: string | null;
+  /**
+   * Aim for 120–160 characters.
+   */
+  defaultDescription?: string | null;
+  /**
+   * 1200×630 recommended.
+   */
+  defaultImage?: (number | null) | Media;
+  /**
+   * Public origin of the website, e.g. https://www.example.com. Falls back to APP_URL. Used for canonical links and the sitemap.
+   */
+  canonicalBaseURL?: string | null;
+  /**
+   * Off by default so staging or unfinished sites are not indexed. Turn on for production.
+   */
+  allowIndexing?: boolean | null;
+  disallowPaths?:
+    | {
+        path: string;
+        id?: string | null;
+      }[]
+    | null;
+  twitterHandle?: string | null;
+  /**
+   * Publishes schema.org Organization JSON-LD using Site settings. Only factual information is used — no ratings or reviews are generated.
+   */
+  organization?: {
+    enabled?: boolean | null;
+    type?: ('Organization' | 'LocalBusiness' | 'ProfessionalService') | null;
+    legalName?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  tagline?: T;
+  description?: T;
+  logo?: T;
+  logoInverse?: T;
+  favicon?: T;
+  contactEmail?: T;
+  contactPhone?: T;
+  address?: T;
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  headerLinks?:
+    | T
+    | {
+        link?: T | CMSLinkSelect<T>;
+        visible?: T;
+        id?: T;
+      };
+  headerCta?:
+    | T
+    | {
+        enabled?: T;
+        link?: T | CMSLinkSelect<T>;
+      };
+  footerLinks?:
+    | T
+    | {
+        link?: T | CMSLinkSelect<T>;
+        visible?: T;
+        id?: T;
+      };
+  footerNote?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CMSLink_select".
+ */
+export interface CMSLinkSelect<T extends boolean = true> {
+  type?: T;
+  newTab?: T;
+  label?: T;
+  reference?: T;
+  url?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo-settings_select".
+ */
+export interface SeoSettingsSelect<T extends boolean = true> {
+  titleTemplate?: T;
+  defaultTitle?: T;
+  defaultDescription?: T;
+  defaultImage?: T;
+  canonicalBaseURL?: T;
+  allowIndexing?: T;
+  disallowPaths?:
+    | T
+    | {
+        path?: T;
+        id?: T;
+      };
+  twitterHandle?: T;
+  organization?:
+    | T
+    | {
+        enabled?: T;
+        type?: T;
+        legalName?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
@@ -326,6 +1451,26 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSchedulePublish".
+ */
+export interface TaskSchedulePublish {
+  input: {
+    type?: ('publish' | 'unpublish') | null;
+    locale?: string | null;
+    doc?: {
+      relationTo: 'pages';
+      value: number | Page;
+    } | null;
+    global?: string | null;
+    user?: {
+      relationTo: 'users';
+      value: number | User;
+    } | null;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

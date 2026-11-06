@@ -33,9 +33,12 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], channel: 'chromium' },
     },
   ],
-  webServer: {
-    command: 'pnpm dev',
-    reuseExistingServer: true,
-    url: 'http://localhost:3000',
-  },
+  // Set E2E_BASE_URL to test an already-running server (no dev server is started).
+  webServer: process.env.E2E_BASE_URL
+    ? undefined
+    : {
+        command: 'pnpm dev',
+        reuseExistingServer: true,
+        url: 'http://localhost:3000',
+      },
 })

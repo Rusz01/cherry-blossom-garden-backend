@@ -48,3 +48,7 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Arthanova local tooling (may contain tokens/test data)
+/.dev-outbox
+/.email-previews

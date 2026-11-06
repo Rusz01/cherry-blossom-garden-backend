@@ -1,0 +1,120 @@
+// ---------------------------------------------------------------------------
+// Arthanova Studio — admin design tokens
+//
+// Source: arthanovastudio.com production CSS
+//   ink #1e1e1e · blue #3b82f6 · gray #f5f5f5 · gray-darker #555
+//   DM Sans for everything — headings and text (as on the website's h1/h2)
+//
+// Principles
+//   • Two-tone structure: brand gray for chrome (sidebar), white "paper" for work.
+//   • Hairlines separate content; elevation is reserved for things that float
+//     (menus, modals, toasts).
+//   • One shape scale: 4px (marks), 6px (controls), 8px (containers).
+//   • Blue is functional only: focus, links, the current-location marker.
+//   • One typeface: DM Sans. Hierarchy comes from size, weight and tracking.
+// ---------------------------------------------------------------------------
+
+:root {
+  // Brand
+  --arth-ink: #1e1e1e;
+  --arth-blue: #3b82f6;
+  --arth-gray: #f5f5f5;
+  --arth-gray-darker: #555555;
+
+  // Surfaces
+  --arth-paper: #ffffff; // primary work surface
+  --arth-chrome: #f5f5f5; // sidebar, auth canvas
+  --arth-sunken: #fafafa; // subtle wells (sidebar panels, table hover, dropzones)
+  --arth-hover: rgba(30, 30, 30, 0.045);
+  --arth-pressed: rgba(30, 30, 30, 0.08);
+
+  // Text (all ≥ 4.5:1 on white)
+  --arth-text: #1e1e1e;
+  --arth-text-2: #3d3d3d;
+  --arth-text-muted: #555555;
+  --arth-text-subtle: #6e6e6e;
+
+  // Lines
+  --arth-line: #e8e8e8;
+  --arth-line-strong: #d6d6d6;
+  --arth-line-hover: #b8b8b8;
+
+  // Function colours
+  --arth-accent: #3b82f6;
+  --arth-link: #2563eb;
+  --arth-focus: 0 0 0 3px rgba(59, 130, 246, 0.22);
+  --arth-positive: #15803d;
+  --arth-caution: #a16207;
+  --arth-negative: #b91c1c;
+  --arth-negative-soft: #fef2f2;
+
+  // Type
+  // `--arth-font-sans` is replaced at runtime by BrandFonts with the next/font
+  // family ("DM Sans", "DM Sans Fallback"), so text never silently falls back.
+  --arth-font-sans: 'DM Sans', 'DM Sans Fallback';
+  --arth-font-stack: var(--arth-font-sans), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-heading: var(--arth-font-stack);
+
+  --arth-fs-xs: 12px;
+  --arth-fs-sm: 13px;
+  --arth-fs-md: 14px;
+  --arth-fs-lg: 16px;
+  --arth-fs-title: 26px; // page titles (DM Sans semibold)
+
+  // Space (4px grid)
+  --arth-s1: 4px;
+  --arth-s2: 8px;
+  --arth-s3: 12px;
+  --arth-s4: 16px;
+  --arth-s5: 20px;
+  --arth-s6: 24px;
+  --arth-s8: 32px;
+  --arth-s10: 40px;
+  --arth-s12: 48px;
+
+  // Shape
+  --arth-r-mark: 4px;
+  --arth-r-control: 6px;
+  --arth-r-container: 8px;
+
+  // Elevation — only for floating layers
+  --arth-float: 0 1px 2px rgba(30, 30, 30, 0.05), 0 8px 24px rgba(30, 30, 30, 0.08);
+  --arth-overlay: 0 2px 4px rgba(30, 30, 30, 0.04), 0 24px 48px rgba(30, 30, 30, 0.14);
+
+  // Motion
+  --arth-ease: cubic-bezier(0.2, 0, 0, 1);
+  --arth-fast: 120ms;
+}
+
+@mixin dark-tokens {
+  --arth-paper: #141414;
+  --arth-chrome: #1b1b1b;
+  --arth-sunken: #191919;
+  --arth-hover: rgba(255, 255, 255, 0.05);
+  --arth-pressed: rgba(255, 255, 255, 0.09);
+
+  --arth-text: #ededed;
+  --arth-text-2: #d4d4d4;
+  --arth-text-muted: #a8a8a8;
+  --arth-text-subtle: #8f8f8f;
+
+  --arth-line: #2a2a2a;
+  --arth-line-strong: #3a3a3a;
+  --arth-line-hover: #525252;
+
+  --arth-accent: #60a5fa;
+  --arth-link: #8ab8fb;
+  --arth-focus: 0 0 0 3px rgba(96, 165, 250, 0.32);
+  --arth-positive: #4ade80;
+  --arth-caution: #facc15;
+  --arth-negative: #f87171;
+  --arth-negative-soft: rgba(248, 113, 113, 0.1);
+
+  --arth-float: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.45);
+  --arth-overlay: 0 24px 48px rgba(0, 0, 0, 0.6);
+}
+
+// Payload toggles dark mode with `data-theme="dark"` on <html>.
+html[data-theme='dark'] {
+  @include dark-tokens;
+}

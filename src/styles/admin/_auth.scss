@@ -1,0 +1,169 @@
+// ---------------------------------------------------------------------------
+// Authentication screens (login, forgot/reset password, create-first-user,
+// verify, logout). Payload's minimal template and native forms are kept;
+// only presentation changes.
+//
+// Composition: brand-gray canvas, one white sheet, left-aligned content.
+// The wordmark and a confident DM Sans title carry the brand — nothing else decorates.
+// ---------------------------------------------------------------------------
+
+.template-minimal {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--arth-s12) var(--arth-s4);
+  background: var(--arth-chrome);
+}
+
+.template-minimal__wrap {
+  width: 100%;
+  max-width: 400px;
+  background: var(--arth-paper);
+  border: 1px solid var(--arth-line);
+  border-radius: var(--arth-r-container);
+  padding: var(--arth-s10) var(--arth-s8) var(--arth-s8);
+}
+
+.template-minimal--width-wide .template-minimal__wrap {
+  max-width: 560px;
+}
+
+@media (max-width: 520px) {
+  .template-minimal {
+    align-items: flex-start;
+    padding: var(--arth-s6) var(--arth-s4);
+  }
+
+  .template-minimal__wrap {
+    padding: var(--arth-s8) var(--arth-s5) var(--arth-s6);
+  }
+}
+
+.login__brand {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: var(--arth-s8);
+}
+
+.arth-logo {
+  display: inline-flex;
+
+  img {
+    width: 148px;
+    height: auto;
+  }
+}
+
+.arth-login-intro {
+  margin-bottom: var(--arth-s6);
+
+  .arth-title {
+    margin: 0 0 var(--arth-s1);
+  }
+
+  &__text {
+    margin: 0;
+    font-size: var(--arth-fs-md);
+    color: var(--arth-text-muted);
+  }
+}
+
+.template-minimal h1 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--arth-fs-title);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  margin-top: 0;
+}
+
+.template-minimal p {
+  color: var(--arth-text-muted);
+  line-height: 1.55;
+}
+
+.login__form,
+.forgot-password__form {
+  .login__form__inputWrap {
+    gap: var(--arth-s4);
+  }
+
+  .field-type {
+    margin-bottom: var(--arth-s4);
+  }
+
+  input:not([type='checkbox']) {
+    min-height: 40px;
+  }
+
+  // "Forgot password?" sits as a quiet text link, right-aligned under the fields.
+  > a {
+    display: block;
+    width: fit-content;
+    margin: calc(var(--arth-s1) * -1) 0 var(--arth-s5) auto;
+    font-size: var(--arth-fs-sm);
+    color: var(--arth-text-muted);
+    text-decoration: underline;
+    text-decoration-color: var(--arth-line-strong);
+
+    &:hover {
+      color: var(--arth-text);
+      text-decoration-color: currentColor;
+    }
+  }
+}
+
+// Primary actions span the sheet on auth screens.
+.template-minimal .form-submit .btn,
+.template-minimal button[type='submit'] {
+  width: 100%;
+  min-height: 40px;
+  margin: 0;
+  justify-content: center;
+}
+
+.template-minimal a {
+  color: var(--arth-text-muted);
+}
+
+.arth-login-note {
+  margin: var(--arth-s6) 0 0;
+  padding-top: var(--arth-s4);
+  border-top: 1px solid var(--arth-line);
+  font-size: var(--arth-fs-xs);
+  color: var(--arth-text-subtle);
+}
+
+/* Wordmark on auth sheets that Payload renders without one (forgot/reset
+   password, create-first-user, verify). Login already has `.login__brand`. */
+.template-minimal__wrap:not(:has(.login__brand))::before {
+  content: '';
+  display: block;
+  width: 148px;
+  height: 36px;
+  margin-bottom: var(--arth-s8);
+  background: url('/brand/arthanova-logo.png') no-repeat left center / contain;
+}
+
+html[data-theme='dark'] .template-minimal__wrap:not(:has(.login__brand))::before {
+  background-image: url('/brand/arthanova-logo-white.png');
+}
+
+// Secondary links that follow the submit button ("Back to login").
+.template-minimal .form-submit + a,
+.forgot-password__form .form-submit ~ a {
+  display: block;
+  width: fit-content;
+  margin: var(--arth-s5) auto 0 0;
+  font-size: var(--arth-fs-sm);
+}
+
+/* Create-first-user: hide fields the server overrides (the first account is
+   always an active, verified Administrator). */
+.create-first-user .field-type:has(#field-role),
+.create-first-user .field-type:has(#field-status),
+.create-first-user .field-type:has(#field-_verified),
+.create-first-user .field-type.ui {
+  display: none;
+}

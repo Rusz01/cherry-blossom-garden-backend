@@ -1,0 +1,8 @@
+// Arthanova Studio admin theme.
+// Tokens → Payload variable mapping → component restyles → layout areas.
+@use '../../styles/admin/tokens';
+@use '../../styles/admin/payload';
+@use '../../styles/admin/components';
+@use '../../styles/admin/nav';
+@use '../../styles/admin/auth';
+@use '../../styles/admin/dashboard';

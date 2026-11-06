@@ -1,0 +1,662 @@
+// ---------------------------------------------------------------------------
+// Payload core UI restyled with Arthanova tokens.
+// Restraint over decoration: hairlines, one shape scale, quiet states.
+// ---------------------------------------------------------------------------
+
+/* Buttons ------------------------------------------------------------------- */
+.btn {
+  border-radius: var(--arth-r-control);
+  font-weight: 500;
+  letter-spacing: 0;
+  box-shadow: none;
+  transition:
+    background-color var(--arth-fast) var(--arth-ease),
+    border-color var(--arth-fast) var(--arth-ease),
+    color var(--arth-fast) var(--arth-ease);
+}
+
+// Primary: solid ink, like the website's main CTA. Hover deepens; no glow.
+.btn--style-primary:not(.btn--withPopup) {
+  background-color: var(--arth-ink);
+  color: #fff;
+
+  &:not(.btn--disabled):hover {
+    background-color: #000;
+  }
+}
+
+html[data-theme='dark'] .btn--style-primary:not(.btn--withPopup) {
+  background-color: #ededed;
+  color: var(--arth-ink);
+
+  &:not(.btn--disabled):hover {
+    background-color: #fff;
+  }
+}
+
+// Split buttons (Publish / Save + options): colour the segments, not the wrapper.
+.btn--withPopup {
+  display: inline-flex;
+  border-radius: var(--arth-r-control);
+  overflow: hidden;
+
+  > .btn,
+  .popup-button {
+    border-radius: 0;
+    background-color: var(--arth-ink);
+    color: #fff;
+  }
+
+  .popup-button {
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  > .btn:not([disabled]):hover,
+  .popup-button:hover {
+    background-color: #000;
+  }
+
+  &.btn--disabled > .btn,
+  &.btn--disabled .popup-button {
+    background-color: var(--arth-chrome);
+    color: var(--arth-text-subtle);
+  }
+
+  &.btn--disabled .popup-button {
+    border-left-color: var(--arth-line-strong);
+    color: var(--arth-text);
+  }
+}
+
+html[data-theme='dark'] .btn--withPopup {
+  > .btn,
+  .popup-button {
+    background-color: #ededed;
+    color: var(--arth-ink);
+  }
+
+  > .btn:not([disabled]):hover,
+  .popup-button:hover {
+    background-color: #fff;
+  }
+
+  .popup-button {
+    border-left-color: rgba(0, 0, 0, 0.12);
+  }
+
+  &.btn--disabled > .btn,
+  &.btn--disabled .popup-button {
+    background-color: var(--arth-chrome);
+    color: var(--arth-text-subtle);
+  }
+}
+
+// Secondary and Payload's "pill" buttons (Create New, Columns, Filters, upload
+// actions) share one quiet outlined style instead of grey lozenges.
+.btn--style-secondary,
+.btn--style-pill,
+.pill.pill--style-light,
+.pill.pill--style-white {
+  border: 0;
+  background: var(--arth-paper);
+  color: var(--arth-text);
+  box-shadow: inset 0 0 0 1px var(--arth-line-strong);
+  border-radius: var(--arth-r-control);
+
+  &:not(.btn--disabled):hover {
+    background: var(--arth-sunken);
+    box-shadow: inset 0 0 0 1px var(--arth-line-hover);
+  }
+}
+
+.pill {
+  border-radius: var(--arth-r-mark);
+  font-weight: 500;
+}
+
+.pill--style-light.pill-selector__pill--selected {
+  background: var(--arth-chrome);
+}
+
+.btn--style-subtle:hover,
+.btn--style-none:hover {
+  background: var(--arth-hover);
+}
+
+/* Inputs -------------------------------------------------------------------- */
+.field-type input:not([type='checkbox']):not([type='radio']),
+.field-type textarea,
+.react-select .rs__control,
+.field-type .code-editor,
+.date-time-picker input {
+  border: 1px solid var(--arth-line-strong);
+  border-radius: var(--arth-r-control);
+  background: var(--arth-paper);
+  box-shadow: none;
+  transition:
+    border-color var(--arth-fast) var(--arth-ease),
+    box-shadow var(--arth-fast) var(--arth-ease);
+}
+
+.field-type input:not([type='checkbox']):not([type='radio']):hover,
+.field-type textarea:hover,
+.react-select .rs__control:hover {
+  border-color: var(--arth-line-hover);
+}
+
+.field-type input:not([type='checkbox']):not([type='radio']):focus,
+.field-type textarea:focus,
+.react-select .rs__control--is-focused,
+.react-select .rs__control--is-focused:hover {
+  border-color: var(--arth-accent);
+  box-shadow: var(--arth-focus);
+  outline: none;
+}
+
+.field-type input[readonly],
+.field-type input:disabled,
+.field-type textarea:disabled,
+.read-only input {
+  background: var(--arth-sunken);
+  color: var(--arth-text-muted);
+}
+
+.field-label {
+  font-size: var(--arth-fs-sm);
+  font-weight: 500;
+  color: var(--arth-text-2);
+  letter-spacing: 0;
+}
+
+.field-label .required {
+  color: var(--arth-negative);
+}
+
+.field-description {
+  font-size: var(--arth-fs-xs);
+  line-height: 1.5;
+  color: var(--arth-text-subtle);
+}
+
+.field-type.error input,
+.field-type.error textarea,
+.field-type.error .rs__control {
+  border-color: var(--arth-negative);
+  box-shadow: 0 0 0 3px var(--arth-negative-soft);
+}
+
+// Checked: fill the box and draw the tick (Payload's SVG uses the input's text
+// colour) in contrast — never paint the tick layer itself.
+.checkbox-input--checked .checkbox-input__input {
+  background: var(--arth-ink);
+  border-color: var(--arth-ink);
+  color: #fff;
+}
+
+html[data-theme='dark'] .checkbox-input--checked .checkbox-input__input {
+  background: #ededed;
+  border-color: #ededed;
+  color: var(--arth-ink);
+}
+
+.checkbox-input__input {
+  box-shadow: none;
+  border-color: var(--arth-line-strong);
+  border-radius: var(--arth-r-mark);
+}
+
+.checkbox-input__icon {
+  border-radius: var(--arth-r-mark);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--arth-ink);
+}
+
+/* App header + breadcrumbs ------------------------------------------------ */
+.app-header__bg {
+  background: color-mix(in srgb, var(--arth-paper) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--arth-line);
+}
+
+.step-nav {
+  font-size: var(--arth-fs-sm);
+  color: var(--arth-text-subtle);
+
+  a {
+    color: var(--arth-text-muted);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--arth-text);
+    }
+  }
+}
+
+.step-nav__home {
+  width: 20px;
+  height: 20px;
+}
+
+.arth-icon {
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transform: scale(1.5); // the mark artwork carries generous built-in padding
+  }
+}
+
+/* List view ----------------------------------------------------------------- */
+.list-header {
+  margin-bottom: var(--arth-s5);
+}
+
+// "Create New" sits beside the title as a proper small button, not a tag.
+.list-create-new-doc__create-new-button.btn--size-small {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  margin: 0;
+  padding: 0 var(--arth-s3);
+  font-size: var(--arth-fs-sm);
+
+  .btn__content {
+    padding: 0;
+    line-height: 1;
+  }
+}
+
+.list-header__title-and-actions {
+  align-items: center;
+  gap: var(--arth-s4);
+}
+
+.collection-list__sub-header,
+.custom-view-description {
+  color: var(--arth-text-muted);
+  font-size: var(--arth-fs-md);
+  max-width: 64ch;
+}
+
+.search-bar {
+  border-radius: var(--arth-r-control);
+  background: var(--arth-paper);
+  box-shadow: inset 0 0 0 1px var(--arth-line-strong);
+
+  // Ring only when typing in the search input, not when a toggle button is focused.
+  &:has(.search-filter__input:focus) {
+    box-shadow:
+      inset 0 0 0 1px var(--arth-accent),
+      var(--arth-focus);
+  }
+}
+
+.list-controls__columns > div,
+.list-controls__where > div,
+.list-controls__group-by > div {
+  border: 1px solid var(--arth-line);
+  border-radius: var(--arth-r-container);
+  background: var(--arth-sunken);
+}
+
+.search-filter__input {
+  background: transparent;
+}
+
+// Tables read as a ledger: hairline rows, quiet headers, no floating box.
+.table {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+
+  table {
+    border-collapse: collapse;
+  }
+
+  thead th {
+    background: transparent;
+    color: var(--arth-text-subtle);
+    font-size: var(--arth-fs-xs);
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    border-bottom: 1px solid var(--arth-line-strong);
+
+    .field-label {
+      color: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+    }
+  }
+
+  tbody tr {
+    background: transparent;
+    transition: background-color var(--arth-fast) var(--arth-ease);
+
+    &:nth-child(odd) {
+      background: transparent;
+    }
+
+    &:hover {
+      background: var(--arth-sunken);
+    }
+  }
+
+  td {
+    border-bottom: 1px solid var(--arth-line);
+    color: var(--arth-text-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // Record titles: ink, medium weight, underline only on hover.
+  td a {
+    color: var(--arth-text);
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Status column: a small mark carries the state; the text stays neutral.
+.cell-_status > span,
+.cell-status > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--arth-line-hover);
+    flex: none;
+  }
+}
+
+.cell-_status .selected--published::before,
+.cell-status .selected--active::before,
+.cell-status .selected--submitted::before {
+  background: var(--arth-positive);
+}
+
+.cell-_status .selected--changed::before,
+.cell-status .selected--not-configured::before {
+  background: var(--arth-caution);
+}
+
+.cell-status .selected--failed::before,
+.cell-status .selected--suspended::before {
+  background: var(--arth-negative);
+}
+
+.paginator__page {
+  border-radius: var(--arth-r-control);
+
+  &--is-current {
+    background: var(--arth-chrome);
+    color: var(--arth-text);
+    font-weight: 600;
+  }
+}
+
+/* Document view --------------------------------------------------------------- */
+.doc-header {
+  padding-bottom: var(--arth-s2);
+}
+
+.doc-tab {
+  border-radius: var(--arth-r-control);
+  color: var(--arth-text-muted);
+
+  &.doc-tab--active {
+    background: var(--arth-chrome);
+    color: var(--arth-text);
+  }
+}
+
+.pill-version-count {
+  border-radius: var(--arth-r-mark);
+  background: var(--arth-chrome);
+  color: var(--arth-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.doc-controls {
+  border-top: 1px solid var(--arth-line);
+  border-bottom: 1px solid var(--arth-line);
+}
+
+.doc-controls__meta {
+  font-size: var(--arth-fs-sm);
+  color: var(--arth-text-subtle);
+}
+
+.doc-controls__value,
+.status__value {
+  color: var(--arth-text-2);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+// Forms keep a comfortable reading width on large monitors; list views,
+// the dashboard and live preview still use the full content area.
+.document-fields__fields {
+  max-width: 1120px;
+}
+
+.document-fields__sidebar-wrap {
+  border-left: 1px solid var(--arth-line);
+  background: var(--arth-sunken);
+}
+
+// Tabs: text tabs with an ink underline — the same language as the website nav.
+.tabs-field__tabs {
+  gap: 0; // Payload offsets the first tab with a gutter spacer; spacing lives on the buttons
+  border-bottom: 1px solid var(--arth-line);
+}
+
+.tabs-field__tab-button {
+  padding-inline: 0;
+  margin-right: var(--arth-s6);
+  border-radius: 0;
+  color: var(--arth-text-subtle);
+  font-weight: 500;
+  font-size: var(--arth-fs-md);
+  transition: color var(--arth-fast) var(--arth-ease);
+
+  &:hover {
+    color: var(--arth-text);
+    background: transparent;
+  }
+}
+
+.tabs-field__tab-button--active {
+  color: var(--arth-text);
+  box-shadow: inset 0 -2px 0 var(--arth-text);
+}
+
+.tabs-field__description {
+  color: var(--arth-text-subtle);
+}
+
+// Array / block rows and collapsibles: outlined, header on a sunken band.
+.collapsible {
+  border: 1px solid var(--arth-line);
+  border-radius: var(--arth-r-container);
+  background: var(--arth-paper);
+  box-shadow: none;
+}
+
+.collapsible__toggle-wrap {
+  background: var(--arth-sunken);
+  border-radius: var(--arth-r-container) var(--arth-r-container) 0 0;
+}
+
+.collapsible--collapsed .collapsible__toggle-wrap {
+  border-radius: var(--arth-r-container);
+}
+
+.array-field__header-heading,
+.blocks-field__header-heading {
+  font-family: var(--font-heading);
+  font-size: var(--arth-fs-lg);
+  font-weight: 600;
+}
+
+// Block row header: type label as a quiet tag; the row title as plain text.
+.blocks-field__block-pill,
+.blocks-field .pill {
+  background: var(--arth-chrome);
+  box-shadow: none;
+  color: var(--arth-text-2);
+}
+
+.blocks-field__block-header .row-label,
+.blocks-field__block-header input {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  color: var(--arth-text-subtle);
+}
+
+/* Upload / media -------------------------------------------------------------- */
+.dropzone {
+  border: 1px dashed var(--arth-line-strong);
+  border-radius: var(--arth-r-container);
+  background: var(--arth-sunken);
+  transition:
+    border-color var(--arth-fast) var(--arth-ease),
+    background-color var(--arth-fast) var(--arth-ease);
+
+  &.dragging,
+  &:hover {
+    border-color: var(--arth-accent);
+    background: color-mix(in srgb, var(--arth-accent) 5%, var(--arth-paper));
+  }
+}
+
+.thumbnail,
+.file-details,
+.upload__wrap {
+  border-radius: var(--arth-r-container);
+}
+
+.file-details {
+  border: 1px solid var(--arth-line);
+}
+
+/* Rich text --------------------------------------------------------------------- */
+.rich-text-lexical .editor-container,
+.rich-text-lexical .editor {
+  border-radius: var(--arth-r-control);
+}
+
+/* Floating layers: menus, selects, popups, modals, toasts ------------------- */
+.popup__content,
+.react-select .rs__menu {
+  border: 1px solid var(--arth-line);
+  border-radius: var(--arth-r-container);
+  box-shadow: var(--arth-float);
+  background: var(--arth-paper);
+}
+
+.react-select .rs__menu {
+  overflow: hidden;
+}
+
+.popup-button-list__button {
+  border-radius: var(--arth-r-mark);
+
+  &:hover {
+    background: var(--arth-hover);
+  }
+}
+
+.react-select .rs__option--is-focused {
+  background: var(--arth-hover);
+}
+
+.react-select .rs__option--is-selected {
+  background: var(--arth-chrome);
+  color: var(--arth-text);
+  font-weight: 500;
+}
+
+.confirmation-modal__wrapper,
+.modal__content,
+.drawer__content {
+  border-radius: var(--arth-r-container);
+}
+
+.confirmation-modal__wrapper {
+  border: 1px solid var(--arth-line);
+  box-shadow: var(--arth-overlay);
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0;
+    margin: 0 0 var(--arth-s2);
+  }
+
+  p {
+    color: var(--arth-text-muted);
+    font-size: var(--arth-fs-md);
+  }
+}
+
+.payload-toast-container .payload-toast-item {
+  border-radius: var(--arth-r-container);
+  border: 1px solid var(--arth-line);
+  box-shadow: var(--arth-float);
+  font-family: var(--arth-font-stack);
+}
+
+.banner {
+  border-radius: var(--arth-r-container);
+}
+
+.shimmer-effect {
+  border-radius: var(--arth-r-control);
+}
+
+/* User edit: resend activation ----------------------------------------------- */
+.arth-activation {
+  border-top: 1px solid var(--arth-line);
+  border-bottom: 1px solid var(--arth-line);
+  padding: var(--arth-s4) 0;
+  margin-bottom: var(--arth-s6);
+
+  &__title {
+    margin: 0 0 var(--arth-s1);
+    font-size: var(--arth-fs-sm);
+    font-weight: 600;
+    color: var(--arth-text);
+  }
+
+  &__text {
+    margin: 0 0 var(--arth-s3);
+    font-size: var(--arth-fs-xs);
+    color: var(--arth-text-muted);
+    line-height: 1.5;
+  }
+
+  .btn {
+    margin: 0;
+  }
+}
