@@ -1,32 +1,54 @@
-import type { Metadata, Viewport } from 'next'
-import React from 'react'
+import type { Metadata } from "next";
+import {
+  Inter,
+  Cormorant_Garamond,
+  Allura,
+} from "next/font/google";
 
-import { getAppURL } from '@/lib/env'
-import { dmSans } from '@/lib/fonts'
+import "./globals.css";
+import Footer from "@/components/frontend/footer";
+import MotionProvider from "@/components/frontend/motion/motionProvider";
 
-import './styles.css'
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant-garamond",
+  subsets: ["latin"],
+});
+
+const allura = Allura({
+  variable: "--font-allura",
+  subsets: ["latin"],
+  weight: "400",
+});
 
 export const metadata: Metadata = {
-  metadataBase: new URL(getAppURL()),
-  title: { default: 'Arthanova Studio CMS', template: '%s' },
-  description: 'Arthanova Studio — Partners in Digital Growth. Content management for Arthanova Studio projects.',
-  applicationName: 'Arthanova Studio CMS',
-  icons: {
-    icon: [{ url: '/favicon.png', type: 'image/png' }],
-    apple: [{ url: '/apple-touch-icon.png' }],
-  },
-}
+  title: "Cherry Blossom Garden",
+  description: "Where Every Moment Blooms",
+};
 
-export const viewport: Viewport = {
-  themeColor: '#1e1e1e',
-  width: 'device-width',
-  initialScale: 1,
-}
-
-export default function FrontendLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+                                     children,
+                                   }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={dmSans.variable}>
-      <body>{children}</body>
+    <html
+      lang="en"
+      className={`${inter.variable} ${cormorantGaramond.variable} ${allura.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
+    >
+    <body className="min-h-full flex flex-col">
+    {/* Without JavaScript, Motion's initial hidden styles would never clear. */}
+    <noscript>
+      <style>{`[data-reveal]{opacity:1!important;transform:none!important;clip-path:none!important}`}</style>
+    </noscript>
+    <MotionProvider>
+      {children}
+      <Footer />
+    </MotionProvider>
+    </body>
     </html>
-  )
+  );
 }
