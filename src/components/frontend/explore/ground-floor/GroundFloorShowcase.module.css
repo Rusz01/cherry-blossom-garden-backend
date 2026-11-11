@@ -1,0 +1,1995 @@
+/* Brand variables come from src/app/globals.css. Do not redefine them globally. */
+.showcase {
+    --ink: var(--ivory);
+    --muted: rgba(232, 214, 188, 0.65);
+    --soft: rgba(232, 214, 188, 0.38);
+    --accent: var(--blossom);
+    --border: rgba(197, 160, 106, 0.35);
+    position: relative;
+    isolation: isolate;
+    /* Covers the viewport behind the shared Navbar, without a boxed width. */
+    height: max(820px, 100svh);
+    min-height: 820px;
+    width: 100%;
+    overflow: hidden;
+    background: var(--midnight);
+    color: var(--ink);
+    font-family: var(--font-inter), sans-serif;
+    transition: color 650ms ease;
+}
+
+.showcase[data-tone="cream"] {
+    --ink: #1d1b1a;
+    --muted: rgba(29, 27, 26, 0.69);
+    --soft: rgba(29, 27, 26, 0.42);
+    --accent: var(--rose);
+    --border: rgba(91, 70, 49, 0.3);
+}
+
+.background {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 850ms var(--motion-ease);
+    pointer-events: none;
+}
+.background[data-active="true"] { opacity: 1; }
+.background[data-background="midnight"] { background: var(--midnight); }
+.background[data-background="charcoal"] { background: var(--charcoal); }
+.background[data-background="walnut"] { background: var(--midnight); }
+.background[data-background="cream"] { background: var(--cream); }
+/* The active photograph covers the entire carousel, not just the arch.
+   An intentionally dark cinematic treatment leaves the typography legible. */
+.backgroundPhoto {
+    object-fit: cover;
+    transform: scale(1.06);
+    filter: blur(5px) brightness(.58) saturate(.8);
+    transition: transform 8000ms ease, filter 850ms ease;
+}
+.background[data-active="true"] .backgroundPhoto { transform: scale(1); }
+.backgroundShade {
+    position: absolute;
+    inset: 0;
+    background:
+            linear-gradient(90deg, rgba(14,15,18,.95) 0%, rgba(14,15,18,.87) 32%, rgba(14,15,18,.68) 62%, rgba(14,15,18,.45) 100%),
+            linear-gradient(0deg, rgba(14,15,18,.74) 0%, transparent 40%, rgba(14,15,18,.3) 100%);
+}
+/* Kids experience uses the homepage's soft, light palette. */
+.background[data-background="cream"] .backgroundPhoto {
+    filter: blur(5px) brightness(1.07) saturate(.62);
+}
+.background[data-background="cream"] .backgroundShade {
+    background:
+            linear-gradient(90deg, rgba(248,245,240,.97) 0%, rgba(248,245,240,.92) 37%, rgba(248,245,240,.75) 67%, rgba(248,245,240,.55) 100%),
+            linear-gradient(0deg, rgba(248,245,240,.7), transparent 42%);
+}
+.fineLine { position: absolute; inset: 0; z-index: -1; opacity: .45; background: linear-gradient(to right, transparent 48%, var(--border) 48%, var(--border) calc(48% + 1px), transparent calc(48% + 1px)); pointer-events:none; }
+
+.topRail {
+    position: absolute;
+    top: clamp(122px, 10vw, 156px);
+    right: 0;
+    left: 0;
+    z-index: 5;
+    padding: 22px clamp(28px, 5.5vw, 104px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.railIdentity, .counter { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .25em; }
+.railIdentity { display:flex; align-items:center; gap: 13px; white-space: nowrap; }
+.railLine { display:block; width: 29px; height: 1px; background: var(--accent); }
+.railDivider { color: var(--accent); }
+.counter { display:flex; align-items: baseline; gap: 9px; font-variant-numeric: tabular-nums; }
+.counterDivider { opacity:.35; }
+
+.copyArea {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    width: 48%;
+    height: 100%;
+    padding: 174px 0 76px clamp(28px, 5.5vw, 104px);
+    pointer-events: none;
+}
+.copy { width: 100%; max-width: 560px; pointer-events: auto; }
+.eyebrow { margin: 0 0 21px; color:var(--accent); letter-spacing: .25em; text-transform:uppercase; font-size: 10px; font-weight: 600; }
+.title {
+    margin: 0;
+    font-family: var(--font-cormorant-garamond), Georgia, serif;
+    font-size: clamp(63px, 7.2vw, 116px);
+    font-weight: 400;
+    line-height: .85;
+    letter-spacing: -.043em;
+    color: var(--ink);
+    white-space: nowrap;
+}
+.title span { display:block; margin-top: 3px; }
+.longTitle { font-size: clamp(61px, 6.5vw, 105px); }
+.subtitle { max-width: 410px; margin: 34px 0 0; font-family: var(--font-cormorant-garamond), Georgia, serif; font-size:clamp(21px, 2.0vw, 29px); font-style:italic; line-height:1.15; color:var(--ink); }
+.description { max-width: 390px; margin: 15px 0 0; font-size: 13px; line-height: 1.86; color: var(--muted); }
+.cta {
+    margin-top: 31px;
+    display: inline-flex;
+    align-items: center;
+    gap: 17px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: gap 300ms ease, color 300ms ease;
+}
+.cta:hover { gap: 25px; }
+.cta:focus-visible, .scrollPrompt:focus-visible, .arrowButton:focus-visible, .nextPreview:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+
+.gallery { position:absolute; z-index: 1; inset:0; pointer-events: none; }
+.archHalo {
+    position: absolute;
+    left: 49.5%;
+    top: 14%;
+    width: min(33vw, 495px);
+    height: 73%;
+    border: 1px solid var(--border);
+    border-radius: 240px 240px 8px 8px;
+    transform: translate(13px, -13px);
+    opacity: .7;
+    transition: border-color 650ms ease;
+}
+.featuredArch {
+    position: absolute;
+    left: 49.5%;
+    top: 14%;
+    width: min(33vw, 495px);
+    height: 73%;
+    overflow:hidden;
+    border-radius: 240px 240px 8px 8px;
+    background: #292225;
+    border: 1px solid var(--border);
+    box-shadow: 0 25px 90px rgba(0,0,0,.17);
+}
+.featuredImage { position:absolute; inset:0; opacity:0; transform:translateX(20px) scale(1.075); transition:opacity 950ms var(--motion-ease),transform 1300ms var(--motion-ease); }
+.featuredImage[data-active="true"] { opacity:1; transform:translateX(0) scale(1); z-index:1; }
+.photo { object-fit: cover; filter: saturate(.94) contrast(1.035); }
+.archSheen { position:absolute; inset:0; z-index:2; background: linear-gradient(to top,rgba(0,0,0,.55),transparent 25%,rgba(0,0,0,.06)); pointer-events:none; }
+.imageLabel { position:absolute; z-index:3; left:27px; bottom:21px; color:rgba(255,255,255,.8); font-size:9px; font-weight:500; letter-spacing:.23em; }
+.imageSignature { position:absolute; z-index:3; left:26px; bottom:43px; color:#f1c1c7; font-family:var(--font-allura), cursive; font-size:clamp(26px,2.3vw,40px); line-height:1; }
+.nextPreview {
+    position: absolute;
+    top: 28%;
+    right: -8%;
+    width: min(22vw, 320px);
+    height: 53%;
+    overflow:hidden;
+    border: 1px solid var(--border);
+    border-radius: 200px 200px 5px 5px;
+    background:var(--charcoal);
+    cursor:pointer;
+    pointer-events:auto;
+    padding:0;
+    transition:transform 350ms ease, border-color 350ms ease;
+}
+.nextPreview:hover { transform:translateX(-10px); border-color:var(--accent); }
+.previewPhoto { object-fit:cover; transition:transform 450ms ease; filter:brightness(.77); }
+.nextPreview:hover .previewPhoto { transform:scale(1.05); }
+.previewShade { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.6),transparent 50%); }
+.previewWord { position:absolute; bottom:21px; left:17px; color:#fff; font-size:9px; letter-spacing:.2em; font-weight:600; }
+
+.bottomRail {
+    position:absolute;
+    inset: auto clamp(28px,5.5vw,104px) 35px;
+    z-index:5;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+.scrollPrompt { display:inline-flex; align-items:center; gap:9px; font-size:10px; letter-spacing:.13em; color:var(--soft); text-decoration:none; transition:color 250ms ease; }
+.scrollPrompt:hover { color:var(--accent); }
+.controls { display:flex; align-items:center; gap:10px; }
+.dragHint { margin-right:15px; color:var(--soft); font-size:10px; letter-spacing:.11em; }
+.arrowButton {
+    display:grid; place-items:center;
+    width:47px; height:47px; border:1px solid var(--border); border-radius:50%;
+    background:transparent; color:var(--ink); cursor:pointer;
+    transition:background 250ms ease, color 250ms ease, border-color 250ms ease, transform 250ms ease;
+}
+.arrowButton:hover { transform:translateY(-2px); border-color:var(--accent); }
+.arrowNext { color: var(--midnight); background:var(--accent); border-color:var(--accent); }
+.arrowNext:hover { background:var(--ink); }
+.announcement { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+
+@media (max-width: 1250px) {
+    .title { font-size: clamp(58px, 7vw, 92px); }
+    .featuredArch, .archHalo { left: 52%; width: 33%; }
+    .copyArea { width:52%; }
+    .nextPreview { right:-13%; }
+}
+
+@media (max-width: 1023px) {
+    .showcase { height: max(980px, 100svh); min-height:980px; }
+    .fineLine { display:none; }
+    .topRail { top: 108px; padding: 22px 34px; }
+    .copyArea { position:absolute; inset: 155px 0 auto; width:100%; height:auto; padding:45px 34px 0; }
+    .copy { max-width: 680px; }
+    .title { font-size: clamp(57px, 10vw, 94px); }
+    .subtitle { margin-top:20px; }
+    .description { max-width: 550px; }
+    .cta { margin-top:17px; }
+    .featuredArch, .archHalo { top:55%; left:20%; width:47%; height:35%; }
+    .nextPreview { top:62%; right:-4%; width:27%; height:27%; }
+    .bottomRail { inset: auto 34px 26px; }
+}
+
+@media (max-width: 640px) {
+    .showcase { height: max(880px, 100svh); min-height:880px; }
+    .topRail { top: 88px; padding:20px 21px; }
+    .railIdentity, .counter { font-size:9px; letter-spacing:.13em; }
+    .railIdentity { gap:9px; }
+    .railLine { width:20px; }
+    .copyArea { inset: 132px 0 auto; padding: 30px 22px 0; }
+    .eyebrow { font-size:9px; margin-bottom:14px; }
+    .title { font-size:clamp(54px, 13vw, 77px); letter-spacing:-.035em; }
+    .longTitle { font-size:clamp(43px, 11.1vw, 65px); }
+    .subtitle { margin-top:17px; font-size:21px; }
+    .description { max-width:365px; margin-top:11px; font-size:11.5px; line-height:1.65; }
+    .cta { margin-top:14px; font-size:9px; }
+    .featuredArch, .archHalo { top:59%; left:10%; width:66%; height:31%; border-radius: 190px 190px 7px 7px; }
+    .archHalo { transform:translate(9px,-9px); }
+    .nextPreview { top:65%; right:-12%; width:31%; height:24%; }
+    .imageLabel { left:14px; bottom:15px; font-size:7px; letter-spacing:.1em; }
+    .imageSignature { left:14px; bottom:31px; font-size:25px; }
+    .bottomRail { inset:auto 18px 15px; }
+    .dragHint { display:none; }
+    .scrollPrompt { font-size:9px; letter-spacing:0; }
+    .arrowButton { width:40px; height:40px; }
+    .controls { gap:7px; }
+}
+
+@media (max-width: 370px) {
+    .showcase { min-height:950px; height:max(950px, 100svh); }
+    .title { font-size:clamp(49px, 13vw, 60px); }
+    .featuredArch, .archHalo { top:62%; height:28%; }
+    .nextPreview { top:67%; height:21%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .showcase, .background, .backgroundPhoto, .featuredImage, .copy, .arrowButton, .nextPreview, .previewPhoto, .cta { animation: none !important; transition: none !important; }
+}
+
+
+/* ============================================================
+   CHERRY BLOSSOM GARDEN
+   GROUND FLOOR — PREMIUM CAROUSEL ENHANCEMENTS
+
+   Add AFTER all existing CSS, including media queries.
+   ============================================================ */
+
+/* ---------- 01. CINEMATIC CANVAS ---------- */
+
+.showcase {
+    --premium-ease: var(--motion-ease);
+
+    background: var(--midnight);
+    isolation: isolate;
+}
+
+.showcase::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+
+    background:
+            radial-gradient(
+                    ellipse at 76% 46%,
+                    rgba(197, 160, 106, 0.055),
+                    transparent 46%
+            ),
+            linear-gradient(
+                    180deg,
+                    rgba(0, 0, 0, 0.04) 0%,
+                    transparent 35%,
+                    rgba(0, 0, 0, 0.24) 100%
+            );
+}
+
+.showcase::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.34;
+
+    background:
+            linear-gradient(
+                    to right,
+                    transparent 5.5%,
+                    rgba(232, 214, 188, 0.08) 5.55%,
+                    transparent 5.6%
+            ),
+            linear-gradient(
+                    to right,
+                    transparent 94.4%,
+                    rgba(232, 214, 188, 0.08) 94.45%,
+                    transparent 94.5%
+            );
+}
+
+/* More detailed background photography */
+
+.backgroundPhoto {
+    transform: scale(1.09);
+
+    filter:
+            blur(3px)
+            brightness(0.72)
+            saturate(0.85);
+
+    transition:
+            transform 8500ms ease-out,
+            filter 1200ms ease;
+}
+
+.background[data-active="true"] .backgroundPhoto {
+    transform: scale(1);
+}
+
+.backgroundShade {
+    background:
+            linear-gradient(
+                    90deg,
+                    rgba(14, 15, 18, 0.96) 0%,
+                    rgba(14, 15, 18, 0.88) 25%,
+                    rgba(14, 15, 18, 0.71) 45%,
+                    rgba(14, 15, 18, 0.35) 75%,
+                    rgba(14, 15, 18, 0.38) 100%
+            ),
+            linear-gradient(
+                    180deg,
+                    rgba(14, 15, 18, 0.36) 0%,
+                    transparent 35%,
+                    transparent 60%,
+                    rgba(14, 15, 18, 0.76) 100%
+            );
+}
+
+/* ---------- 02. EDITORIAL TYPOGRAPHY ---------- */
+
+.copy {
+    position: relative;
+}
+
+.copy::before {
+    content: "";
+    position: absolute;
+    top: -37px;
+    left: 0;
+
+    width: 65px;
+    height: 1px;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    var(--accent),
+                    transparent
+            );
+}
+
+.eyebrow {
+    font-family: var(--font-inter), sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.29em;
+    color: var(--accent);
+
+    margin-bottom: 25px;
+}
+
+.title {
+    font-family:
+            var(--font-cormorant-garamond),
+            Georgia,
+            serif;
+
+    font-weight: 400;
+    font-size: clamp(65px, 7vw, 112px);
+    letter-spacing: -0.046em;
+    line-height: 0.86;
+
+    text-shadow:
+            0 8px 35px rgba(0, 0, 0, 0.12);
+}
+
+.title span {
+    display: block;
+    margin-top: 9px;
+}
+
+.longTitle {
+    font-size: clamp(60px, 6.35vw, 102px);
+}
+
+.subtitle {
+    margin-top: 36px;
+
+    font-family:
+            var(--font-cormorant-garamond),
+            Georgia,
+            serif;
+
+    font-size: clamp(22px, 2.05vw, 30px);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+}
+
+.description {
+    margin-top: 18px;
+    max-width: 405px;
+
+    font-family: var(--font-inter), sans-serif;
+    font-size: 13px;
+    line-height: 1.95;
+    letter-spacing: 0.005em;
+
+    color: var(--muted);
+}
+
+/* ---------- 03. PREMIUM TEXT CTA ---------- */
+
+.cta {
+    position: relative;
+
+    margin-top: 35px;
+    padding-bottom: 15px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 25px;
+
+    border: none;
+
+    font-family: var(--font-inter), sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.19em;
+
+    color: var(--accent);
+
+    transition:
+            color 350ms ease,
+            gap 350ms var(--premium-ease);
+}
+
+.cta::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 1px;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    var(--accent) 0%,
+                    var(--accent) 58%,
+                    transparent 100%
+            );
+
+    transform: scaleX(0.62);
+    transform-origin: left;
+
+    transition:
+            transform 500ms var(--premium-ease);
+}
+
+.cta svg {
+    transition:
+            transform 450ms var(--premium-ease);
+}
+
+.cta:hover {
+    gap: 25px;
+}
+
+.cta:hover::after {
+    transform: scaleX(1);
+}
+
+.cta:hover svg {
+    transform: translateX(7px);
+}
+
+/* ---------- 04. ARCHITECTURAL PHOTO FRAME ---------- */
+
+.archHalo {
+    border: 1px solid var(--border);
+
+    transform: translate(17px, -17px);
+
+    opacity: 0.8;
+
+    transition:
+            border-color 700ms ease,
+            transform 700ms var(--premium-ease);
+}
+
+.featuredArch {
+    border: 1px solid rgba(197, 160, 106, 0.55);
+
+    box-shadow:
+            0 32px 100px rgba(0, 0, 0, 0.35),
+            0 4px 30px rgba(0, 0, 0, 0.14),
+            0 0 65px rgba(197, 160, 106, 0.045);
+}
+
+/* Fine inset border gives the photograph a gallery-like frame */
+
+.featuredArch::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+
+    z-index: 4;
+    pointer-events: none;
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 220px 220px 3px 3px;
+}
+
+/* Subtle premium lighting */
+
+.featuredArch::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    z-index: 2;
+    pointer-events: none;
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(255, 255, 255, 0.14) 0%,
+                    transparent 35%
+            );
+}
+
+.featuredImage {
+    transform: translateX(24px) scale(1.09);
+
+    transition:
+            opacity 1150ms var(--premium-ease),
+            transform 1450ms var(--premium-ease);
+}
+
+.featuredImage[data-active="true"] {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+.photo {
+    object-fit: cover;
+
+    filter:
+            saturate(0.96)
+            contrast(1.045)
+            brightness(0.97);
+}
+
+.archSheen {
+    background:
+            linear-gradient(
+                    180deg,
+                    rgba(0, 0, 0, 0.13) 0%,
+                    transparent 25%,
+                    transparent 55%,
+                    rgba(0, 0, 0, 0.78) 100%
+            );
+}
+
+.imageSignature {
+    z-index: 5;
+    bottom: 49px;
+    left: 32px;
+
+    color: #f0b8c0;
+
+    font-size: clamp(29px, 2.5vw, 43px);
+
+    text-shadow:
+            0 4px 18px rgba(0, 0, 0, 0.24);
+}
+
+.imageLabel {
+    z-index: 5;
+    bottom: 27px;
+    left: 33px;
+
+    font-family: var(--font-inter), sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+
+    letter-spacing: 0.27em;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---------- 05. NEXT SLIDE PREVIEW ---------- */
+
+.nextPreview {
+    border: 1px solid rgba(197, 160, 106, 0.48);
+
+    box-shadow:
+            -25px 25px 85px rgba(0, 0, 0, 0.28);
+
+    transition:
+            transform 600ms var(--premium-ease),
+            border-color 400ms ease,
+            box-shadow 500ms ease;
+}
+
+.nextPreview:hover {
+    transform: translateX(-15px);
+
+    border-color: var(--accent);
+
+    box-shadow:
+            -35px 35px 110px rgba(0, 0, 0, 0.4);
+}
+
+.previewPhoto {
+    object-fit: cover;
+    filter: brightness(0.78) saturate(0.85);
+
+    transition:
+            transform 1000ms var(--premium-ease),
+            filter 700ms ease;
+}
+
+.nextPreview:hover .previewPhoto {
+    transform: scale(1.09);
+    filter: brightness(0.94) saturate(0.95);
+}
+
+.previewShade {
+    position: absolute;
+    inset: 0;
+
+    background:
+            linear-gradient(
+                    180deg,
+                    rgba(0, 0, 0, 0.35) 0%,
+                    transparent 38%,
+                    rgba(0, 0, 0, 0.84) 100%
+            );
+}
+
+.previewTop {
+    position: absolute;
+    z-index: 3;
+    top: 33px;
+    left: 25px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-family: var(--font-inter), sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.23em;
+
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.previewLine {
+    width: 25px;
+    height: 1px;
+
+    background: #f0b8c0;
+}
+
+.previewInfo {
+    position: absolute;
+    z-index: 3;
+    left: 25px;
+    right: 17px;
+    bottom: 31px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    text-align: left;
+}
+
+.previewNumber {
+    margin-bottom: 12px;
+
+    font-family: var(--font-inter), sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+
+    color: #f0b8c0;
+}
+
+.previewNumber span {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.previewTitle {
+    display: block;
+
+    max-width: 175px;
+
+    font-family:
+            var(--font-cormorant-garamond),
+            Georgia,
+            serif;
+
+    font-size: clamp(25px, 2.35vw, 35px);
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+
+    color: #ffffff;
+}
+
+.previewTitle > span {
+    display: block;
+    margin-top: 4px;
+}
+
+.previewArrow {
+    display: grid;
+    place-items: center;
+
+    width: 38px;
+    height: 38px;
+
+    margin-top: 19px;
+
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+
+    color: #ffffff;
+
+    transition:
+            background 400ms ease,
+            color 400ms ease,
+            transform 450ms var(--premium-ease);
+}
+
+.nextPreview:hover .previewArrow {
+    background: var(--blossom);
+    border-color: var(--blossom);
+    transform: translate(3px, -3px);
+}
+
+/* ---------- 06. NAVIGATION CONTROLS ---------- */
+
+.bottomRail {
+    bottom: 39px;
+}
+
+.controls {
+    gap: 11px;
+}
+
+.dragHint {
+    margin-right: 22px;
+
+    font-family: var(--font-inter), sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+}
+
+.arrowButton {
+    width: 51px;
+    height: 51px;
+
+    border: 1px solid var(--border);
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(12px);
+
+    transition:
+            background 350ms ease,
+            border-color 350ms ease,
+            color 350ms ease,
+            transform 450ms var(--premium-ease);
+}
+
+.arrowButton:hover {
+    transform: translateY(-3px);
+    background: rgba(197, 160, 106, 0.1);
+    border-color: var(--accent);
+}
+
+.arrowNext {
+    background: var(--accent);
+    color: var(--midnight);
+    border-color: var(--accent);
+}
+
+.arrowNext:hover {
+    background: var(--ink);
+    color: var(--midnight);
+    border-color: var(--ink);
+}
+
+.showcase[data-tone="cream"] .arrowNext {
+    color: #ffffff;
+}
+
+.showcase[data-tone="cream"] .arrowNext:hover {
+    background: #1d1b1a;
+    color: #ffffff;
+}
+
+/* ---------- 07. INTERACTIVE SLIDE PROGRESS ---------- */
+
+.progressCluster {
+    display: flex;
+    align-items: center;
+    gap: 23px;
+}
+
+.progressCount {
+    white-space: nowrap;
+
+    font-family: var(--font-inter), sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.progressCount > span {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--soft);
+}
+
+.progressSteps {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.progressStep {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 32px;
+    height: 40px;
+    padding: 0;
+
+    border: 0;
+    background: transparent;
+
+    cursor: pointer;
+}
+
+.progressStep > span {
+    position: relative;
+    display: block;
+
+    width: 100%;
+    height: 2px;
+
+    background: var(--border);
+    overflow: hidden;
+
+    transition: background 350ms ease;
+}
+
+.progressStep > span::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: var(--accent);
+
+    transform: scaleX(0);
+    transform-origin: left;
+
+    transition:
+            transform 650ms var(--premium-ease);
+}
+
+.progressStep[data-active="true"] > span::after {
+    transform: scaleX(1);
+}
+
+.progressStep:hover > span {
+    background: var(--accent);
+}
+
+.progressStep:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+}
+
+/* ---------- 08. MOTION ---------- */
+
+
+/* ---------- 09. TABLET ---------- */
+
+@media (max-width: 1023px) {
+    .copy::before {
+        top: -24px;
+        width: 48px;
+    }
+
+    .title {
+        font-size: clamp(57px, 9vw, 88px);
+    }
+
+    .longTitle {
+        font-size: clamp(52px, 8vw, 78px);
+    }
+
+    .subtitle {
+        margin-top: 24px;
+    }
+
+    .featuredArch::before {
+        inset: 7px;
+    }
+
+    .previewTop {
+        top: 21px;
+        left: 18px;
+    }
+
+    .previewInfo {
+        left: 18px;
+        bottom: 19px;
+    }
+
+    .previewTitle {
+        font-size: 27px;
+    }
+
+    .bottomRail {
+        bottom: 30px;
+    }
+
+    .dragHint {
+        display: none;
+    }
+}
+
+/* ---------- 10. MOBILE ---------- */
+
+@media (max-width: 640px) {
+    .showcase::after {
+        opacity: 0.16;
+    }
+
+    .backgroundPhoto {
+        filter:
+                blur(3px)
+                brightness(0.67)
+                saturate(0.8);
+    }
+
+    .backgroundShade {
+        background:
+                linear-gradient(
+                        180deg,
+                        rgba(14, 15, 18, 0.85) 0%,
+                        rgba(14, 15, 18, 0.86) 30%,
+                        rgba(14, 15, 18, 0.72) 55%,
+                        rgba(14, 15, 18, 0.48) 75%,
+                        rgba(14, 15, 18, 0.84) 100%
+                );
+    }
+
+    .copy::before {
+        top: -18px;
+        width: 37px;
+    }
+
+    .eyebrow {
+        margin-bottom: 14px;
+        font-size: 9px;
+        letter-spacing: 0.2em;
+    }
+
+    .title {
+        font-size: clamp(53px, 12.5vw, 73px);
+        line-height: 0.9;
+    }
+
+    .longTitle {
+        font-size: clamp(43px, 10.6vw, 61px);
+    }
+
+    .title span {
+        margin-top: 4px;
+    }
+
+    .subtitle {
+        margin-top: 17px;
+        font-size: 22px;
+    }
+
+    .description {
+        margin-top: 11px;
+        font-size: 11.5px;
+        line-height: 1.75;
+    }
+
+    .cta {
+        margin-top: 15px;
+        padding-bottom: 10px;
+        font-size: 9px;
+    }
+
+    .featuredArch {
+        box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .featuredArch::before {
+        inset: 6px;
+        border-radius: 180px 180px 3px 3px;
+    }
+
+    .archHalo {
+        transform: translate(10px, -10px);
+    }
+
+    .imageSignature {
+        left: 16px;
+        bottom: 34px;
+        font-size: 26px;
+    }
+
+    .imageLabel {
+        left: 16px;
+        bottom: 17px;
+        font-size: 7px;
+        letter-spacing: 0.13em;
+    }
+
+    .nextPreview:hover {
+        transform: translateX(-6px);
+    }
+
+    .previewTop {
+        top: 19px;
+        left: 13px;
+        gap: 7px;
+        font-size: 7px;
+        letter-spacing: 0.12em;
+    }
+
+    .previewLine {
+        width: 12px;
+    }
+
+    .previewInfo {
+        left: 13px;
+        right: 7px;
+        bottom: 18px;
+    }
+
+    .previewNumber {
+        margin-bottom: 7px;
+        font-size: 8px;
+    }
+
+    .previewTitle {
+        max-width: 105px;
+        font-size: clamp(18px, 5vw, 24px);
+        line-height: 1;
+    }
+
+    .previewArrow {
+        width: 29px;
+        height: 29px;
+        margin-top: 12px;
+    }
+
+    .previewArrow svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .bottomRail {
+        left: 18px;
+        right: 18px;
+        bottom: 17px;
+    }
+
+    .progressCluster {
+        gap: 11px;
+    }
+
+    .progressCount {
+        font-size: 11px;
+    }
+
+    .progressCount > span {
+        font-size: 9px;
+    }
+
+    .progressSteps {
+        gap: 3px;
+    }
+
+    .progressStep {
+        width: 24px;
+        height: 38px;
+    }
+
+    .progressStep > span {
+        height: 2px;
+    }
+
+    .arrowButton {
+        width: 40px;
+        height: 40px;
+    }
+
+    .controls {
+        gap: 7px;
+    }
+}
+
+/* ---------- 11. SMALL DEVICES ---------- */
+
+@media (max-width: 370px) {
+    .progressCount {
+        display: none;
+    }
+
+    .progressCluster {
+        gap: 0;
+    }
+
+    .progressStep {
+        width: 24px;
+    }
+
+    .previewTitle {
+        font-size: 18px;
+    }
+
+    .previewArrow {
+        margin-top: 9px;
+    }
+}
+
+/* ---------- 12. ACCESSIBILITY ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .copy {
+        animation: none !important;
+        filter: none !important;
+    }
+
+    .background,
+    .backgroundPhoto,
+    .featuredImage,
+    .previewPhoto,
+    .nextPreview,
+    .previewArrow,
+    .cta,
+    .cta::after,
+    .cta svg,
+    .progressStep > span,
+    .progressStep > span::after,
+    .arrowButton {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+
+/* ==================================================
+   BOTANICAL EDITORIAL GALLERY
+   Creative image redesign — Cherry Blossom Garden
+   ================================================== */
+
+/* Main image — sculptural, asymmetric petal shape */
+
+.featuredArch {
+    left: 49.5%;
+    top: 14%;
+    width: min(34vw, 510px);
+    height: 73%;
+
+    border-radius: 210px 12px 175px 12px;
+
+    border: 1px solid rgba(197, 160, 106, 0.48);
+
+    box-shadow:
+            0 45px 110px rgba(0, 0, 0, 0.4),
+            0 0 80px rgba(197, 160, 106, 0.07);
+
+    transform: translateZ(0);
+}
+
+/* Remove the previous rounded arch inset frame */
+.featuredArch::before {
+    border-radius: inherit;
+    inset: 11px;
+    border-color: rgba(255, 255, 255, 0.24);
+}
+
+.featuredArch::after {
+    border-radius: inherit;
+}
+
+/* Offset golden outline */
+
+.archHalo {
+    left: 49.5%;
+    top: 14%;
+    width: min(34vw, 510px);
+    height: 73%;
+
+    border-radius: 210px 12px 175px 12px;
+
+    transform: translate(19px, -19px);
+
+    border: 1px solid rgba(197, 160, 106, 0.63);
+    opacity: 0.85;
+}
+
+/* More cinematic main photograph — see MOTION below for the transition. */
+
+.photo {
+    object-fit: cover;
+    filter: contrast(1.04) saturate(0.95);
+}
+
+/* Soft highlight across photograph */
+
+.archSheen {
+    background:
+            linear-gradient(
+                    150deg,
+                    rgba(255,255,255,0.11),
+                    transparent 38%
+            ),
+            linear-gradient(
+                    0deg,
+                    rgba(0,0,0,0.76),
+                    transparent 38%
+            );
+}
+
+/* Editorial serial label */
+
+.imageSerial {
+    position: absolute;
+    z-index: 5;
+
+    top: 34px;
+    right: 29px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    color: rgba(255,255,255,0.86);
+
+    font-family: var(--font-inter), sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-align: right;
+}
+
+.imageSerial span {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #f2c2c9;
+}
+
+/* Circular photo detail overlapping the main frame */
+
+.detailWindow {
+    position: absolute;
+    z-index: 4;
+
+    left: calc(49.5% - 65px);
+    bottom: 14%;
+
+    width: clamp(110px, 10vw, 155px);
+    aspect-ratio: 1;
+
+    overflow: hidden;
+    border-radius: 50%;
+
+    border: 5px solid #171719;
+
+    box-shadow:
+            0 15px 45px rgba(0,0,0,0.52),
+            0 0 0 1px rgba(197,160,106,0.65);
+
+    background: #171719;
+}
+
+.detailImage {
+    position: absolute;
+    inset: 0;
+
+    opacity: 0;
+    transform: scale(1.15);
+
+    transition:
+            opacity 950ms ease,
+            transform 1400ms var(--motion-ease);
+}
+
+.detailImage[data-active="true"] {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.detailPhoto {
+    object-fit: cover;
+    transform: scale(1.55);
+    filter: saturate(0.93) contrast(1.08);
+}
+
+.detailWindowRim {
+    position: absolute;
+    inset: 5px;
+    z-index: 2;
+    border: 1px solid rgba(255,255,255,0.42);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Vertical editorial caption alongside photo */
+
+.gallerySideLabel {
+    position: absolute;
+    z-index: 2;
+
+    left: calc(49.5% - 36px);
+    top: 32%;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+
+    font-family: var(--font-inter), sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+
+    color: rgba(232,214,188,0.58);
+}
+
+.gallerySideLabel span {
+    display: block;
+    width: 1px;
+    height: 37px;
+    background: var(--champagne);
+}
+
+/* Main photo caption */
+
+.imageSignature {
+    left: 35px;
+    bottom: 53px;
+    font-size: clamp(29px,2.4vw,42px);
+    color: #f2c2c9;
+}
+
+.imageLabel {
+    left: 36px;
+    bottom: 29px;
+}
+
+/* Next preview — inverse sculptural shape */
+
+.nextPreview {
+    top: 28%;
+    right: -8%;
+    width: min(22vw, 320px);
+    height: 53%;
+
+    border-radius: 12px 155px 12px 115px;
+
+    border: 1px solid rgba(197,160,106,0.5);
+
+    box-shadow: -25px 35px 85px rgba(0,0,0,0.35);
+}
+
+.nextPreview:hover {
+    transform: translateX(-12px) scale(1.02);
+}
+
+.previewTop {
+    top: 36px;
+    left: 28px;
+}
+
+.previewInfo {
+    left: 28px;
+    bottom: 34px;
+}
+
+/* Tablet */
+
+@media (max-width: 1250px) {
+    .featuredArch,
+    .archHalo {
+        left: 52%;
+        width: 33%;
+    }
+
+    .detailWindow {
+        left: calc(52% - 45px);
+    }
+
+    .gallerySideLabel {
+        left: calc(52% - 27px);
+    }
+}
+
+@media (max-width: 1023px) {
+    .featuredArch,
+    .archHalo {
+        left: 20%;
+        top: 55%;
+        width: 47%;
+        height: 35%;
+        border-radius: 155px 9px 115px 9px;
+    }
+
+    .archHalo {
+        transform: translate(13px,-13px);
+    }
+
+    .detailWindow {
+        left: calc(20% - 35px);
+        bottom: 10%;
+        width: 112px;
+    }
+
+    .gallerySideLabel {
+        display: none;
+    }
+
+    .nextPreview {
+        top: 62%;
+        right: -4%;
+        width: 27%;
+        height: 27%;
+
+        border-radius: 8px 95px 8px 75px;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 640px) {
+    .featuredArch,
+    .archHalo {
+        top: 59%;
+        left: 10%;
+        width: 66%;
+        height: 31%;
+
+        border-radius: 135px 8px 105px 8px;
+    }
+
+    .archHalo {
+        transform: translate(10px,-10px);
+    }
+
+    .featuredArch::before {
+        inset: 6px;
+    }
+
+    .imageSerial {
+        top: 23px;
+        right: 15px;
+        font-size: 7px;
+        gap: 5px;
+        letter-spacing: 0.12em;
+    }
+
+    .imageSerial span {
+        font-size: 9px;
+    }
+
+    .imageSignature {
+        left: 19px;
+        bottom: 35px;
+        font-size: 26px;
+    }
+
+    .imageLabel {
+        left: 19px;
+        bottom: 18px;
+        font-size: 7px;
+    }
+
+    .detailWindow {
+        left: 5%;
+        bottom: 11%;
+        width: 76px;
+        border-width: 3px;
+    }
+
+    .detailWindowRim {
+        inset: 3px;
+    }
+
+    .nextPreview {
+        top: 65%;
+        right: -12%;
+        width: 31%;
+        height: 24%;
+
+        border-radius: 7px 75px 7px 55px;
+    }
+
+    .previewTop {
+        top: 19px;
+        left: 13px;
+    }
+
+    .previewInfo {
+        left: 13px;
+        bottom: 18px;
+    }
+}
+
+@media (max-width: 370px) {
+    .featuredArch,
+    .archHalo {
+        top: 62%;
+        height: 28%;
+    }
+
+    .nextPreview {
+        top: 67%;
+        height: 21%;
+    }
+
+    .detailWindow {
+        bottom: 10%;
+        width: 64px;
+    }
+}
+
+/* Respect reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+    .featuredImage,
+    .detailImage,
+    .nextPreview {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+
+/* ==================================================
+   MOTION
+   One place for every transition in the showcase.
+   Earlier sections set the look; this section sets
+   the movement. React only animates the copy.
+   ================================================== */
+
+/* Tone changes glide instead of snapping: registered colour properties
+   interpolate when [data-tone] changes. */
+@property --ink {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #e8d6bc;
+}
+
+@property --muted {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rgba(232, 214, 188, 0.65);
+}
+
+@property --soft {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rgba(232, 214, 188, 0.38);
+}
+
+@property --accent {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #d4878f;
+}
+
+@property --border {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: rgba(197, 160, 106, 0.35);
+}
+
+.showcase {
+    transition:
+            --ink 900ms var(--motion-ease),
+            --muted 900ms var(--motion-ease),
+            --soft 900ms var(--motion-ease),
+            --accent 900ms var(--motion-ease),
+            --border 900ms var(--motion-ease);
+}
+
+/* ---------- Background: layered crossfade ----------
+   The incoming photograph fades in above the outgoing one, which only
+   disappears once it is covered: no dip to black between slides. */
+
+.backgroundStack {
+    position: absolute;
+    inset: -12px;
+    z-index: -2;
+}
+
+.background {
+    z-index: 0;
+    transition: opacity 0s linear 1300ms;
+}
+
+.background[data-active="true"] {
+    z-index: 1;
+    transition: opacity 1300ms var(--motion-ease);
+}
+
+/* ---------- Featured photograph: direction-aware mask + zoom ----------
+   The new photograph wipes in from the side the carousel travels towards
+   while settling from a light zoom. A keyframe animation (not a
+   transition) so it always starts from the correct side, even when the
+   direction flips on the same frame. The photograph that just left stays
+   beneath, fully visible, until the next change. */
+
+.featuredStack {
+    position: absolute;
+    inset: -14px;
+}
+
+.featuredImage {
+    opacity: 0;
+    z-index: 0;
+    filter: none;
+    transform: none;
+    transition: none;
+}
+
+.featuredImage[data-state="leaving"] {
+    opacity: 1;
+    z-index: 1;
+}
+
+.featuredImage[data-active="true"] {
+    opacity: 1;
+    z-index: 2;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .featuredImage[data-active="true"] {
+        animation: gfMaskFromRight 1.15s var(--motion-ease-mask) both,
+                   gfSettle 1.7s var(--motion-ease) both;
+    }
+
+    .showcase[data-direction="previous"] .featuredImage[data-active="true"] {
+        animation-name: gfMaskFromLeft, gfSettle;
+    }
+
+    /* First paint: no wipe; the frame itself reveals (below). */
+    .showcase:not([data-changed="true"]) .featuredImage {
+        animation: none;
+    }
+}
+
+@keyframes gfMaskFromRight {
+    from {
+        clip-path: inset(0 0 0 100%);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes gfMaskFromLeft {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes gfSettle {
+    from {
+        transform: scale(1.12);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+/* First paint: the opening photograph rises into its frame. */
+@media (prefers-reduced-motion: no-preference) {
+    .featuredStack {
+        animation: gfFrameReveal 1.5s var(--motion-ease-mask) 0.2s backwards;
+    }
+
+    .nextPreview {
+        animation: gfPreviewEnter 1.2s var(--motion-ease) 0.55s backwards;
+    }
+}
+
+@keyframes gfFrameReveal {
+    from {
+        clip-path: inset(100% 0 0 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* `translate`, not `transform`: hover owns the card's transform. */
+@keyframes gfPreviewEnter {
+    from {
+        opacity: 0;
+        translate: 60px 0;
+    }
+
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+/* ---------- Up-next card ----------
+   Its photograph and title arrive with each slide change. Opacity, clip
+   and translate only, so the hover zoom (transform) keeps working. */
+
+.previewPhoto {
+    animation: gfPreviewPhoto 700ms var(--motion-ease) backwards;
+}
+
+.previewInfo {
+    animation: gfPreviewInfo 800ms var(--motion-ease) 350ms backwards;
+}
+
+@keyframes gfPreviewPhoto {
+    from {
+        opacity: 0.35;
+        clip-path: inset(0 0 0 40%);
+    }
+
+    to {
+        opacity: 1;
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes gfPreviewInfo {
+    from {
+        opacity: 0;
+        translate: 0 14px;
+    }
+
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+.nextPreview {
+    transition:
+            transform 700ms var(--motion-ease),
+            border-color 450ms var(--motion-ease),
+            box-shadow 700ms var(--motion-ease);
+}
+
+/* ---------- Counters roll to the new number ---------- */
+
+.rollWindow {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    font: inherit;
+    line-height: 1.2;
+}
+
+.roll {
+    display: inline-block;
+    font: inherit;
+    animation: gfRoll 650ms var(--motion-ease) backwards;
+}
+
+@keyframes gfRoll {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* ---------- Progress: autoplay countdown ---------- */
+
+.progressFill {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform-origin: left;
+}
+
+/* While autoplaying, the countdown fill replaces the static active bar. */
+.progressStep[data-active="true"][data-playing="true"] > span::after {
+    transform: scaleX(0);
+    transition: none;
+}
+
+.progressStep > span::after {
+    transition: transform 650ms var(--motion-ease);
+}
+
+/* ---------- Controls ---------- */
+
+.autoplayButton {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin-right: 4px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--soft);
+    cursor: pointer;
+    transition: color 350ms var(--motion-ease);
+}
+
+.autoplayButton:hover,
+.autoplayButton:focus-visible {
+    color: var(--accent);
+}
+
+.autoplayButton:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/* A fill blooms from the centre; the arrow nudges the way it points. */
+.arrowButton {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    transition:
+            border-color 450ms var(--motion-ease),
+            color 450ms var(--motion-ease),
+            transform 450ms var(--motion-ease);
+}
+
+.arrowButton::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: scale(0);
+    transition: transform 550ms var(--motion-ease);
+}
+
+.arrowButton svg {
+    transition: transform 450ms var(--motion-ease);
+}
+
+.arrowButton:hover,
+.arrowButton:focus-visible {
+    background: rgba(255, 255, 255, 0.035);
+    color: var(--midnight);
+}
+
+.arrowButton:hover::before,
+.arrowButton:focus-visible::before {
+    transform: scale(1);
+}
+
+.arrowButton:hover svg,
+.arrowButton:focus-visible svg {
+    transform: translateX(-3px);
+}
+
+.arrowNext::before {
+    background: var(--ink);
+}
+
+.arrowNext:hover,
+.arrowNext:focus-visible {
+    background: var(--accent);
+    border-color: var(--ink);
+}
+
+.arrowNext:hover svg,
+.arrowNext:focus-visible svg {
+    transform: translateX(3px);
+}
+
+.showcase[data-tone="cream"] .arrowNext:hover,
+.showcase[data-tone="cream"] .arrowNext:focus-visible {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+/* ---------- Reduced motion ----------
+   Slides still change; nothing travels, wipes or zooms. */
+
+@media (prefers-reduced-motion: reduce) {
+    .showcase,
+    .background,
+    .featuredImage,
+    .featuredStack,
+    .nextPreview,
+    .previewPhoto,
+    .previewInfo,
+    .roll,
+    .arrowButton,
+    .arrowButton::before,
+    .arrowButton svg,
+    .autoplayButton {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .featuredImage,
+    .featuredImage[data-active="true"] {
+        transform: none;
+        clip-path: none;
+    }
+
+    .featuredImage:not([data-active="true"]) {
+        opacity: 0;
+    }
+
+    .arrowButton:hover svg,
+    .arrowButton:focus-visible svg {
+        transform: none;
+    }
+}

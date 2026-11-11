@@ -1,0 +1,800 @@
+
+/* ============================================
+   CHERRY BLOSSOM GARDEN
+   UPCOMING EVENTS — PREMIUM EDITORIAL CARDS
+   ============================================ */
+
+.section {
+    /* Aliases of the global brand tokens (src/app/globals.css). */
+    --event-bg: var(--midnight);
+    --event-surface: var(--charcoal);
+    --event-ivory: var(--ivory);
+    --event-pink: var(--blossom);
+    --event-gold: var(--champagne);
+    --event-ease: var(--motion-ease);
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    padding: clamp(75px, 9vw, 140px) 24px;
+
+    background: var(--event-bg);
+    color: var(--event-ivory);
+    font-family: var(--font-inter), sans-serif;
+
+    border-top: 1px solid rgba(197, 160, 106, 0.16);
+}
+
+.section::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: -200px;
+    right: -180px;
+
+    width: 700px;
+    height: 700px;
+    pointer-events: none;
+
+    background: radial-gradient(
+            circle,
+            rgba(212, 135, 143, 0.055),
+            transparent 70%
+    );
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+/* ================ HEADER ================ */
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 40px;
+
+    margin-bottom: 58px;
+}
+
+.headingArea {
+    max-width: 850px;
+}
+
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-bottom: 25px;
+
+    color: var(--event-pink);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+}
+
+.eyebrowLine {
+    width: 32px;
+    height: 1px;
+    background: var(--event-pink);
+}
+
+.title {
+    margin: 0;
+
+    color: var(--event-ivory);
+    font-size: clamp(49px, 6.5vw, 93px);
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.075em;
+}
+
+
+.intro {
+    max-width: 565px;
+    margin-top: 24px;
+
+    color: rgba(232, 214, 188, 0.62);
+    font-size: 13px;
+    line-height: 1.95;
+    font-weight: 400;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-shrink: 0;
+
+    margin-bottom: 7px;
+}
+
+.count {
+    font-size: 60px;
+    line-height: 1;
+    font-weight: 300;
+    letter-spacing: -0.07em;
+    color: var(--event-gold);
+}
+
+.countLabel {
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1.7;
+    letter-spacing: 0.17em;
+    color: rgba(232, 214, 188, 0.55);
+}
+
+/* ================ GRID ================ */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 23px;
+    align-items: stretch;
+}
+
+/* ================ CARD ================ */
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    overflow: hidden;
+
+    background: var(--event-surface);
+    border: 1px solid rgba(197, 160, 106, 0.21);
+    border-radius: 5px;
+
+    /* `translate`, not `transform`: the entrance animation owns the
+       element's inline transform, and the two must not overwrite each other. */
+    transition:
+            translate 600ms var(--event-ease),
+            border-color 450ms var(--event-ease),
+            box-shadow 600ms var(--event-ease);
+}
+
+.card:hover {
+    translate: 0 -7px;
+    border-color: rgba(212, 135, 143, 0.55);
+
+    box-shadow: 0 28px 75px rgba(0, 0, 0, 0.35);
+}
+
+/* Featured event occupies two columns */
+
+.featured {
+    grid-column: span 2;
+
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+
+    min-height: 510px;
+}
+
+/* ================ IMAGE ================ */
+
+.imageWrapper {
+    position: relative;
+    width: 100%;
+    height: 285px;
+    flex-shrink: 0;
+
+    overflow: hidden;
+    background: #252321;
+}
+
+.featured .imageWrapper {
+    height: 100%;
+    min-height: 510px;
+}
+
+.image {
+    object-fit: cover;
+    object-position: center;
+
+    transform: scale(1.01);
+
+    filter: saturate(0.85) contrast(1.04);
+
+    transition:
+            transform 1400ms var(--event-ease),
+            filter 800ms var(--event-ease);
+}
+
+.card:hover .image {
+    transform: scale(1.05);
+    filter: saturate(1) contrast(1.04);
+}
+
+.imageGradient {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    background:
+            linear-gradient(
+                    180deg,
+                    rgba(0, 0, 0, 0.38),
+                    transparent 35%,
+                    rgba(0, 0, 0, 0.65)
+            );
+
+    transition: opacity 800ms var(--event-ease);
+}
+
+/* The photograph opens up a little as it lifts. */
+.card:hover .imageGradient {
+    opacity: 0.8;
+}
+
+/* ================ DATE BADGE ================ */
+
+.dateBadge {
+    position: absolute;
+    z-index: 3;
+    top: 22px;
+    left: 22px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 68px;
+    height: 77px;
+
+    background: rgba(14, 15, 18, 0.86);
+
+    backdrop-filter: blur(14px);
+
+    border: 1px solid rgba(197, 160, 106, 0.45);
+}
+
+.dateDay {
+    color: var(--event-ivory);
+    font-size: 31px;
+    line-height: 1;
+    font-weight: 400;
+    letter-spacing: -0.05em;
+}
+
+.dateMonth {
+    margin-top: 7px;
+
+    color: var(--event-pink);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+}
+
+.imageCategory {
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+    z-index: 3;
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.featured .imageCategory {
+    bottom: 32px;
+    left: 32px;
+}
+
+/* ================ CONTENT ================ */
+
+.cardBody {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+
+    padding: 30px 29px 27px;
+}
+
+.featured .cardBody {
+    justify-content: center;
+    padding: clamp(30px, 3.3vw, 58px);
+}
+
+.featuredLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 35px;
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--event-pink);
+}
+
+.featuredDot {
+    width: 6px;
+    height: 6px;
+    background: var(--event-pink);
+    border-radius: 50%;
+
+    box-shadow: 0 0 16px rgba(212, 135, 143, 0.65);
+}
+
+/* ================ DATE AND TIME ================ */
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 19px;
+
+    margin-bottom: 20px;
+}
+
+.metaItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--event-pink);
+
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    white-space: nowrap;
+}
+
+.metaItem svg {
+    flex-shrink: 0;
+}
+
+/* ================ TITLE AND DESCRIPTION ================ */
+
+.cardTitle {
+    margin: 0;
+
+    color: var(--event-ivory);
+
+    font-size: clamp(25px, 2.2vw, 34px);
+    line-height: 1.16;
+    font-weight: 500;
+    letter-spacing: -0.055em;
+}
+
+.featured .cardTitle {
+    font-size: clamp(36px, 3.3vw, 55px);
+    line-height: 1.07;
+    letter-spacing: -0.065em;
+}
+
+.description {
+    margin-top: 16px;
+
+    color: rgba(232, 214, 188, 0.58);
+
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.9;
+}
+
+.featured .description {
+    margin-top: 23px;
+    font-size: 13px;
+    line-height: 1.95;
+}
+
+/* ================ CARD FOOTER ================ */
+
+.cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-top: auto;
+    padding-top: 28px;
+}
+
+.location {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-width: 0;
+
+    color: rgba(232, 214, 188, 0.49);
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.location svg {
+    color: var(--event-gold);
+    flex-shrink: 0;
+}
+
+.cardArrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 41px;
+    height: 41px;
+
+    border: 1px solid rgba(212, 135, 143, 0.55);
+    border-radius: 50%;
+
+    color: var(--event-pink);
+    text-decoration: none;
+
+    transition:
+            background 300ms ease,
+            color 300ms ease,
+            transform 350ms ease;
+}
+
+.cardArrow:hover {
+    color: var(--event-bg);
+    background: var(--event-pink);
+    transform: rotate(45deg);
+}
+
+.cardArrow:focus-visible,
+.viewLink:focus-visible {
+    outline: 2px solid var(--event-pink);
+    outline-offset: 4px;
+}
+
+/* ================ EMPTY STATE ================ */
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 90px 25px;
+    text-align: center;
+
+    border: 1px solid rgba(197, 160, 106, 0.2);
+    background: var(--event-surface);
+}
+
+.emptyFlower {
+    color: var(--event-pink);
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.emptyState h3 {
+    font-size: clamp(25px, 4vw, 38px);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+}
+
+.emptyState p {
+    max-width: 400px;
+    margin-top: 14px;
+
+    font-size: 13px;
+    line-height: 1.8;
+
+    color: rgba(232, 214, 188, 0.58);
+}
+
+/* ================ SECTION FOOTER ================ */
+
+.sectionFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+
+    margin-top: 47px;
+    padding-top: 26px;
+
+    border-top: 1px solid rgba(197, 160, 106, 0.2);
+}
+
+.footerText {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.footerFlower {
+    font-size: 22px;
+    color: var(--event-pink);
+}
+
+.footerText p {
+    margin: 0;
+
+    color: rgba(232, 214, 188, 0.55);
+    font-size: 12px;
+    font-style: italic;
+}
+
+.viewLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+
+    color: var(--event-pink);
+
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+
+    text-decoration: none;
+}
+
+/* A hairline draws under the label; the arrow moves ahead of it. */
+.viewLinkLabel {
+    position: relative;
+    padding-bottom: 6px;
+}
+
+.viewLinkLabel::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 550ms var(--event-ease);
+}
+
+.viewLinkIcon {
+    margin-bottom: 6px;
+    transition: transform 450ms var(--event-ease);
+}
+
+.viewLink:hover .viewLinkLabel::after,
+.viewLink:focus-visible .viewLinkLabel::after {
+    transform: scaleX(1);
+}
+
+.viewLink:hover .viewLinkIcon,
+.viewLink:focus-visible .viewLinkIcon {
+    transform: translateX(6px);
+}
+
+/* ================ TABLET ================ */
+
+@media (max-width: 1100px) {
+    .sectionHeader {
+        margin-bottom: 45px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .featured {
+        grid-column: span 2;
+        min-height: 450px;
+    }
+
+    .featured .imageWrapper {
+        min-height: 450px;
+    }
+
+    .featured .cardBody {
+        padding: 36px;
+    }
+
+    .cardTitle {
+        font-size: 29px;
+    }
+
+    .imageWrapper {
+        height: 280px;
+    }
+}
+
+/* ================ MOBILE ================ */
+
+@media (max-width: 700px) {
+    .section {
+        padding: 75px 20px;
+    }
+
+    .sectionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 28px;
+
+        margin-bottom: 37px;
+    }
+
+    .eyebrow {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        margin-bottom: 18px;
+    }
+
+    .eyebrowLine {
+        width: 23px;
+    }
+
+    .title {
+        font-size: clamp(43px, 10vw, 60px);
+        line-height: 1.06;
+    }
+
+    .intro {
+        margin-top: 17px;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .headerRight {
+        margin: 0;
+        gap: 12px;
+    }
+
+    .count {
+        font-size: 42px;
+    }
+
+    .countLabel {
+        font-size: 8px;
+    }
+
+    .grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 20px;
+    }
+
+    .featured {
+        grid-column: span 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .featured .imageWrapper {
+        height: 320px;
+        min-height: 0;
+    }
+
+    .imageWrapper {
+        height: 285px;
+    }
+
+    .dateBadge {
+        top: 16px;
+        left: 16px;
+        width: 59px;
+        height: 66px;
+    }
+
+    .dateDay {
+        font-size: 27px;
+    }
+
+    .dateMonth {
+        font-size: 8px;
+    }
+
+    .imageCategory,
+    .featured .imageCategory {
+        bottom: 20px;
+        left: 20px;
+        font-size: 8px;
+    }
+
+    .cardBody,
+    .featured .cardBody {
+        padding: 26px 23px 26px;
+    }
+
+    .featuredLabel {
+        margin-bottom: 18px;
+        font-size: 8px;
+    }
+
+    .meta {
+        margin-bottom: 17px;
+        gap: 11px 15px;
+    }
+
+    .metaItem {
+        font-size: 10px;
+    }
+
+    .cardTitle,
+    .featured .cardTitle {
+        font-size: clamp(29px, 7.6vw, 40px);
+        line-height: 1.12;
+    }
+
+    .description,
+    .featured .description {
+        margin-top: 13px;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .cardFooter {
+        padding-top: 22px;
+    }
+
+    .sectionFooter {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 22px;
+
+        margin-top: 36px;
+    }
+
+    .footerText p {
+        font-size: 11px;
+    }
+
+    .viewLink {
+        font-size: 9px;
+    }
+}
+
+/* ================ SMALL MOBILE ================ */
+
+@media (max-width: 380px) {
+    .section {
+        padding-inline: 15px;
+    }
+
+    .title {
+        font-size: 42px;
+    }
+
+    .imageWrapper,
+    .featured .imageWrapper {
+        height: 250px;
+    }
+
+    .cardBody,
+    .featured .cardBody {
+        padding: 23px 19px;
+    }
+
+    .metaItem {
+        font-size: 9px;
+    }
+
+    .cardTitle,
+    .featured .cardTitle {
+        font-size: 29px;
+    }
+}
+
+/* ================ REDUCED MOTION ================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .card,
+    .image,
+    .imageGradient,
+    .cardArrow,
+    .viewLink,
+    .viewLinkLabel::after,
+    .viewLinkIcon {
+        transition: none !important;
+        animation: none !important;
+    }
+}

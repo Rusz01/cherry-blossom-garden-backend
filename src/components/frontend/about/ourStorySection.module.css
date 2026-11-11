@@ -1,0 +1,692 @@
+
+/* ==============================================
+   CHERRY BLOSSOM GARDEN — OUR STORY
+   Uses existing global.css brand variables
+   ============================================== */
+
+.section {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--midnight);
+    color: var(--ivory);
+    font-family: var(--font-inter), sans-serif;
+    padding-top: 100px;
+}
+
+/* ==============================================
+   DECORATIVE BLOSSOMS
+   ============================================== */
+
+.topBlossom {
+    position: absolute;
+    z-index: -1;
+    top: -35px;
+    width: clamp(170px, 23vw, 350px);
+    height: clamp(170px, 23vw, 350px);
+    pointer-events: none;
+    opacity: 0.9;
+}
+
+.blossomImage {
+    object-fit: contain;
+}
+
+.blossomLeft {
+    left: -90px;
+    transform: rotate(175deg);
+}
+
+.blossomRight {
+    right: -90px;
+    transform: scaleX(-1) rotate(175deg);
+}
+
+/* ==============================================
+   INTRODUCTION
+   ============================================== */
+
+.introduction {
+    position: relative;
+    z-index: 2;
+    max-width: 850px;
+    margin: 0 auto 90px;
+    padding: 0 24px;
+    text-align: center;
+}
+
+.centerEyebrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.centerEyebrow span {
+    width: 44px;
+    height: 1px;
+    background: var(--champagne);
+    opacity: 0.6;
+}
+
+.centerEyebrow p,
+.eyebrow p {
+    margin: 0;
+    color: var(--ivory);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+}
+
+.mainHeading {
+    margin: 0;
+    font-family:
+            var(--font-cormorant-garamond),
+            Georgia,
+            serif;
+    font-size: clamp(36px, 4vw, 60px);
+    font-weight: 400;
+    line-height: 0.99;
+    letter-spacing: -0.018em;
+}
+
+.mainHeading span {
+    display: block;
+}
+
+.highlight {
+    color: var(--blossom);
+}
+
+.flowerDivider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 24px 0;
+    color: var(--blossom);
+}
+
+.flowerDivider span {
+    width: 58px;
+    height: 1px;
+    background: var(--champagne);
+    opacity: 0.35;
+}
+
+.introDescription {
+    max-width: 680px;
+    margin: 0 auto;
+    color: rgba(232, 214, 188, 0.7);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.9;
+}
+
+/* ==============================================
+   STORY LAYOUT
+   ============================================== */
+
+.storyContainer {
+    position: relative;
+    z-index: 2;
+    max-width: 1420px;
+    margin-inline: auto;
+    padding-inline: clamp(24px, 6vw, 90px);
+}
+
+.storyRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(50px, 7vw, 110px);
+}
+
+.secondRow {
+    margin-top: 95px;
+}
+
+/* ==============================================
+   IMAGE FRAMES
+   ============================================== */
+
+.imageFrame {
+    position: relative;
+    min-width: 0;
+    isolation: isolate;
+}
+
+.imageFrame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border: 1px solid var(--champagne);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+.frameLeft::before {
+    transform: translate(-13px, 13px);
+}
+
+.frameRight::before {
+    transform: translate(13px, 13px);
+}
+
+.imageInner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    aspect-ratio: 1.67 / 1;
+    overflow: hidden;
+    background: var(--charcoal);
+}
+
+.storyImage {
+    object-fit: cover;
+    filter: saturate(0.95);
+    transition: transform 900ms var(--motion-ease);
+}
+
+.imageFrame:hover .storyImage {
+    transform: scale(1.035);
+}
+
+/* Two independent crops of one source photograph */
+.imageFirst {
+    object-position: 45% 60%;
+}
+
+.imageSecond {
+    object-position: 80% 35%;
+}
+
+/* ==============================================
+   TEXT CONTENT
+   ============================================== */
+
+.storyContent {
+    max-width: 540px;
+}
+
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 19px;
+}
+
+.eyebrow span {
+    display: block;
+    width: 37px;
+    height: 1px;
+    background: var(--champagne);
+}
+
+.storyHeading {
+    margin: 0 0 22px;
+    font-family:
+            var(--font-cormorant-garamond),
+            Georgia,
+            serif;
+    font-size: clamp(32px, 3.25vw, 48px);
+    font-weight: 400;
+    line-height: 1.03;
+    letter-spacing: -0.012em;
+}
+
+.paragraphs {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+}
+
+.paragraphs p {
+    margin: 0;
+    color: rgba(232, 214, 188, 0.72);
+    font-size: 13.5px;
+    font-weight: 400;
+    line-height: 1.9;
+}
+
+.smallDivider {
+    display: block;
+    width: 36px;
+    height: 1px;
+    margin-top: 24px;
+    background: var(--champagne);
+}
+
+/* ==============================================
+   VALUES — TWO COLUMNS
+   ============================================== */
+
+.valuesSection {
+    position: relative;
+    margin-top: 100px;
+    border-top: 1px solid rgba(197, 160, 106, 0.2);
+    border-bottom: 1px solid rgba(197, 160, 106, 0.2);
+    background: #101012;
+}
+
+.valuesContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1420px;
+    margin-inline: auto;
+    padding: 65px clamp(24px, 6vw, 90px);
+}
+
+.valueItem {
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    padding-right: 50px;
+}
+
+.valueItem + .valueItem {
+    border-left: 1px solid rgba(197, 160, 106, 0.45);
+    padding-left: 60px;
+    padding-right: 0;
+}
+
+.valueIcon {
+    color: var(--blossom);
+}
+
+.valueItem:first-child .valueIcon {
+    color: var(--champagne);
+}
+
+.valueLabel {
+    margin: 0 0 12px;
+    color: var(--ivory);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.27em;
+    text-transform: uppercase;
+}
+
+.valueText h3 {
+    margin: 0 0 22px;
+    font-family:
+            var(--font-cormorant-garamond),
+            Georgia,
+            serif;
+    font-size: clamp(25px, 2.4vw, 36px);
+    font-weight: 400;
+    line-height: 1.03;
+    color: var(--blossom);
+}
+
+.valueDescription {
+    max-width: 460px;
+    margin: 0;
+    color: rgba(232, 214, 188, 0.72);
+    font-size: 13px;
+    line-height: 1.85;
+}
+
+/* ==============================================
+   CLOSING QUOTE AND RESERVATION CTA
+   ============================================== */
+
+.closingSection {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+
+    background:
+            radial-gradient(
+                    ellipse at 25% 100%,
+                    rgba(212, 135, 143, 0.16),
+                    transparent 60%
+            ),
+            linear-gradient(
+                    110deg,
+                    #141012,
+                    #1c1517 55%,
+                    var(--midnight)
+            );
+}
+
+.closingBlossom {
+    position: absolute;
+    z-index: -1;
+    left: -90px;
+    bottom: -155px;
+    width: 470px;
+    height: 470px;
+    opacity: 0.75;
+    pointer-events: none;
+    transform: rotate(170deg);
+}
+
+.closingContainer {
+    position: relative;
+    width: 100%;
+    max-width: 1420px;
+    margin-inline: auto;
+    padding: 55px clamp(24px, 6vw, 90px);
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 45px;
+}
+
+.quoteContent {
+    text-align: center;
+    padding-left: 12%;
+}
+
+.quoteMark {
+    display: block;
+    height: 30px;
+    font-family: Georgia, serif;
+    font-size: 70px;
+    line-height: 0.8;
+    color: var(--blossom);
+}
+
+.quoteContent blockquote {
+    margin: 12px 0 25px;
+    font-family:
+            var(--font-cormorant-garamond),
+            Georgia,
+            serif;
+    font-style: italic;
+    font-size: clamp(25px, 2.65vw, 39px);
+    font-weight: 400;
+    line-height: 1.25;
+    color: var(--ivory);
+}
+
+.quoteSeparator {
+    width: 65px;
+    height: 1px;
+    margin: 0 auto 18px;
+    background: var(--champagne);
+}
+
+.quoteContent > p {
+    margin: 0;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.33em;
+    color: var(--ivory);
+}
+
+.reservationButton {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+
+    border: 1px solid var(--blossom);
+    padding: 17px 24px;
+
+    color: var(--blossom);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    transition: color 450ms var(--motion-ease);
+}
+
+/* Blossom fill sweeps in from the left on hover and focus. */
+.reservationButton::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--blossom);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 550ms var(--motion-ease);
+}
+
+.reservationButton:hover,
+.reservationButton:focus-visible {
+    color: var(--midnight);
+}
+
+.reservationButton:hover::before,
+.reservationButton:focus-visible::before {
+    transform: scaleX(1);
+}
+
+.reservationIcon {
+    transition: transform 450ms var(--motion-ease);
+}
+
+.reservationButton:hover .reservationIcon,
+.reservationButton:focus-visible .reservationIcon {
+    transform: translate(2px, -2px);
+}
+
+.reservationButton:focus-visible {
+    outline: 2px solid var(--ivory);
+    outline-offset: 4px;
+}
+
+/* ==============================================
+   TABLET
+   ============================================== */
+
+@media (max-width: 1024px) {
+    .section {
+        padding-top: 85px;
+    }
+
+    .introduction {
+        margin-bottom: 75px;
+    }
+
+    .storyRow {
+        gap: 40px;
+    }
+
+    .secondRow {
+        margin-top: 80px;
+    }
+
+    .valuesContainer {
+        gap: 30px;
+        padding-block: 52px;
+    }
+
+    .valueItem {
+        grid-template-columns: 50px 1fr;
+        gap: 17px;
+        padding-right: 22px;
+    }
+
+    .valueItem + .valueItem {
+        padding-left: 30px;
+    }
+
+    .valueIcon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .closingContainer {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        gap: 30px;
+    }
+
+    .quoteContent {
+        padding-left: 0;
+    }
+}
+
+/* ==============================================
+   MOBILE
+   ============================================== */
+
+@media (max-width: 767px) {
+    .section {
+        padding-top: 65px;
+    }
+
+    .topBlossom {
+        width: 190px;
+        height: 190px;
+        opacity: 0.38;
+    }
+
+    .blossomLeft {
+        left: -115px;
+    }
+
+    .blossomRight {
+        right: -115px;
+    }
+
+    .introduction {
+        padding-inline: 23px;
+        margin-bottom: 60px;
+    }
+
+    .mainHeading {
+        font-size: clamp(35px, 8vw, 50px);
+        line-height: 1;
+    }
+
+    .introDescription {
+        font-size: 13px;
+        line-height: 1.85;
+    }
+
+    .storyContainer {
+        padding-inline: 25px;
+    }
+
+    .storyRow {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .secondRow {
+        margin-top: 75px;
+    }
+
+    .storyContent {
+        max-width: 100%;
+    }
+
+    .storyHeading {
+        font-size: clamp(34px, 8vw, 45px);
+    }
+
+    .paragraphs p {
+        font-size: 13px;
+        line-height: 1.85;
+    }
+
+    .imageInner {
+        aspect-ratio: 1.55 / 1;
+    }
+
+    .frameLeft::before {
+        transform: translate(-8px, 8px);
+    }
+
+    .frameRight::before {
+        transform: translate(8px, 8px);
+    }
+
+    .valuesSection {
+        margin-top: 75px;
+    }
+
+    .valuesContainer {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        padding: 45px 28px;
+    }
+
+    .valueItem {
+        grid-template-columns: 45px 1fr;
+        gap: 20px;
+        padding: 0;
+    }
+
+    .valueItem + .valueItem {
+        border-left: 0;
+        border-top: 1px solid rgba(197, 160, 106, 0.3);
+        padding: 35px 0 0;
+    }
+
+    .valueText h3 {
+        font-size: 28px;
+    }
+
+    .valueDescription {
+        font-size: 12.5px;
+    }
+
+    .closingSection {
+        min-height: 330px;
+    }
+
+    .closingBlossom {
+        width: 300px;
+        height: 300px;
+        left: -120px;
+        bottom: -130px;
+        opacity: 0.45;
+    }
+
+    .closingContainer {
+        padding: 65px 25px;
+    }
+
+    .quoteContent blockquote {
+        font-size: 29px;
+    }
+
+    .desktopBreak {
+        display: none;
+    }
+
+    .quoteContent > p {
+        font-size: 9px;
+    }
+
+    .reservationButton {
+        padding: 15px 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .storyImage,
+    .reservationButton,
+    .reservationButton::before,
+    .reservationIcon {
+        transition: none;
+    }
+
+    .imageFrame:hover .storyImage,
+    .reservationButton:hover .reservationIcon,
+    .reservationButton:focus-visible .reservationIcon {
+        transform: none;
+    }
+}

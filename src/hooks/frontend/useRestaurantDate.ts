@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-import { restaurantDate } from "@/lib/specials";
+import { restaurantDate } from "@/lib/frontend/specials";
 import type { RestaurantDate } from "@/types/specials";
 
 /** Re-check once a minute so a page left open rolls over at midnight. */

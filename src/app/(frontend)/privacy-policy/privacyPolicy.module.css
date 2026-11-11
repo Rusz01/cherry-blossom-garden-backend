@@ -1,0 +1,896 @@
+
+/* ==========================================
+   CHERRY BLOSSOM GARDEN
+   PRIVACY POLICY — PREMIUM EDITORIAL DESIGN
+   ========================================== */
+
+.page {
+    min-height: 100vh;
+    background: var(--midnight);
+    color: var(--ivory);
+    font-family: var(--font-inter), sans-serif;
+}
+
+.page a {
+    text-underline-offset: 4px;
+}
+
+.page :focus-visible {
+    outline: 2px solid var(--blossom);
+    outline-offset: 4px;
+}
+
+.skipLink {
+    position: absolute;
+    z-index: 100;
+    top: -100px;
+    left: 20px;
+    padding: 12px 18px;
+    background: var(--ivory);
+    color: var(--midnight);
+}
+
+.skipLink:focus {
+    top: 10px;
+}
+
+/* ==========================================
+   PAGE HEADING
+   ========================================== */
+
+.pageHeader {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(197, 160, 106, 0.22);
+    padding: clamp(75px, 8vw, 140px) 24px 85px;
+}
+
+.pageHeader::before {
+    content: "";
+    position: absolute;
+    top: -300px;
+    right: -260px;
+    width: 720px;
+    height: 720px;
+    border-radius: 50%;
+    background: radial-gradient(
+            circle,
+            rgba(212, 135, 143, 0.09),
+            transparent 68%
+    );
+    pointer-events: none;
+}
+
+.headerInner {
+    position: relative;
+    z-index: 1;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 31px;
+}
+
+.eyebrow span {
+    display: block;
+    width: 42px;
+    height: 1px;
+    background: var(--blossom);
+}
+
+.eyebrow p,
+.smallLabel {
+    margin: 0;
+    color: var(--blossom);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+}
+
+.pageTitle {
+    margin: 0;
+    font-family: var(--font-cormorant-garamond), Georgia, serif;
+    font-size: clamp(78px, 10vw, 160px);
+    font-weight: 400;
+    letter-spacing: -0.045em;
+    line-height: 0.85;
+}
+
+.pageTitle em {
+    font-weight: 400;
+    color: var(--blossom);
+}
+
+.headerDescription {
+    max-width: 570px;
+    margin: 35px 0 0;
+    color: rgba(232, 214, 188, 0.68);
+    font-size: clamp(13px, 1.15vw, 15px);
+    line-height: 1.9;
+}
+
+.headerMeta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+    margin-top: 49px;
+    color: rgba(232, 214, 188, 0.42);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.metaSeparator {
+    width: 22px;
+    height: 1px;
+    background: var(--champagne);
+}
+
+.headerNumber {
+    position: absolute;
+    right: max(24px, calc((100vw - 1300px) / 2));
+    bottom: 38px;
+    color: rgba(197, 160, 106, 0.25);
+    font-family: var(--font-cormorant-garamond), Georgia, serif;
+    font-size: clamp(23px, 3vw, 43px);
+    letter-spacing: 0.12em;
+    pointer-events: none;
+}
+
+/* ==========================================
+   PRIVACY AT A GLANCE
+   ========================================== */
+
+.atGlance {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 82px 24px 90px;
+}
+
+.glanceHeading h2 {
+    margin: 15px 0 39px;
+    font-family: var(--font-cormorant-garamond), Georgia, serif;
+    font-size: clamp(38px, 4vw, 59px);
+    font-weight: 400;
+    line-height: 1.05;
+}
+
+.glanceHeading em {
+    color: var(--blossom);
+}
+
+.glanceGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid rgba(197, 160, 106, 0.35);
+    border-bottom: 1px solid rgba(197, 160, 106, 0.35);
+}
+
+.glanceItem {
+    min-width: 0;
+    padding: 36px 38px 38px 0;
+}
+
+.glanceItem + .glanceItem {
+    padding-left: 38px;
+    border-left: 1px solid rgba(197, 160, 106, 0.25);
+}
+
+.glanceItem svg {
+    color: var(--blossom);
+    margin-bottom: 25px;
+}
+
+.glanceItem h3 {
+    margin: 0 0 12px;
+    font-family: var(--font-cormorant-garamond), Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+}
+
+.glanceItem p {
+    max-width: 285px;
+    margin: 0;
+    color: rgba(232, 214, 188, 0.58);
+    font-size: 12px;
+    line-height: 1.85;
+}
+
+/* ==========================================
+   MAIN TWO-COLUMN LAYOUT
+   ========================================== */
+
+.mainLayout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: clamp(55px, 7vw, 110px);
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px 24px 115px;
+}
+
+/* ==========================================
+   STICKY TABLE OF CONTENTS
+   ========================================== */
+
+.sidebar {
+    min-width: 0;
+}
+
+.sidebarInner {
+    position: sticky;
+    top: 22px;
+    max-height: calc(100vh - 44px);
+    overflow-y: auto;
+    padding-right: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(197, 160, 106, 0.3) transparent;
+}
+
+.sidebarEyebrow {
+    margin: 0 0 26px;
+    color: var(--blossom);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+.sidebar nav {
+    border-left: 1px solid rgba(197, 160, 106, 0.2);
+}
+
+/* Active-section hairline: glides to the section being read. */
+.contentsNav {
+    position: relative;
+}
+
+.sidebarIndicator {
+    position: absolute;
+    top: 0;
+    left: -1px;
+    width: 1px;
+    height: 0;
+    background: var(--blossom);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+            transform 500ms var(--motion-ease),
+            height 500ms var(--motion-ease),
+            opacity 300ms ease;
+}
+
+.sidebarLink {
+    display: flex;
+    align-items: baseline;
+    gap: 17px;
+    padding: 10px 0 10px 17px;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+
+    color: rgba(232, 214, 188, 0.58);
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 1.5;
+
+    transition:
+            color 300ms var(--motion-ease),
+            border-color 300ms var(--motion-ease),
+            background 300ms var(--motion-ease);
+}
+
+.sidebarLink:hover,
+.sidebarLink:focus-visible {
+    color: var(--blossom);
+    border-left-color: rgba(212, 135, 143, 0.45);
+    background: rgba(212, 135, 143, 0.045);
+}
+
+/* The section being read (aria-current="location"). */
+.sidebarLink[aria-current="location"] {
+    color: var(--ivory);
+}
+
+.sidebarTitle {
+    transition: transform 400ms var(--motion-ease);
+}
+
+.sidebarLink:hover .sidebarTitle,
+.sidebarLink:focus-visible .sidebarTitle {
+    transform: translateX(3px);
+}
+
+.sidebarNumber {
+    flex-shrink: 0;
+    color: rgba(197, 160, 106, 0.85);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    transition: color 300ms var(--motion-ease);
+}
+
+.sidebarLink[aria-current="location"] .sidebarNumber {
+    color: var(--blossom);
+}
+
+.sidebarContact {
+    margin-top: 35px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(197, 160, 106, 0.2);
+}
+
+.sidebarContact p {
+    margin: 0 0 13px;
+    color: rgba(232, 214, 188, 0.62);
+    font-size: 12px;
+}
+
+.sidebarContact a,
+.inlineLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--blossom);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.sidebarContact a,
+.inlineLink {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition:
+            color 300ms var(--motion-ease),
+            background-size 500ms var(--motion-ease);
+}
+
+.sidebarContact a:hover,
+.inlineLink:hover,
+.sidebarContact a:focus-visible,
+.inlineLink:focus-visible {
+    color: var(--ivory);
+    background-size: 100% 1px;
+}
+
+/* ==========================================
+   POLICY DOCUMENT
+   ========================================== */
+
+.document {
+    min-width: 0;
+    border-top: 1px solid rgba(197, 160, 106, 0.25);
+}
+
+.policySection {
+    position: relative;
+    padding: 48px 0 54px;
+    border-bottom: 1px solid rgba(197, 160, 106, 0.2);
+    scroll-margin-top: 35px;
+}
+
+.policySection:target {
+    border-bottom-color: rgba(212, 135, 143, 0.5);
+}
+
+.sectionTop {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.sectionNumber {
+    color: var(--blossom);
+    font-family: var(--font-cormorant-garamond), Georgia, serif;
+    font-size: 26px;
+    line-height: 1;
+}
+
+/* Drawn between the number and eyebrow as each heading arrives. */
+.sectionRule {
+    width: 28px;
+    height: 1px;
+    background: rgba(197, 160, 106, 0.55);
+}
+
+.sectionEyebrow {
+    color: var(--champagne);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.23em;
+    text-transform: uppercase;
+}
+
+.policySection h2 {
+    max-width: 750px;
+    margin: 0 0 24px;
+    font-family: var(--font-cormorant-garamond), Georgia, serif;
+    font-size: clamp(34px, 3.7vw, 52px);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    color: var(--ivory);
+}
+
+.sectionBody {
+    max-width: 760px;
+    color: rgba(232, 214, 188, 0.7);
+    font-size: 13.5px;
+    line-height: 1.95;
+}
+
+.sectionBody p {
+    margin: 0 0 17px;
+}
+
+.sectionBody h3 {
+    margin: 28px 0 12px;
+    color: var(--ivory);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.sectionBody strong {
+    font-weight: 600;
+    color: var(--ivory);
+}
+
+.sectionBody ul {
+    margin: 20px 0 25px;
+    padding-left: 22px;
+    list-style: none;
+}
+
+.sectionBody li {
+    position: relative;
+    padding-left: 8px;
+    margin-bottom: 12px;
+}
+
+.sectionBody li::before {
+    content: "";
+    position: absolute;
+    left: -19px;
+    top: 13px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--blossom);
+}
+
+.contactDetails {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    margin: 25px 0;
+    padding: 23px 0 23px 22px;
+    border-left: 1px solid var(--champagne);
+}
+
+.contactDetails p {
+    margin: 0;
+}
+
+.contactDetails a {
+    color: var(--blossom);
+}
+
+.backToTop {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 15px;
+    color: rgba(212, 135, 143, 0.8);
+    font-size: 10px;
+    letter-spacing: 0.13em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 300ms var(--motion-ease);
+}
+
+.backToTop svg {
+    transition: transform 400ms var(--motion-ease);
+}
+
+.backToTop:hover,
+.backToTop:focus-visible {
+    color: var(--ivory);
+}
+
+.backToTop:hover svg,
+.backToTop:focus-visible svg {
+    transform: translateY(-2px);
+}
+
+/* ==========================================
+   MOBILE CONTENTS MENU
+   ========================================== */
+
+.mobileContents {
+    display: none;
+}
+
+.mobileContents details {
+    border: 1px solid rgba(197, 160, 106, 0.35);
+}
+
+.mobileContents summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 19px 20px;
+    color: var(--ivory);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    list-style: none;
+}
+
+.mobileContents summary::-webkit-details-marker {
+    display: none;
+}
+
+.mobileContents summary svg {
+    color: var(--blossom);
+    transition: transform 200ms ease;
+}
+
+.mobileContents details[open] summary svg {
+    transform: rotate(180deg);
+}
+
+.mobileContents nav {
+    display: grid;
+    max-height: 360px;
+    overflow-y: auto;
+    border-top: 1px solid rgba(197, 160, 106, 0.2);
+    padding: 8px 16px 16px;
+}
+
+.mobileContents nav a {
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+    padding: 11px 5px;
+    color: rgba(232, 214, 188, 0.75);
+    font-size: 12px;
+    line-height: 1.45;
+    text-decoration: none;
+}
+
+.mobileContents nav a span {
+    color: var(--blossom);
+    font-size: 10px;
+}
+
+.mobileContents nav a {
+    transition: color 300ms var(--motion-ease);
+}
+
+.mobileContents nav a:hover,
+.mobileContents nav a:focus-visible {
+    color: var(--blossom);
+}
+
+/* ==========================================
+   CLOSING SECTION
+   ========================================== */
+
+.endNote {
+    position: relative;
+    overflow: hidden;
+    padding: 90px 24px 105px;
+    border-top: 1px solid rgba(197, 160, 106, 0.25);
+    background:
+            radial-gradient(
+                    ellipse at 50% 100%,
+                    rgba(212, 135, 143, 0.075),
+                    transparent 67%
+            ),
+            var(--midnight);
+}
+
+.endNoteInner {
+    max-width: 800px;
+    margin: auto;
+    text-align: center;
+}
+
+.endNote h2 {
+    margin: 18px 0;
+    font-family: var(--font-cormorant-garamond), Georgia, serif;
+    font-size: clamp(43px, 5vw, 74px);
+    font-weight: 400;
+    line-height: 1;
+}
+
+.endNote h2 em {
+    color: var(--blossom);
+}
+
+.endNoteInner > p:not(.smallLabel) {
+    max-width: 510px;
+    margin: 0 auto;
+    color: rgba(232, 214, 188, 0.6);
+    font-size: 13px;
+    line-height: 1.9;
+}
+
+.endNoteInner > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 33px;
+    padding: 16px 27px;
+    border: 1px solid var(--blossom);
+    color: var(--blossom);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+            background 400ms var(--motion-ease),
+            color 400ms var(--motion-ease);
+}
+
+.endNoteInner > a svg {
+    transition: transform 400ms var(--motion-ease);
+}
+
+.endNoteInner > a:hover svg,
+.endNoteInner > a:focus-visible svg {
+    transform: translate(2px, -2px);
+}
+
+.endNoteInner > a:hover,
+.endNoteInner > a:focus-visible {
+    color: var(--midnight);
+    background: var(--blossom);
+}
+
+/* ==========================================
+   TABLET
+   ========================================== */
+
+@media (max-width: 1050px) {
+    .mainLayout {
+        grid-template-columns: 225px minmax(0, 1fr);
+        gap: 42px;
+    }
+
+    .sidebarLink {
+        font-size: 11px;
+        gap: 12px;
+    }
+
+    .glanceItem {
+        padding-right: 22px;
+    }
+
+    .glanceItem + .glanceItem {
+        padding-left: 22px;
+    }
+}
+
+/* ==========================================
+   MOBILE
+   ========================================== */
+
+@media (max-width: 767px) {
+    .pageHeader {
+        padding: 78px 24px 62px;
+    }
+
+    .eyebrow {
+        margin-bottom: 26px;
+    }
+
+    .eyebrow p {
+        font-size: 9px;
+    }
+
+    .pageTitle {
+        font-size: clamp(70px, 13vw, 103px);
+        line-height: 0.88;
+    }
+
+    .pageTitle em {
+        display: block;
+    }
+
+    .headerDescription {
+        margin-top: 27px;
+        font-size: 13px;
+        line-height: 1.85;
+    }
+
+    .headerMeta {
+        margin-top: 35px;
+        gap: 12px;
+        font-size: 9px;
+    }
+
+    .headerNumber {
+        display: none;
+    }
+
+    .atGlance {
+        padding: 65px 24px;
+    }
+
+    .glanceHeading h2 {
+        margin-bottom: 32px;
+    }
+
+    .glanceGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .glanceItem,
+    .glanceItem + .glanceItem {
+        border-left: 0;
+        padding: 25px 0;
+    }
+
+    .glanceItem + .glanceItem {
+        border-top: 1px solid rgba(197, 160, 106, 0.2);
+    }
+
+    .glanceItem svg {
+        margin-bottom: 14px;
+    }
+
+    .glanceItem h3 {
+        font-size: 27px;
+        margin-bottom: 7px;
+    }
+
+    .glanceItem p {
+        max-width: 440px;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .mobileContents {
+        display: block;
+        margin: 0 24px 20px;
+    }
+
+    .mainLayout {
+        display: block;
+        padding: 20px 24px 80px;
+    }
+
+    .policySection {
+        padding: 42px 0 46px;
+        scroll-margin-top: 18px;
+    }
+
+    .policySection h2 {
+        font-size: clamp(35px, 8vw, 48px);
+    }
+
+    .sectionBody {
+        font-size: 13px;
+        line-height: 1.85;
+    }
+
+    .sectionBody li {
+        margin-bottom: 10px;
+    }
+
+    .endNote {
+        padding: 75px 24px 85px;
+    }
+
+    .endNote h2 {
+        font-size: clamp(45px, 9vw, 64px);
+    }
+}
+
+/* ==========================================
+   READING AIDS
+   ========================================== */
+
+/* Fills as the page is read (scaleX driven by ReadingProgress). */
+.readingProgress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 80;
+    height: 2px;
+    background: linear-gradient(90deg, var(--champagne), var(--blossom));
+    transform-origin: left;
+    transform: scaleX(0);
+    pointer-events: none;
+}
+
+.floatingTop {
+    position: fixed;
+    right: clamp(16px, 3vw, 34px);
+    bottom: clamp(16px, 3vw, 34px);
+    z-index: 70;
+
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+
+    border: 1px solid rgba(197, 160, 106, 0.45);
+    border-radius: 50%;
+    background: rgba(14, 15, 18, 0.82);
+    backdrop-filter: blur(10px);
+    color: var(--blossom);
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition:
+            opacity 400ms var(--motion-ease),
+            transform 400ms var(--motion-ease),
+            visibility 0s linear 400ms,
+            border-color 300ms ease,
+            color 300ms ease;
+}
+
+.floatingTop[data-visible="true"] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition:
+            opacity 400ms var(--motion-ease),
+            transform 400ms var(--motion-ease),
+            visibility 0s,
+            border-color 300ms ease,
+            color 300ms ease;
+}
+
+.floatingTop svg {
+    transition: transform 400ms var(--motion-ease);
+}
+
+.floatingTop:hover,
+.floatingTop:focus-visible {
+    border-color: var(--blossom);
+    color: var(--ivory);
+}
+
+.floatingTop:hover svg,
+.floatingTop:focus-visible svg {
+    transform: translateY(-2px);
+}
+
+/* Smooth anchor scrolling comes from the global html rule (motion-aware). */
+
+@media (prefers-reduced-motion: reduce) {
+    .page *,
+    .page *::before,
+    .page *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .sidebarLink:hover .sidebarTitle,
+    .sidebarLink:focus-visible .sidebarTitle,
+    .backToTop:hover svg,
+    .floatingTop:hover svg {
+        transform: none;
+    }
+}

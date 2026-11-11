@@ -1,0 +1,1197 @@
+
+/* ==========================================
+   CHERRY BLOSSOM GARDEN
+   PREMIUM EXPERIENCE COVERFLOW
+   ========================================== */
+
+.experiences {
+    /* Aliases of the global brand tokens (src/app/globals.css). */
+    --bg: var(--midnight);
+    --pink: var(--blossom);
+    --gold: var(--champagne);
+    --ease: var(--motion-ease);
+
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    min-height: 900px;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ivory);
+    font-family: var(--font-inter), sans-serif;
+    padding: 75px 0 65px;
+}
+
+.ambientGlow {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    pointer-events: none;
+
+    background:
+            radial-gradient(
+                    ellipse at 50% 48%,
+                    rgba(212, 135, 143, 0.055),
+                    transparent 51%
+            ),
+            radial-gradient(
+                    ellipse at 85% 20%,
+                    rgba(197, 160, 106, 0.05),
+                    transparent 38%
+            );
+}
+
+/* ==========================================
+   HEADER
+   ========================================== */
+
+.header {
+    width: min(100% - 100px, 1450px);
+    margin: 0 auto 35px;
+    position: relative;
+    z-index: 10;
+}
+
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    color: var(--pink);
+}
+
+.eyebrowLine {
+    width: 35px;
+    height: 1px;
+    background: var(--pink);
+}
+
+.edition {
+    margin-left: auto;
+    color: rgba(232, 214, 188, 0.62);
+    letter-spacing: 0.1em;
+}
+
+.headerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 45px;
+    margin-top: 30px;
+}
+
+.pageTitle {
+    max-width: 950px;
+    margin: 0;
+
+    font-size: clamp(56px, 7vw, 112px);
+    line-height: 0.96;
+    letter-spacing: -0.082em;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--ivory);
+}
+
+.pageAccent {
+    color: var(--pink);
+    font-weight: 400;
+}
+
+.pageDescription {
+    max-width: 300px;
+    margin: 0 0 8px;
+
+    font-size: 12px;
+    line-height: 1.9;
+    font-weight: 400;
+    color: rgba(232, 214, 188, 0.58);
+}
+
+/* ==========================================
+   3D VIEWPORT
+   ========================================== */
+
+.viewport {
+    position: relative;
+    width: 100%;
+    height: min(58vw, 660px);
+    min-height: 540px;
+
+    overflow: hidden;
+    perspective: 1650px;
+    touch-action: pan-y;
+    outline: none;
+}
+
+.viewport:focus-visible {
+    outline: 1px solid var(--pink);
+    outline-offset: -5px;
+}
+
+.stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+/* ==========================================
+   SLIDES
+   ========================================== */
+
+.slide {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    width: min(60vw, 780px);
+    height: clamp(420px, 43vw, 550px);
+
+    overflow: hidden;
+    border-radius: 7px;
+    border: 1px solid rgba(197, 160, 106, 0.3);
+    background: #242322;
+
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+
+    box-shadow:
+            0 35px 110px rgba(0, 0, 0, 0.55),
+            0 0 50px rgba(197, 160, 106, 0.03);
+
+    transition:
+            transform 950ms var(--ease),
+            opacity 800ms var(--ease),
+            filter 800ms var(--ease),
+            border-color 600ms ease;
+
+    will-change: transform, opacity;
+}
+
+/* Active image */
+.slide[data-position="0"] {
+    z-index: 5;
+    opacity: 1;
+    filter: none;
+
+    transform:
+            translate(-50%, -50%)
+            translate3d(0, 0, 0)
+            rotateY(0deg)
+            scale(1);
+
+    border-color: rgba(197, 160, 106, 0.65);
+}
+
+/* Previous image */
+.slide[data-position="-1"] {
+    z-index: 3;
+    opacity: 0.75;
+    filter: saturate(0.7) brightness(0.8);
+
+    transform:
+            translate(-50%, -50%)
+            translate3d(-83%, 10px, -190px)
+            rotateY(20deg)
+            scale(0.9);
+}
+
+/* Next image */
+.slide[data-position="1"] {
+    z-index: 3;
+    opacity: 0.75;
+    filter: saturate(0.7) brightness(0.8);
+
+    transform:
+            translate(-50%, -50%)
+            translate3d(83%, 10px, -190px)
+            rotateY(-20deg)
+            scale(0.9);
+}
+
+/* Far previous image */
+.slide[data-position="-2"] {
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+
+    transform:
+            translate(-50%, -50%)
+            translate3d(-165%, 30px, -400px)
+            rotateY(28deg)
+            scale(0.7);
+}
+
+/* Far next image */
+.slide[data-position="2"] {
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+
+    transform:
+            translate(-50%, -50%)
+            translate3d(165%, 30px, -400px)
+            rotateY(-28deg)
+            scale(0.7);
+}
+
+/* ==========================================
+   PHOTOGRAPHY
+   ========================================== */
+
+.imageLayer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+/* Controlled scaling: the photograph settles as its panel takes centre,
+   and side panels shift their photograph towards the middle for depth. */
+.image {
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1.08);
+
+    transition: transform 1600ms var(--ease);
+}
+
+.slide[data-position="0"] .image {
+    transform: scale(1);
+}
+
+.slide[data-position="-1"] .image {
+    transform: scale(1.12) translateX(5%);
+}
+
+.slide[data-position="1"] .image {
+    transform: scale(1.12) translateX(-5%);
+}
+
+.imageOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    background:
+            linear-gradient(
+                    180deg,
+                    rgba(0, 0, 0, 0.45) 0%,
+                    transparent 25%,
+                    rgba(0, 0, 0, 0.1) 48%,
+                    rgba(0, 0, 0, 0.75) 78%,
+                    rgba(0, 0, 0, 0.92) 100%
+            ),
+            linear-gradient(
+                    90deg,
+                    rgba(0, 0, 0, 0.24),
+                    transparent 75%
+            );
+}
+
+.innerBorder {
+    position: absolute;
+    inset: 11px;
+    z-index: 2;
+    pointer-events: none;
+    border: 1px solid rgba(255, 255, 255, 0.17);
+    border-radius: 3px;
+}
+
+/* ==========================================
+   IMAGE TOP LABELS
+   ========================================== */
+
+.cardHeader {
+    position: absolute;
+    top: 35px;
+    left: 40px;
+    right: 40px;
+    z-index: 3;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cardIdentity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.19em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.smallFlower {
+    font-size: 20px;
+    font-weight: 300;
+    color: #f0b8c0;
+}
+
+.cardNumber {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.85);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================
+   IMAGE TITLE / DESCRIPTION
+   ========================================== */
+
+.cardContent {
+    position: absolute;
+    z-index: 3;
+
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    padding: 45px 55px 54px;
+
+}
+
+/* Directional reveal: each line of copy enters from the side the carousel
+   is travelling from (--dir is set on .stage), one after another. */
+/* .slide raises specificity above component rules such as .cardLink,
+   whose own transition would otherwise replace this one. */
+.slide .cardContent > * {
+    transition:
+            opacity 550ms var(--ease),
+            transform 900ms var(--ease),
+            color 400ms var(--ease);
+}
+
+.slide:not([data-position="0"]) .cardContent > * {
+    opacity: 0;
+    transform: translateX(calc(var(--dir, 1) * 36px));
+    transition-duration: 250ms;
+    transition-delay: 0ms;
+}
+
+.slide[data-position="0"] .cardContent > :nth-child(1) { transition-delay: 300ms; }
+.slide[data-position="0"] .cardContent > :nth-child(2) { transition-delay: 380ms; }
+.slide[data-position="0"] .cardContent > :nth-child(3) { transition-delay: 460ms; }
+.slide[data-position="0"] .cardContent > :nth-child(4) { transition-delay: 540ms; }
+
+.categoryRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.categoryLine {
+    width: 30px;
+    height: 1px;
+    background: #f0b8c0;
+}
+
+.category {
+    font-size: 9px;
+    letter-spacing: 0.23em;
+    font-weight: 600;
+    color: #f0b8c0;
+}
+
+.cardTitle {
+    max-width: 640px;
+    margin: 0;
+
+    font-size: clamp(41px, 5vw, 69px);
+    line-height: 0.99;
+    letter-spacing: -0.065em;
+    font-weight: 500;
+    color: #fff5ee;
+}
+
+.cardDescription {
+    max-width: 490px;
+    margin-top: 20px;
+
+    font-size: 12px;
+    line-height: 1.85;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.cardLink {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 21px;
+
+    margin-top: 24px;
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid rgba(240, 184, 192, 0.75);
+
+    font-size: 9px;
+    letter-spacing: 0.19em;
+    font-weight: 600;
+
+    color: #f0b8c0;
+    text-decoration: none;
+
+    transition: color 400ms var(--ease);
+}
+
+/* An ivory line draws over the pink underline; the arrow lifts away. */
+.cardLink::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: #fff;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 550ms var(--ease);
+}
+
+.cardLink svg {
+    transition: transform 450ms var(--ease);
+}
+
+.cardLink:hover,
+.cardLink:focus-visible {
+    color: #fff;
+}
+
+.cardLink:hover::after,
+.cardLink:focus-visible::after {
+    transform: scaleX(1);
+}
+
+.cardLink:hover svg,
+.cardLink:focus-visible svg {
+    transform: translate(3px, -3px);
+}
+
+/* Only the active card's details are interactive */
+.slide:not([data-position="0"]) .cardContent {
+    pointer-events: none;
+}
+
+.slide:not([data-position="0"]) .cardHeader {
+    opacity: 0.7;
+}
+
+/* ==========================================
+   SIDE PREVIEW BUTTONS
+   ========================================== */
+
+.previewButton {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+}
+
+.previewLabel {
+    position: absolute;
+    top: 50%;
+
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 2px;
+
+    color: white;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+
+    background: rgba(14, 15, 18, 0.2);
+    backdrop-filter: blur(8px);
+
+    transform: translateY(-50%);
+    transition:
+            background 300ms ease,
+            border-color 300ms ease;
+}
+
+.slide[data-position="-1"] .previewLabel {
+    right: 15%;
+}
+
+.slide[data-position="1"] .previewLabel {
+    left: 15%;
+}
+
+.previewButton:hover .previewLabel {
+    background: rgba(212, 135, 143, 0.7);
+    border-color: var(--pink);
+}
+
+/* ==========================================
+   CONTROLS
+   ========================================== */
+
+.controls {
+    width: min(100% - 100px, 1350px);
+    margin: 5px auto 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.slideCounter {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    min-width: 95px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* The number rolls up into a small window when the slide changes. */
+.counterWindow {
+    display: inline-block;
+    overflow: hidden;
+    line-height: 1.15;
+}
+
+.currentNumber {
+    display: inline-block;
+    font-size: 21px;
+    font-weight: 500;
+    color: var(--ivory);
+}
+
+.totalNumber {
+    font-size: 12px;
+    color: rgba(232, 214, 188, 0.62);
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.paginationButton {
+    width: 25px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+}
+
+.paginationButton span {
+    position: relative;
+    display: block;
+    overflow: hidden;
+
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(232, 214, 188, 0.35);
+
+    transition:
+            width 450ms var(--ease),
+            background 350ms ease,
+            border-radius 350ms ease;
+}
+
+.paginationActive span {
+    width: 25px;
+    height: 3px;
+    border-radius: 5px;
+    background: rgba(212, 135, 143, 0.28);
+}
+
+/* Autoplay countdown. Full when autoplay is off. */
+.paginationProgress {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--pink);
+    transform-origin: left;
+}
+
+.paginationButton:hover span {
+    background: var(--pink);
+}
+
+.navigation {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.autoplayButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    height: 38px;
+    border: 0;
+    background: transparent;
+    color: rgba(232, 214, 188, 0.55);
+    cursor: pointer;
+}
+
+.autoplayButton:hover {
+    color: var(--pink);
+}
+
+.navigationDivider {
+    height: 24px;
+    width: 1px;
+    background: rgba(197, 160, 106, 0.25);
+    margin: 0 10px;
+}
+
+.arrowButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 51px;
+    height: 51px;
+
+    border: 1px solid rgba(232, 214, 188, 0.28);
+    border-radius: 50%;
+
+    color: var(--ivory);
+    background: transparent;
+    cursor: pointer;
+
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    transition:
+            transform 450ms var(--ease),
+            border-color 450ms var(--ease),
+            color 450ms var(--ease);
+}
+
+/* A fill blooms from the centre; the arrow nudges the way it points. */
+.arrowButton::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 50%;
+    background: var(--pink);
+    transform: scale(0);
+    transition: transform 550ms var(--ease);
+}
+
+.arrowButton svg {
+    transition: transform 450ms var(--ease);
+}
+
+.arrowButton:hover,
+.arrowButton:focus-visible {
+    transform: translateY(-2px);
+    border-color: var(--pink);
+    color: var(--bg);
+}
+
+.arrowButton:hover::before,
+.arrowButton:focus-visible::before {
+    transform: scale(1);
+}
+
+.arrowButton:hover svg,
+.arrowButton:focus-visible svg {
+    transform: translateX(-3px);
+}
+
+.arrowNext {
+    color: var(--bg);
+    background: var(--pink);
+    border-color: var(--pink);
+}
+
+.arrowNext::before {
+    background: var(--ivory);
+}
+
+.arrowNext:hover,
+.arrowNext:focus-visible {
+    border-color: var(--ivory);
+}
+
+.arrowNext:hover svg,
+.arrowNext:focus-visible svg {
+    transform: translateX(3px);
+}
+
+.experiences button:focus-visible,
+.experiences a:focus-visible {
+    outline: 2px solid var(--pink);
+    outline-offset: 4px;
+}
+
+/* ==========================================
+   BOTTOM EDITORIAL
+   ========================================== */
+
+.bottomEditorial {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: center;
+    gap: 30px;
+
+    width: min(100% - 100px, 1450px);
+    margin: 75px auto 0;
+    padding-top: 35px;
+
+    border-top: 1px solid rgba(197, 160, 106, 0.19);
+}
+
+.bottomIdentity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.17em;
+    color: rgba(232, 214, 188, 0.45);
+}
+
+.bottomDot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--pink);
+}
+
+.bottomEditorial p {
+    margin: 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.65;
+    color: rgba(232, 214, 188, 0.68);
+}
+
+.bottomLink {
+    display: inline-flex;
+    align-items: center;
+    justify-self: end;
+    gap: 14px;
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+
+    color: var(--pink);
+    text-decoration: none;
+    transition: gap 300ms ease;
+}
+
+.bottomLink:hover {
+    gap: 20px;
+}
+
+/* ==========================================
+   TABLET
+   ========================================== */
+
+@media (max-width: 1100px) {
+    .header {
+        width: calc(100% - 64px);
+    }
+
+    .headerContent {
+        align-items: start;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .pageTitle {
+        font-size: clamp(55px, 8vw, 85px);
+    }
+
+    .pageDescription {
+        max-width: 520px;
+    }
+
+    .slide {
+        width: min(69vw, 680px);
+        height: clamp(420px, 55vw, 520px);
+    }
+
+    .cardContent {
+        padding: 36px 42px 43px;
+    }
+
+    .cardTitle {
+        font-size: clamp(38px, 5.6vw, 60px);
+    }
+
+    .controls,
+    .bottomEditorial {
+        width: calc(100% - 64px);
+    }
+}
+
+/* ==========================================
+   MOBILE
+   ========================================== */
+
+@media (max-width: 700px) {
+    .experiences {
+        padding-top: 45px;
+        padding-bottom: 45px;
+        min-height: auto;
+    }
+
+    .header {
+        width: calc(100% - 42px);
+        margin-bottom: 18px;
+    }
+
+    .eyebrow {
+        gap: 9px;
+        font-size: 8px;
+        letter-spacing: 0.15em;
+    }
+
+    .eyebrowLine {
+        width: 21px;
+    }
+
+    .edition {
+        font-size: 8px;
+    }
+
+    .headerContent {
+        margin-top: 25px;
+        gap: 18px;
+    }
+
+    .pageTitle {
+        font-size: clamp(44px, 10vw, 66px);
+        letter-spacing: -0.075em;
+        white-space: normal;
+    }
+
+    .pageDescription {
+        max-width: 390px;
+        font-size: 11px;
+        line-height: 1.75;
+    }
+
+    /* Mobile keeps narrow side-image previews */
+    .viewport {
+        height: 550px;
+        min-height: 0;
+        perspective: 1050px;
+    }
+
+    .slide {
+        width: min(80vw, 440px);
+        height: clamp(390px, 115vw, 505px);
+        border-radius: 5px;
+    }
+
+    .slide[data-position="-1"] {
+        transform:
+                translate(-50%, -50%)
+                translate3d(-84%, 12px, -100px)
+                rotateY(19deg)
+                scale(0.88);
+    }
+
+    .slide[data-position="1"] {
+        transform:
+                translate(-50%, -50%)
+                translate3d(84%, 12px, -100px)
+                rotateY(-19deg)
+                scale(0.88);
+    }
+
+    .slide[data-position="-2"] {
+        transform:
+                translate(-50%, -50%)
+                translate3d(-165%, 15px, -300px)
+                rotateY(25deg)
+                scale(0.7);
+    }
+
+    .slide[data-position="2"] {
+        transform:
+                translate(-50%, -50%)
+                translate3d(165%, 15px, -300px)
+                rotateY(-25deg)
+                scale(0.7);
+    }
+
+    .cardHeader {
+        top: 24px;
+        left: 23px;
+        right: 23px;
+    }
+
+    .cardIdentity {
+        gap: 6px;
+        font-size: 7px;
+        letter-spacing: 0.08em;
+    }
+
+    .smallFlower {
+        font-size: 16px;
+    }
+
+    .cardNumber {
+        font-size: 8px;
+    }
+
+    .cardContent {
+        padding: 25px 24px 31px;
+    }
+
+    .categoryRow {
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .categoryLine {
+        width: 17px;
+    }
+
+    .category {
+        font-size: 7px;
+        letter-spacing: 0.14em;
+    }
+
+    .cardTitle {
+        max-width: 340px;
+        font-size: clamp(32px, 8vw, 48px);
+        line-height: 1.02;
+        letter-spacing: -0.065em;
+    }
+
+    .cardDescription {
+        margin-top: 13px;
+        font-size: 10.5px;
+        line-height: 1.65;
+    }
+
+    .cardLink {
+        margin-top: 18px;
+        padding-bottom: 8px;
+        gap: 12px;
+        font-size: 8px;
+        letter-spacing: 0.12em;
+    }
+
+    .cardLink svg {
+        width: 14px;
+    }
+
+    .innerBorder {
+        inset: 6px;
+    }
+
+    .previewLabel {
+        padding: 7px 8px;
+        font-size: 7px;
+    }
+
+    .slide[data-position="-1"] .previewLabel {
+        right: 10%;
+    }
+
+    .slide[data-position="1"] .previewLabel {
+        left: 10%;
+    }
+
+    .controls {
+        width: calc(100% - 42px);
+        margin-top: 0;
+        gap: 8px;
+    }
+
+    .slideCounter {
+        min-width: 60px;
+        gap: 5px;
+    }
+
+    .currentNumber {
+        font-size: 18px;
+    }
+
+    .totalNumber {
+        font-size: 10px;
+    }
+
+    .pagination {
+        gap: 2px;
+    }
+
+    .paginationButton {
+        width: 24px;
+        height: 32px;
+    }
+
+    .paginationActive span {
+        width: 15px;
+    }
+
+    .navigation {
+        gap: 6px;
+    }
+
+    .autoplayButton {
+        width: 26px;
+        height: 34px;
+    }
+
+    .navigationDivider {
+        display: none;
+    }
+
+    .arrowButton {
+        width: 38px;
+        height: 38px;
+    }
+
+    .arrowButton svg {
+        width: 16px;
+    }
+
+    .bottomEditorial {
+        width: calc(100% - 42px);
+        margin-top: 40px;
+        padding-top: 24px;
+
+        grid-template-columns: 1fr;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .bottomIdentity {
+        justify-content: center;
+        font-size: 8px;
+    }
+
+    .bottomEditorial p {
+        font-size: 12px;
+    }
+
+    .bottomLink {
+        justify-self: center;
+    }
+}
+
+@media (max-width: 370px) {
+    .pageTitle {
+        font-size: 42px;
+    }
+
+    .viewport {
+        height: 500px;
+    }
+
+    .slide {
+        width: 82vw;
+        height: 390px;
+    }
+
+    .cardTitle {
+        font-size: 31px;
+    }
+
+    .cardDescription {
+        font-size: 10px;
+    }
+
+    .cardContent {
+        padding: 23px 21px 27px;
+    }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+   ========================================== */
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    /* Entrance: transform only, so the active photograph paints at once. */
+    .stage {
+        animation: stageRise 1.2s var(--ease) 0.35s both;
+    }
+
+    .currentNumber {
+        animation: counterRise 600ms var(--ease) both;
+    }
+
+    @keyframes stageRise {
+        from {
+            transform: translateY(40px);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes counterRise {
+        from {
+            transform: translateY(100%);
+        }
+
+        to {
+            transform: translateY(0);
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .slide,
+    .image,
+    .cardContent,
+    .cardContent > *,
+    .arrowButton,
+    .arrowButton::before,
+    .arrowButton svg,
+    .cardLink,
+    .cardLink::after,
+    .cardLink svg,
+    .paginationButton span {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .arrowButton:hover,
+    .arrowButton:focus-visible,
+    .arrowButton:hover svg,
+    .arrowButton:focus-visible svg,
+    .cardLink:hover svg,
+    .cardLink:focus-visible svg {
+        transform: none;
+    }
+}
