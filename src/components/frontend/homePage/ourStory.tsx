@@ -1,3 +1,7 @@
+"use client";
+
+import { useHomeContent } from "./HomeContentProvider";
+import { imageSrc } from "@/lib/homepage/defaults";
 import Image from "next/image";
 
 import ImageReveal from "@/components/frontend/motion/imageReveal";
@@ -6,6 +10,7 @@ import Eyebrow from "@/components/frontend/ui/eyebrow";
 import TextLink from "@/components/frontend/ui/textLink";
 
 export default function OurStory() {
+  const { story } = useHomeContent();
     return (
         <section
             id="our-story"
@@ -19,7 +24,7 @@ export default function OurStory() {
                     className="min-h-[500px] lg:min-h-[750px]"
                 >
                     <Image
-                        src="/assets/story-main.png"
+                        src={imageSrc(story.image, "/assets/story-main.png")}
                         alt="Cherry Blossom Garden dining experience"
                         fill
                         className="object-cover"
@@ -40,36 +45,33 @@ export default function OurStory() {
 
                         {/* Eyebrow */}
                         <StaggerItem>
-                            <Eyebrow className="mb-4">Our Story</Eyebrow>
+                            <Eyebrow className="mb-4">{story.eyebrow}</Eyebrow>
                         </StaggerItem>
 
                         {/* Heading */}
                         <StaggerItem>
                             <h2 className="max-w-[570px] font-cormorant text-[42px] font-normal leading-[0.98] tracking-[-0.02em] text-ivory sm:text-5xl lg:text-[52px] xl:text-[58px]">
-                                A Garden Rooted in
+                              {story.title1}
                                 <br className="hidden sm:block" />
-                                Elegance and Connection
+                              {story.title2}
                             </h2>
                         </StaggerItem>
 
                         {/* Copy */}
                         <div className="mt-8 max-w-[520px] space-y-5 font-inter text-[14px] leading-[1.8] text-ivory/65">
                             <StaggerItem as="p" intensity="subtle">
-                                Cherry Blossom Garden celebrates generous hospitality,
-                                beautifully presented food and memorable moments. Every
-                                detail is designed to make gatherings feel special.
+                              {story.paragraph1}
                             </StaggerItem>
 
                             <StaggerItem as="p" intensity="subtle">
-                                More than a meal, it is a welcoming escape where every corner
-                                gives guests something new to discover.
+                              {story.paragraph2}
                             </StaggerItem>
                         </div>
 
                         {/* Link */}
                         <StaggerItem intensity="subtle">
-                            <TextLink href="/about" className="mt-9">
-                                Discover Our Story
+                            <TextLink href={story.buttonHref} className="mt-9">
+                              {story.buttonLabel}
                             </TextLink>
                         </StaggerItem>
                     </StaggerReveal>

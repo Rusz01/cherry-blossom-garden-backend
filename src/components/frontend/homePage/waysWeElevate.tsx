@@ -1,5 +1,11 @@
 "use client";
 
+import { useHomeContent } from "./HomeContentProvider";
+import {
+  DEFAULT_HOMEPAGE,
+  imageSrc,
+} from "@/lib/homepage/defaults";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
@@ -23,53 +29,6 @@ import { cn } from "@/lib/frontend/cn";
 
 const AUTO_PLAY_DELAY = 6000;
 
-const experiences = [
-    {
-        number: "01",
-        eyebrow: "Elevated Dining",
-        title: "Elevated Dining",
-        image: "/assets/elevated-dining.png",
-        href: "/experiences/elevated-dining",
-        description:
-            "Step into an atmosphere where dining feels considered from the moment you arrive. Warm lighting, beautifully styled interiors and carefully presented dishes come together to create an experience that feels intimate, elegant and memorable. Whether it is a relaxed dinner or a special evening, every detail is designed to make the occasion feel elevated.",
-    },
-    {
-        number: "02",
-        eyebrow: "Garden Ambience",
-        title: "Garden Ambience",
-        image: "/assets/garden-ambience.png",
-        href: "/experiences/garden-ambience",
-        description:
-            "Surrounded by greenery, warm lanterns and signature cherry blossom details, our garden spaces are designed to feel like a peaceful escape from the everyday. Comfortable seating, atmospheric lighting and carefully layered planting create the perfect setting for long conversations, evening drinks and beautifully relaxed moments.",
-    },
-    {
-        number: "03",
-        eyebrow: "Private Celebration",
-        title: "Private Celebrations",
-        image: "/assets/private-celebration.png",
-        href: "/experiences/private-celebrations",
-        description:
-            "Celebrate meaningful moments in a setting designed to feel personal and refined. From birthdays and intimate dinners to family gatherings and special occasions, our private spaces can be arranged around your celebration while maintaining the warm, elegant atmosphere that defines Cherry Blossom Garden.",
-    },
-    {
-        number: "04",
-        eyebrow: "Kids Play Area",
-        title: "A Space for Little Explorers",
-        image: "/assets/kids-play-area.png",
-        href: "/experiences/kids-play-area",
-        description:
-            "Our dedicated children's space gives younger guests somewhere imaginative, comfortable and exciting to enjoy while families relax nearby. Designed with playful natural details and a warm garden-inspired character, it adds another layer to the Cherry Blossom experience and makes family visits feel easier, more relaxed and more enjoyable.",
-    },
-    {
-        number: "05",
-        eyebrow: "Live Music",
-        title: "Evenings with Live Music",
-        image: "/assets/first-floor.png",
-        href: "/experiences/live-music",
-        description:
-            "As the evening unfolds, live performances bring another energy to the space. Enjoy dinner, drinks and conversation while carefully selected music creates a lively yet sophisticated atmosphere. It is the kind of setting designed for staying a little longer and turning an ordinary evening into something memorable.",
-    },
-];
 
 type SlidePosition = "before" | "active" | "after";
 
@@ -86,7 +45,24 @@ function positionOf(index: number, activeIndex: number): SlidePosition {
  */
 
 export default function WaysWeElevate() {
-    const [activeIndex, setActiveIndex] = useState(0);
+
+
+  const { experiences: experienceContent } =
+    useHomeContent();
+
+  const experiences = experienceContent.items.map(
+    (experience, index) => ({
+      ...experience,
+      image: imageSrc(
+        experience.image,
+        DEFAULT_HOMEPAGE.experiences.items[index]?.image ??
+        "/assets/elevated-dining.png",
+      ),
+    }),
+  );
+
+
+  const [activeIndex, setActiveIndex] = useState(0);
     const [hovered, setHovered] = useState(false);
     const [focused, setFocused] = useState(false);
     const [touching, setTouching] = useState(false);
@@ -202,11 +178,14 @@ export default function WaysWeElevate() {
                 <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
                     <div className="max-w-[760px]">
                         <Reveal intensity="subtle">
-                            <Eyebrow className="mb-4">The Cherry Blossom Experience</Eyebrow>
+                            <Eyebrow className="mb-4">{experienceContent.eyebrow}</Eyebrow>
                         </Reveal>
 
                         <TextReveal
-                            text={["Ways We Elevate", "Your Evening"]}
+                          text={[
+                            experienceContent.title1,
+                            experienceContent.title2,
+                          ]}
                             className="font-cormorant text-[48px] font-normal leading-[0.92] tracking-[-0.02em] text-ivory sm:text-[58px] md:text-[66px] lg:text-[74px] xl:text-[82px]"
                         />
                     </div>

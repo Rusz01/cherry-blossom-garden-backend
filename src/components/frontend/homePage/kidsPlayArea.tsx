@@ -1,3 +1,7 @@
+"use client";
+
+import { useHomeContent } from "./HomeContentProvider";
+import { imageSrc } from "@/lib/homepage/defaults";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -12,16 +16,7 @@ import ImageReveal from "@/components/frontend/motion/imageReveal";
 import StaggerReveal, { StaggerItem } from "@/components/frontend/motion/staggerReveal";
 import Petal from "@/components/frontend/ui/petal";
 
-/* =========================================================
-   IMAGE PATHS
-========================================================= */
 
-const images = {
-    main: "/assets/kids-play-area.png",
-    top: "/assets/kids-play-area.png",
-    bottom: "/assets/kids-play-area.png",
-    blossom: "/assets/playareablossom.png",
-};
 
 /* =========================================================
    ORGANIC IMAGE SHAPES
@@ -51,33 +46,41 @@ const BOTTOM_IMAGE_SHAPE = `
 `;
 
 /* =========================================================
-   FEATURES
-========================================================= */
-
-const features = [
-    {
-        icon: ShieldCheck,
-        line1: "SAFE &",
-        line2: "CHILD FRIENDLY",
-    },
-    {
-        icon: Lightbulb,
-        line1: "IMAGINATIVE",
-        line2: "PLAY SPACES",
-    },
-    {
-        icon: UsersRound,
-        line1: "MEMORABLE",
-        line2: "FAMILY MOMENTS",
-    },
-];
-
-/* =========================================================
    MAIN SECTION
 ========================================================= */
 
 export default function KidsPlayAreaSection() {
-    return (
+
+  const { kids } = useHomeContent();
+
+  const images = {
+    main: imageSrc(
+      kids.mainImage,
+      "/assets/kids-play-area.png",
+    ),
+    top: imageSrc(
+      kids.topImage,
+      "/assets/kids-play-area.png",
+    ),
+    bottom: imageSrc(
+      kids.bottomImage,
+      "/assets/kids-play-area.png",
+    ),
+    blossom: "/assets/playareablossom.png",
+  };
+
+  const featureIcons = [
+    ShieldCheck,
+    Lightbulb,
+    UsersRound,
+  ];
+
+  const features = kids.features.map((feature, index) => ({
+    ...feature,
+    icon: featureIcons[index] ?? ShieldCheck,
+  }));
+
+  return (
         <section
             data-theme="light"
             className="relative isolate overflow-hidden bg-cream text-ink py-24 border-y-2 border-champagne"
@@ -221,7 +224,7 @@ export default function KidsPlayAreaSection() {
                   sm:text-xs
                 "
                             >
-                                Kids Play Area
+                              {kids.eyebrow}
                             </p>
                         </StaggerItem>
 
@@ -242,13 +245,13 @@ export default function KidsPlayAreaSection() {
                 lg:text-[clamp(54px,4.7vw,82px)]
               "
                         >
-                            Where Little
+                          {kids.title1}
                             <br />
-                            Adventures
+                          {kids.title2}
                             <br />
 
                             <span className="font-normal italic text-rose">
-                Come to Life
+                {kids.titleAccent}
               </span>
                         </h2>
                         </StaggerItem>
@@ -265,12 +268,7 @@ export default function KidsPlayAreaSection() {
                 lg:mt-8
               "
                         >
-                            A thoughtfully designed play area where
-                            imagination, play and discovery come together.
-                            Surrounded by warm natural tones and playful
-                            details, it&apos;s a safe and welcoming space
-                            for little guests to enjoy, while you relax
-                            and make memories.
+                            {kids.description}
                         </p>
                         </StaggerItem>
 
@@ -323,7 +321,7 @@ export default function KidsPlayAreaSection() {
 
                         <StaggerItem intensity="subtle">
                         <Link
-                            href="/kids-play"
+                          href={kids.buttonHref}
                             className="
                 group focus-ring mt-7 inline-flex
                 min-h-[52px] items-center
@@ -338,7 +336,7 @@ export default function KidsPlayAreaSection() {
                 sm:px-8 sm:text-xs
               "
                         >
-                            Discover Our Kids Play Area
+                          {kids.buttonLabel}
 
                             <ArrowRight
                                 strokeWidth={1.5}

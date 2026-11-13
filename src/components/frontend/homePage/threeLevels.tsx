@@ -5,6 +5,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { m } from "motion/react";
 
+import { useHomeContent } from "./HomeContentProvider";
+import {
+  DEFAULT_HOMEPAGE,
+  imageSrc,
+} from "@/lib/homepage/defaults";
+
 import Reveal from "@/components/frontend/motion/reveal";
 import TextReveal from "@/components/frontend/motion/textReveal";
 import Container from "@/components/frontend/ui/container";
@@ -19,48 +25,22 @@ import {
     staggerVariants,
 } from "@/lib/frontend/motion/variants";
 
-const levels = [
-    {
-        id: 1,
-        eyebrow: "Level 01",
-        shortTitle: "Café",
-        title: "Café & Family Space",
-        image: "/assets/hero.png",
-        href: "/explore/ground-floor",
-        description:
-            "A warm and welcoming space for coffee, fresh food and relaxed dining. With comfortable seating, an open kitchen and a dedicated kids area, it’s the perfect place for families, casual catch-ups and easy-going moments throughout the day.",
-    },
-    {
-        id: 2,
-        eyebrow: "Level 02",
-        shortTitle: "Dining",
-        title: "Dining & Entertainment",
-        image: "/assets/first-floor.png",
-        href: "/explore/dining-entertainment",
-        description:
-            "A vibrant social space created for dining, drinks and memorable evenings. Enjoy stylish seating, a lively bar, private dining spaces, live entertainment and a dedicated stage area.",
-    },
-    {
-        id: 3,
-        eyebrow: "Level 03",
-        shortTitle: "Rooftop",
-        title: "Rooftop BBQ & Events",
-        image: "/assets/rooftop.png",
-        href: "/explore/rooftop-bbq-events",
-        description:
-            "An open-air rooftop experience designed for relaxed dining and special occasions. With BBQ dining, buffet options, comfortable seating and flexible event space under the open sky.",
-    },
-];
-
-/*
- * Interaction
- * - Pointer: first click opens a level; a click on the open level visits it.
- * - Keyboard / screen readers: each closed level is a real button that opens
- *   it (aria-expanded); the open level's "Explore Level" link visits it.
- */
 
 export default function ThreeLevels() {
-    const router = useRouter();
+
+  const { levels: levelContent } = useHomeContent();
+
+  const levels = levelContent.items.map((level, index) => ({
+    ...level,
+    id: index + 1,
+    image: imageSrc(
+      level.image,
+      DEFAULT_HOMEPAGE.levels.items[index]?.image ??
+      "/assets/hero.png",
+    ),
+  }));
+
+  const router = useRouter();
     const reduced = usePrefersReducedMotion();
 
     // Start with first level expanded
@@ -100,19 +80,17 @@ export default function ThreeLevels() {
         ========================== */}
                 <div className="mx-auto mb-14 max-w-4xl text-center lg:mb-20">
                     <Reveal intensity="subtle">
-                        <Eyebrow className="mb-4">Explore The Space</Eyebrow>
+                        <Eyebrow className="mb-4">{levelContent.eyebrow}</Eyebrow>
                     </Reveal>
 
                     <TextReveal
-                        text="Three Levels, Three Experiences"
-                        className="font-cormorant text-4xl font-normal leading-none text-ivory sm:text-5xl lg:text-[62px]"
+                      text={levelContent.title}
+                      className="font-cormorant text-4xl font-normal leading-none text-ivory sm:text-5xl lg:text-[62px]"
                     />
 
                     <Reveal intensity="subtle" delay={0.2}>
                         <p className="mx-auto mt-6 max-w-3xl font-inter text-sm leading-7 text-ivory/60 sm:text-[15px]">
-                            From relaxed coffee moments to elevated dining and family-friendly
-                            fun, each level at Cherry Blossom Garden offers its own unique
-                            atmosphere to enjoy.
+                          {levelContent.description}
                         </p>
                     </Reveal>
                 </div>
