@@ -1,347 +1,646 @@
-# Arthanova Studio CMS
+<div align="center">
+  <a href="https://github.com/Rusz01/cherry-blossom-garden-backend">
+    <img src="./public/Cherry-Blossom-Garden-Logo.png" alt="Cherry Blossom Garden" width="160" />
+  </a>
 
-> **Partners in Digital Growth.** A branded, reusable content management system for Arthanova Studio projects. It is built on Payload CMS 3, Next.js 16 and PostgreSQL.
+# Cherry Blossom Garden
+### Website & Content Management System
 
-Payload and Next.js run as one application. It contains the admin panel at `/admin`, the REST and GraphQL APIs at `/api`, and a small frontend that renders published pages, drafts and live previews.
+**A modern hospitality website with a custom content-management experience.**  
+Built with Next.js, Payload CMS and PostgreSQL.
 
----
+[![Next.js](https://img.shields.io/badge/Next.js-16.4.1-111111?logo=nextdotjs)](https://nextjs.org/)
+[![Payload CMS](https://img.shields.io/badge/Payload_CMS-3.93.0-111111)](https://payloadcms.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-11.12.0-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
 
-## Contents
-
-1. [Overview](#overview)
-2. [Technology](#technology)
-3. [Features](#features)
-4. [Requirements](#requirements)
-5. [Local setup](#local-setup)
-6. [PostgreSQL](#postgresql)
-7. [Email with Resend](#email-with-resend)
-8. [Users, roles and permissions](#users-roles-and-permissions)
-9. [Admin customisation](#admin-customisation)
-10. [Drafts, publishing and preview](#drafts-publishing-and-preview)
-11. [Environment variables](#environment-variables)
-12. [Commands](#commands)
-13. [Testing](#testing)
-14. [Production](#production)
-15. [Troubleshooting](#troubleshooting)
-16. [Project structure](#project-structure)
+[Website](#application-routes) · [Quick start](#quick-start-recommended) · [CMS guide](#content-management) · [Environment](#environment-variables) · [Deployment](#production-and-deployment)
+</div>
 
 ---
 
 ## Overview
 
-This CMS is a foundation that future Arthanova Studio projects can reuse. It is not a copy of the marketing website. Content is modelled as generic **Pages** built from **content blocks**, and site-wide **globals** hold settings, navigation and SEO defaults. Everything is protected by **role-based access control**, which is enforced at the API and database-query level.
+This repository contains the **Cherry Blossom Garden website and its Payload CMS backend in one Next.js application**. It provides a branded hospitality frontend, a structured content editor, role-based permissions, media management, previews and supporting infrastructure.
 
-## Technology
+The CMS is built on an Arthanova Studio starter project. Some internal identifiers, admin branding, email templates and example configuration values still reference **Arthanova Studio**; see [Current implementation notes](#current-implementation-notes).
 
-| Area           | Choice                                                                   |
-| -------------- | ------------------------------------------------------------------------ |
-| CMS            | Payload 3.93 (`payload`, `@payloadcms/next`, `@payloadcms/ui`)           |
-| Framework      | Next.js 16 (App Router, Turbopack), React 19                             |
-| Database       | PostgreSQL via `@payloadcms/db-postgres` (Drizzle), with migrations      |
-| Rich text      | Lexical (`@payloadcms/richtext-lexical`)                                 |
-| Email          | Resend SDK + a custom Payload `EmailAdapter`, templates in React Email   |
-| SEO            | `@payloadcms/plugin-seo` plus custom canonical, robots and JSON-LD fields |
-| Live preview   | `@payloadcms/live-preview-react` (server-side refresh)                   |
-| Media storage  | Local filesystem by default; optional S3/MinIO (`@payloadcms/storage-s3`) |
-| Icons and fonts | Lucide; DM Sans via `next/font` (self-hosted)                            |
-| Tests          | Vitest (integration, against a real PostgreSQL), Playwright (e2e)       |
+### At a glance
+
+| Area | Implementation |
+| --- | --- |
+| Website | Next.js 16 App Router + React 19 + TypeScript |
+| CMS | Payload CMS 3.93.0, mounted at `/admin` |
+| Database | PostgreSQL via `@payloadcms/db-postgres` |
+| Editable experiences | Homepage global + three Explore Pages |
+| Other content | Pages collection with reusable blocks, media and site globals |
+| Editorial workflow | Drafts, autosave, version history and supported previews |
+| Access control | Administrator and custom roles with collection/global permissions |
+| Email | Resend integration, React Email templates and development outbox |
+| Storage | Local filesystem; optional S3-compatible storage (including MinIO) |
+| Quality | ESLint, TypeScript, Vitest integration tests and Playwright E2E tests |
 
 ## Features
 
-- **Branded admin**: login and auth screens, sidebar, dashboard and restyled Payload UI, with light and dark themes.
-- **Dashboard**: live statistics, permission-aware quick actions, recently updated pages and email activity. Loading, empty and error states are included.
-- **RBAC**: a protected Administrator role and custom roles with per-collection CRUD and per-global read/update permissions.
-- **Account lifecycle**: first-admin bootstrap, invitation emails, token-based activation and password setup, suspension, and last-admin protection.
-- **Emails**: welcome, invitation, verification and password reset, with an HTML and a plain-text version of each, logging and idempotency.
-- **Email Logs**: an operational record of every attempt. It never stores bodies, tokens or keys.
-- **Content**: Pages with drafts, autosave, version history and restore, scheduled publish and unpublish, preview and live preview.
-- **Nine reusable blocks**: Hero, Rich text, Image, Image and text, Call to action, Feature grid, FAQ, Testimonials and Gallery.
-- **Media**: MIME allow-list, 20 MB limit, required alt text, WebP optimisation, responsive sizes, focal point and crop.
-- **Globals**: Site settings, Navigation and SEO settings.
-- **SEO and AEO**: metadata helpers, canonical URLs, robots rules, Open Graph and Twitter tags, `sitemap.xml`, `robots.txt`, and WebPage, FAQPage and Organization JSON-LD.
+- **Hospitality-focused frontend** — home, about, experiences, Explore floors, menu, gallery, kids play area, reservation/contact and privacy policy.
+- **Homepage editor** — update hero copy, imagery, story, floor cards, experiences, cuisine, kids area, gallery and newsletter section without redesigning the components.
+- **Explore Pages editor** — control each floor's titles, navigation labels, descriptions, carousel slides, images and decorative text.
+- **Original-content fallbacks** — bundled copy and photography are used where editable values are missing; the Explore pages can render even before their CMS records are seeded.
+- **Live preview** — Payload's Live Preview API updates the Homepage and Explore preview interfaces while editing; separate authenticated draft preview routes are available.
+- **Branded Payload admin** — custom dashboard, navigation, login visuals, responsive styling and custom admin components.
+- **Role-based access control** — protected Administrator role, custom roles, user suspension, first-user bootstrap and account activation.
+- **Media handling** — upload, image crop/focal point, responsive derivatives, required alt text and optional object storage.
+- **SEO controls** — SEO settings, canonical helpers, dynamic `robots.txt`, `sitemap.xml` and structured-data support.
+- **Transactional email foundation** — account invitation, verification, password reset and welcome templates, with Email Logs.
+
+> [!NOTE]
+> CMS coverage is **not yet universal**. The Homepage and Explore pages are connected to Payload. The menu and specials currently use `src/data/`, and several other pages retain frontend-defined content. The generic `Pages` collection is present, but this repository does not currently provide a general `/[slug]` page renderer. See [Current implementation notes](#current-implementation-notes).
+
+## Tech stack
+
+| Layer | Technology |
+| --- | --- |
+| Application | Next.js `16.4.1`, React `19.2.6` |
+| Language | TypeScript `5.7.3` |
+| Content platform | Payload CMS `3.93.0` |
+| Database | PostgreSQL (Compose uses PostgreSQL 16) |
+| Rich text | Payload Lexical editor |
+| Styling | Tailwind CSS 4, CSS modules and SCSS for admin customisation |
+| Animation | Motion |
+| Frontend typography | Inter, Cormorant Garamond and Allura |
+| CMS typography | DM Sans |
+| Email | Resend SDK + React Email |
+| Media | Sharp; optional AWS S3 / MinIO-compatible storage |
+| Testing | Vitest and Playwright |
+| Package manager | pnpm `11.12.0` |
 
 ## Requirements
 
-- Node.js `^22.23.4` or `>=24.22.1` (see `engines` in `package.json`)
-- pnpm 11 (`corepack enable`)
-- PostgreSQL 14 or later (16 recommended)
-- Optional: a Resend account, and MinIO or S3 for persistent media in production
+For a **local installation using pnpm**, install:
 
-## Local setup
+- **Git** and a terminal.
+- **Node.js** `^22.23.4` or `>=24.22.1`, as required by `package.json` (Node `22.23.4` is a matching choice).
+- **pnpm `11.12.0`**, preferably managed through Corepack.
+- **PostgreSQL**, either directly or via Docker Desktop (Docker is recommended for the database).
+- An available **port 3000** for the application and **5432** for the bundled database.
+
+Resend and S3/MinIO accounts are **optional for initial local development**.
+
+Confirm your tooling:
 
 ```bash
-# 1. Install dependencies
-pnpm install
+node --version
+pnpm --version
+git --version
+docker --version       # only if using Docker
+docker compose version # only if using Docker Compose
+```
 
-# 2. Configure environment
-cp .env.example .env          # then edit DATABASE_URL, PAYLOAD_SECRET, APP_URL
-openssl rand -hex 32          # use the output as PAYLOAD_SECRET
+If pnpm is not installed, enable Corepack:
 
-# 3. Create a database (pick one)
-createdb arthanova_cms                       # local PostgreSQL
-docker compose up -d postgres                # or the bundled container
+```bash
+corepack enable
+corepack prepare pnpm@11.12.0 --activate
+pnpm --version
+```
 
-# 4. Start the app
+If `corepack` is unavailable, install Corepack for your Node installation first (`npm install -g corepack`), then repeat the commands above.
+
+---
+
+## Quick start (recommended)
+
+**Recommended development setup:** run Next.js/Payload directly on your computer and PostgreSQL in Docker. These instructions work on macOS, Linux and Windows terminals with the relevant tooling installed.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/Rusz01/cherry-blossom-garden-backend.git
+cd cherry-blossom-garden-backend
+```
+
+### 2. Install dependencies
+
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+```
+
+Use **pnpm**, not npm, for the normal development workflow. Both `pnpm-lock.yaml` and `package-lock.json` exist in the repository; the pnpm lockfile is the intended dependency source for these instructions.
+
+### 3. Create the environment file
+
+```bash
+cp .env.example .env
+openssl rand -hex 32
+```
+
+Open `.env` and replace `PAYLOAD_SECRET` with the value generated by the second command. For the first local run, check or change these values:
+
+```dotenv
+# PostgreSQL running in Docker, with Next.js running on your computer
+DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/arthanova_cms
+DATABASE_SSL=disable
+PAYLOAD_DB_PUSH=true
+
+# Paste your own output from: openssl rand -hex 32
+PAYLOAD_SECRET=YOUR_GENERATED_RANDOM_SECRET
+
+APP_URL=http://localhost:3000
+WEBSITE_URL=http://localhost:3000
+
+# Write email messages to local files rather than sending them
+EMAIL_DEV_OUTBOX=true
+EMAIL_FROM_NAME=Cherry Blossom Garden
+
+# Optional services are off for local development
+S3_ENABLED=false
+JOBS_AUTORUN=true
+```
+
+The database name `arthanova_cms` is intentionally retained here because it is already configured in the supplied `docker-compose.yml`. It is an **internal legacy name**, not the website's brand. You can rename it later by updating the database, Compose configuration and connection string together.
+
+> [!IMPORTANT]
+> Do not commit `.env`, real database credentials, API keys or your Payload secret. Keep `APP_URL` consistent with the origin you use to access the CMS; it is also used by preview and email links.
+
+### 4. Start PostgreSQL
+
+```bash
+docker compose up -d postgres
+```
+
+Verify it is healthy:
+
+```bash
+docker compose ps
+docker compose logs postgres --tail=30
+```
+
+The bundled Compose service creates the `arthanova_cms` database with the development-only `postgres` / `postgres` credentials. Do **not** use these credentials for production.
+
+**Without Docker:** install PostgreSQL locally, create a database named `arthanova_cms`, create a login with access to it, then set `DATABASE_URL` to that login and host. For example, with an existing local PostgreSQL role that can create databases:
+
+```bash
+createdb arthanova_cms
+```
+
+### 5. Start the application
+
+```bash
 pnpm dev
 ```
 
-Open <http://localhost:3000/admin>. On an empty database, Payload shows **Create first user**. That account automatically becomes the active, verified **Administrator**. Any role or status submitted on that form is ignored by the server.
+Payload connects to PostgreSQL and, in development, can automatically push the required schema when `PAYLOAD_DB_PUSH=true`.
 
-> **No Resend key yet?** Set `EMAIL_DEV_OUTBOX=true`. Emails are then written to `./.dev-outbox/` as HTML and text and are never sent. This lets you click invitation and reset links locally.
+| Destination | Local URL |
+| --- | --- |
+| Website | http://localhost:3000 |
+| Payload admin | http://localhost:3000/admin |
+| Payload REST API | http://localhost:3000/api |
+| GraphQL endpoint | http://localhost:3000/api/graphql |
+| Explore floor | http://localhost:3000/explore/ground-floor |
 
-## PostgreSQL
+### 6. Create the first Administrator
 
-The adapter is configured in `src/payload.config.ts`, and its connection options come from `src/lib/env.ts`.
+Visit **http://localhost:3000/admin**. On a fresh database, create the first user with your name, email and a strong password. The application's bootstrap logic assigns the protected **Administrator** role automatically.
 
-| Variable                              | Purpose                                             |
-| ------------------------------------- | --------------------------------------------------- |
-| `DATABASE_URL`                        | `postgres://user:password@host:5432/database`       |
-| `DATABASE_SSL`                        | `disable` (local), `require`, or `verify-full`      |
-| `DATABASE_SSL_CA`                     | CA certificate (PEM or base64) for `verify-full`    |
-| `DATABASE_POOL_MAX`                   | Pool size (default 10)                              |
-| `DATABASE_POOL_*_MS`                  | Idle and connection timeouts                        |
+You can now sign in, manage media and edit content. With `EMAIL_DEV_OUTBOX=true`, any emails generated by local account workflows are written to `.dev-outbox/` rather than sent.
 
-- **Development**: Payload *pushes* schema changes automatically (`PAYLOAD_DB_PUSH=true`). Push is never used when `NODE_ENV=production`.
-- **Production**: apply versioned migrations from `src/migrations`.
+### 7. Publish the Homepage content
+
+Open **Admin → Globals → Homepage** (the precise navigation grouping may vary with admin configuration). Review the populated field defaults, make a small change and publish. Visit `/` to see the published content, or use the editor's Live Preview while making changes.
+
+The frontend also includes hardcoded fallback content, so a fresh website can display before the Homepage global is published.
+
+### 8. Seed the three Explore Pages (recommended)
+
+Leave `pnpm dev` running. In another terminal, from the repository root, run:
 
 ```bash
-pnpm migrate:create my-change   # after changing collections/fields
-pnpm migrate                    # apply pending migrations
-pnpm migrate:status
+pnpm exec tsx scripts/seed-explore-pages.ts
 ```
 
-The initial migration (`src/migrations/20261106_205953_initial.ts`) creates the full schema.
+The script adds and publishes the three floor records **only if they do not already exist**:
 
-> If you used push mode against a database, don't run migrations against that same database later. Use a fresh database for migration-managed environments.
-
-**Dokploy / VPS**: create a PostgreSQL service, then set `DATABASE_URL` to its internal hostname. Use `DATABASE_SSL=verify-full` with `DATABASE_SSL_CA` when connecting over a public network. Run `pnpm migrate` before (or as part of) each deploy.
-
-The database is only ever accessed on the server, through Payload's Local API or REST/GraphQL with access control. No client component talks to it.
-
-## Email with Resend
-
-### Setup
-
-1. Create an API key at <https://resend.com/api-keys> (a sending-only key is enough). Set `RESEND_API_KEY`.
-2. **Verify a sending domain** under *Domains*. Add the DNS records Resend shows (SPF/MX, DKIM, and ideally DMARC), then wait for *Verified*. A subdomain such as `mail.arthanovastudio.com` is recommended.
-3. Set `EMAIL_FROM_ADDRESS` to an address on that domain (for example `no-reply@mail.arthanovastudio.com`). Set `EMAIL_FROM_NAME=Arthanova Studio` and `EMAIL_REPLY_TO`.
-4. Set `APP_URL` to the **public** URL. Links in emails and the logo image use it.
-
-Until the domain is verified, Resend only delivers to your own account address.
-
-### Architecture
-
-```
-template (React Email) ─▶ renderEmail() ─▶ payload.sendEmail()
-                                              │
-Payload auth emails (reset / verify) ─────────┤
-                                              ▼
-                               arthanovaEmailAdapter (src/email/adapter.ts)
-                               • Resend SDK (tags, idempotency keys)
-                               • writes Email Logs (no bodies/tokens)
-                               • dev outbox / "not configured" handling
-```
-
-Every email, including Payload's built-in forgot-password and verification emails, goes through one Payload `EmailAdapter`. The official `@payloadcms/email-resend` adapter isn't used because it drops Resend **tags** and **idempotency keys**. The adapter uses the Resend SDK directly instead.
-
-### Emails
-
-| Email | Trigger | Failure behaviour |
-| --- | --- | --- |
-| **Welcome** | First-admin bootstrap; account activation | Non-critical. The failure is logged and the account stays valid. |
-| **Account invitation** | An Administrator creates a user | Critical. The user is **not created** if delivery fails, so no half-provisioned accounts exist. |
-| **Email verification** | A user created without an admin context (for example by a script) | Critical (same as invitation) |
-| **Password reset** | Payload forgot-password | Critical. The API returns an error and no false "sent" message is shown. |
-
-- Plain-text versions are generated for every email.
-- Passwords are never emailed.
-- Reset links expire after **1 hour**, and Payload rate-limits reset requests.
-- Activation links expire after **7 days** and can be used once.
-- Tokens are never logged.
-- **Previews:** `pnpm email:preview` writes every template to `.email-previews/` and sends nothing.
-
-### Email Logs
-
-Administrators can see *Administration → Email logs*: category, recipient, subject, related user ID, timestamp, status, Resend message ID and a sanitised error.
-
-> **"Submitted" means Resend accepted the email, not that it was delivered.** Delivery and bounce tracking would need verified Resend webhooks, which aren't implemented.
-
-## Users, roles and permissions
-
-### Model
-
-- **Administrator** is a protected system role (`slug: administrator`). It is seeded on every start, can't be edited or deleted, and has access to everything.
-- **Custom roles** have a name, description and an auto-generated, immutable slug. They grant permissions per collection (read, create, update, delete) and per global (read, update). Each role also shows its assigned users.
-- **Users** have a name, email, role, status (active or suspended) and timestamps. Anyone with CMS access can edit their own name, email and password.
-
-### Account lifecycle
-
-1. **Bootstrap.** The first user to register becomes the Administrator and is auto-verified. A welcome email is sent.
-2. **Invite.** An Administrator creates a user. The password typed into the form is never shared. The user receives an invitation with a single-use activation link.
-3. **Activate.** `/account/activate/:token` verifies the email (via Payload's `verifyEmail`). It then issues a standard Payload reset token and redirects to Payload's own *set password* screen.
-4. **Resend.** On an unactivated user, Administrators can click **Resend activation email**. This invalidates the old link.
-
-### Protections (enforced on the server; covered by tests)
-
-- Only Administrators can create or delete users, assign roles, change status, or manage roles and Email Logs.
-- Field-level access strips `role` and `status` from non-admin requests, so a user can't promote themselves through the API.
-- The last active Administrator can't be demoted, suspended or deleted. No one can suspend or delete their own account.
-- Reserved role slugs are rejected (`admin`, `super-admin`, `root`, …). Duplicate permission entries are rejected.
-- A role that is assigned to users can't be deleted.
-- Suspended users can't sign in and lose every permission immediately, even with a live session.
-- Drafts and version history are never readable by anonymous visitors.
-
-### Adding a new collection or global to RBAC
-
-Create the config with `buildCollectionAccess('slug')` or `buildGlobalAccess('slug')` from `@/access`. Add it to `contentCollections` or `contentGlobals` in `src/payload.config.ts`. It then appears automatically in the role editor.
-
-## Admin customisation
-
-Brand values come from arthanovastudio.com's production CSS: ink `#1e1e1e`, blue `#3b82f6`, gray `#f5f5f5`, muted `#555`, and DM Sans (the typeface of the website's headings and text). The admin applies them with restraint:
-
-- **Two-tone structure.** Brand gray is used for chrome (the sidebar and auth canvas). White "paper" is used for work. The current page in the sidebar sits on paper, so it visibly connects to the content it opens.
-- **Hairlines over cards.** Sections are separated by rules, not floating boxes. Shadows appear only on things that float: menus, modals and toasts.
-- **One shape scale.** 4px for marks such as checkboxes and tags, 6px for controls, 8px for containers. No pill shapes in the admin.
-- **Functional colour.** Blue marks focus, links and the current location. Status uses one small dot (green published, amber unpublished changes, red failed), and the text stays neutral.
-- **One typeface.** DM Sans throughout, exposed as `--font-heading` for headings. Page titles are 26px semibold with slight negative tracking (22px on mobile). Text uses a 12/13/14/16 scale with tabular figures for numbers and dates. Email templates keep their own serif heading stack.
-- **Dashboard as a workspace.** It has a heading row with the primary action, one ruled strip of figures with context, a ledger of recently edited pages, and a quiet aside with shortcuts and email activity.
-
-| Location | What it does |
+| CMS floor identifier | Public route |
 | --- | --- |
-| `src/styles/admin/_tokens.scss` | Design tokens (colour, type, spacing, radius, shadow, motion) for light and dark |
-| `src/styles/admin/_payload.scss` | Maps tokens onto Payload's own CSS variables |
-| `src/styles/admin/_components.scss` | Buttons, inputs, tables, tabs, popups, modals, toasts, uploads |
-| `src/styles/admin/_nav.scss` / `_nav-icons.scss` | Sidebar. Icons are generated by `pnpm generate:nav-icons`. |
-| `src/styles/admin/_auth.scss` | Login, forgot/reset, create-first-user |
-| `src/styles/admin/_dashboard.scss` | Dashboard |
-| `src/components/admin/*` | Logo, Icon, BeforeLogin/AfterLogin, NavBrand, NavAccount, LogoutButton, Dashboard, ResendActivation, RowLabels, BrandFonts |
+| `ground-floor` | `/explore/ground-floor` |
+| `first-floor` | `/explore/dining-entertainment` |
+| `rooftop` | `/explore/rooftop-bbq-events` |
 
-Payload's own navigation is kept and restyled, so permissions, grouping, collapsible groups, saved preferences and the mobile drawer all keep working. Focus rings are visible, and `prefers-reduced-motion` is respected.
+Manage them under **Admin → Collections → Explore Pages**. The seeder keeps existing records unchanged; it does not overwrite editorial work.
 
-Brand assets live in `public/brand/` and were copied unmodified from the official files. `public/favicon.png` and `public/apple-touch-icon.png` are resized copies of the brand mark.
+**Local setup is complete.** You should now have a working website, CMS login, database and editable Homepage/Explore content.
 
-## Drafts, publishing and preview
+---
 
-- **Drafts and autosave**: Pages autosave every 2 seconds while you edit. Up to 50 versions are kept per document. Versions can be compared and restored.
-- **Publish and unpublish**: use the Publish button. `publishedAt` is set on the first publish.
-- **Scheduled publishing**: use the arrow next to Publish and choose *Schedule*. This needs the job queue. With `JOBS_AUTORUN=true` (the default), it runs in-process every minute. On serverless hosts, set `JOBS_AUTORUN=false` and have a cron call `POST /api/payload-jobs/run` with `Authorization: Bearer $CRON_SECRET`.
-- **Preview**: the eye-and-arrow button opens `/next/preview?path=/slug`. That route checks the Payload session cookie and the user's `pages.read` permission, enables Next.js draft mode and redirects. No shared secret appears in URLs. A banner offers *Exit preview*.
-- **Live preview**: use the *Live Preview* toggle in the editor. The iframe re-renders on every save or autosave using `RefreshRouteOnSave`. Drafts are fetched on the server with the editor's own permissions.
-- Draft pages are marked `noindex`. Anonymous requests never receive drafts, including requests with `?draft=true`.
+## Alternative: run the application with Docker Compose
 
-**Homepage**: publish a page with the slug `home` to replace the starter screen at `/`.
+The repository's **`docker-compose.yml` development stack** runs the app using the Node image, plus PostgreSQL. This is different from its standalone production `Dockerfile`.
+
+1. Clone the repository and create `.env` as described above.
+2. Set `DATABASE_URL=postgres://postgres:postgres@postgres:5432/arthanova_cms` in `.env`. The hostname is **`postgres`**, because the app now runs **inside** the Compose network.
+3. Set `PAYLOAD_SECRET`, `APP_URL=http://localhost:3000` and `EMAIL_DEV_OUTBOX=true`.
+4. Start the services:
+
+```bash
+docker compose up -d
+docker compose logs -f payload
+```
+
+5. Visit `http://localhost:3000/admin` and create the first Administrator.
+6. Once the app has initialised its schema, seed Explore content from the app container:
+
+```bash
+docker compose exec payload pnpm exec tsx scripts/seed-explore-pages.ts
+```
+
+Stop the development stack with `docker compose down`. To start optional MinIO as well, use `docker compose --profile minio up -d`. Its console is exposed on `http://localhost:9001` with the **development-only** credentials from `docker-compose.yml`; a bucket must still be created and S3 variables configured before Payload can use it.
+
+> [!CAUTION]
+> `docker compose down -v` deletes named volumes, including the development PostgreSQL data. Do not run it if you need to keep the data.
+
+## Application routes
+
+| Route | Purpose | Content source |
+| --- | --- | --- |
+| `/` | Homepage | Payload `homepage` global with local defaults |
+| `/about` | About Cherry Blossom Garden | Frontend components |
+| `/experiences` | Experiences and events | Frontend components |
+| `/explore/[slug]` | Three floor showcases | Payload `explore-pages` with local defaults |
+| `/menu` | Food and drinks | `src/data/menu.ts` and `src/data/specials.ts` |
+| `/gallery` | Photography gallery | Frontend gallery data/components |
+| `/kids-play` | Children's play area | Frontend components |
+| `/reservation` | Reservation and contact page | Frontend components |
+| `/privacy-policy` | Privacy policy | Frontend page |
+| `/admin` | Payload CMS | Payload |
+| `/api/*` | Payload REST API | Payload |
+| `/api/graphql` | GraphQL | Payload |
+| `/robots.txt` | Robots directives | SEO global and route handler |
+| `/sitemap.xml` | Sitemap | SEO global and route handler |
+
+The presence of a website form or interface does **not** by itself establish a working external booking, payment, newsletter or marketing integration. Verify such workflows before enabling production traffic.
+
+## Content management
+
+### Collections
+
+| Collection | Slug | Use |
+| --- | --- | --- |
+| Explore Pages | `explore-pages` | Editable content for three floor experiences |
+| Pages | `pages` | Reusable block-based page data; generic frontend routing remains to be implemented |
+| Media | `media` | Images, PDFs and supported videos |
+| Users | `users` | CMS accounts, role assignment and account status |
+| Roles | `roles` | Custom access-control policies |
+| Email Logs | `email-logs` | Send attempt statuses and operational history |
+
+### Globals
+
+| Global | Slug | Use |
+| --- | --- | --- |
+| Homepage | `homepage` | Home page sections and images |
+| Site settings | `site-settings` | Site name, logos, contact details, social links |
+| Navigation | `navigation` | Header and footer link configuration |
+| SEO settings | `seo-settings` | Indexing, canonical defaults, social metadata |
+
+**Homepage sections:** Hero, Our Story, Three Levels, Experiences, Signature Cuisine, Kids Play Area, Gallery and Garden Journal.
+
+**Explore fields:** floor ID, public slug, page title, navigation labels, SEO description, carousel slides (images, copy, CTA, layout tone) and decorative labels. The floor ID is unique and cannot be changed after creation.
+
+**Reusable `pages` blocks:** Hero, Rich Text, Image, Image and Text, Call to Action, Feature Grid, FAQ, Testimonials and Gallery. The block schema is implemented, but adding entries to this collection does not automatically create a public page route in the current frontend.
+
+### Drafts and previews
+
+1. Sign in at `/admin` and open **Homepage** or **Explore Pages**.
+2. Edit text and/or choose an uploaded media file. Existing local images are available as fallbacks.
+3. Use **Live Preview** to inspect changes on mobile, tablet or desktop widths.
+4. Use **Preview** for an authenticated draft page view where supported.
+5. **Publish** to show the CMS version publicly. Unpublished content should not be treated as publicly available.
+
+Relevant implementation files:
+
+```text
+src/globals/Homepage.ts
+src/collections/ExplorePages.ts
+src/lib/homepage/defaults.ts
+src/lib/explore/defaults.ts
+src/lib/explore/get-pages.ts
+src/components/frontend/homePage/HomeContentProvider.tsx
+src/components/frontend/explore/ExploreContent.tsx
+src/app/(frontend)/next/preview/route.ts
+src/app/(frontend)/next/explore-preview/route.ts
+src/app/(frontend)/next/explore-live/page.tsx
+```
+
+The generic `Pages` collection also supports drafts, version history, autosave and scheduled publishing at the CMS level, but its older preview URL implementation is not wired to a general-purpose page-rendering route in this repository.
+
+### Roles and access
+
+- The **Administrator** system role is created automatically when Payload initialises.
+- The first account receives Administrator privileges.
+- Administrators can manage users, roles and Email Logs.
+- Custom roles specify per-collection read/create/update/delete permissions and per-global read/update permissions.
+- The server protects the last active Administrator against accidental removal or suspension.
+- Suspended users cannot authenticate; role and field permissions are enforced on server-side operations.
+- New invited users must complete the activation flow before signing in.
+
+When adding a collection or global, use the helpers under `src/access/` and register the configuration in `src/payload.config.ts` so it appears in the Roles permission editor.
+
+## Database and migrations
+
+This project uses `@payloadcms/db-postgres`. It supports two different schema workflows:
+
+| Environment | Recommended workflow |
+| --- | --- |
+| Disposable local development | `PAYLOAD_DB_PUSH=true` and `pnpm dev` |
+| Staging and production | Versioned migrations with `PAYLOAD_DB_PUSH=false` |
+
+Available commands:
+
+```bash
+pnpm migrate:status
+pnpm migrate
+pnpm migrate:create
+pnpm generate:types
+pnpm generate:importmap
+```
+
+> [!IMPORTANT]
+> **Migration gap at the currently reviewed revision:** the committed initial migration (`src/migrations/20261106_205953_initial.ts`) predates the newer `homepage` global and `explore-pages` collection; it does **not** include their database schema. Local development can create those tables through schema push, but **do not assume the existing migration alone is sufficient for production**. Before deploying, generate, review and commit a follow-up migration using a **separate migration-managed database** (`PAYLOAD_DB_PUSH=false`), then apply all migrations to production. Never point a production migration at a database that was already changed unpredictably by development push.
+
+A safe migration development process is: create a fresh *non-production* database, run the committed initial migration with push disabled, generate a new migration for the new models, review it, then apply and test it. Back up an existing database before changing its schema.
 
 ## Environment variables
 
-See [`.env.example`](./.env.example) for every variable with comments. Summary:
+Start from [`.env.example`](./.env.example). Every secret and connection string is read server-side.
 
-| Variable | Required | Notes |
+| Variable | Purpose | Local example / default |
 | --- | --- | --- |
-| `DATABASE_URL` | **Yes** | Must be `postgres://…` |
-| `PAYLOAD_SECRET` | **Yes** | At least 32 characters in production (`openssl rand -hex 32`) |
-| `APP_URL` | **Yes** (prod) | Public URL; defaults to `http://localhost:3000` |
-| `RESEND_API_KEY`, `EMAIL_FROM_ADDRESS` | To send email | Without them, nothing is sent and critical flows return an error |
-| `EMAIL_FROM_NAME`, `EMAIL_REPLY_TO`, `EMAIL_SUPPORT_ADDRESS` | Optional | Default name: "Arthanova Studio" |
-| `EMAIL_DEV_OUTBOX`, `EMAIL_OVERRIDE_RECIPIENT` | Optional | Dev outbox; staging redirect |
-| `WEBSITE_URL` | Optional | Defaults to `https://arthanovastudio.com` |
-| `DATABASE_SSL*`, `DATABASE_POOL_*`, `PAYLOAD_DB_PUSH` | Optional | See [PostgreSQL](#postgresql) |
-| `JOBS_AUTORUN`, `JOBS_AUTORUN_CRON`, `CRON_SECRET` | Optional | Scheduled publishing |
-| `S3_*` | Optional | See [Production](#production) |
-| `TEST_DATABASE_URL` | Tests | A disposable database whose name ends in `_test` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgres://postgres:postgres@127.0.0.1:5432/arthanova_cms` |
+| `PAYLOAD_SECRET` | Payload signing/encryption secret | Generate with `openssl rand -hex 32` |
+| `APP_URL` | Application base URL for CMS, previews and emails | `http://localhost:3000` |
+| `WEBSITE_URL` | Public website link used by admin/email features | Override the template's Arthanova URL |
+| `DATABASE_SSL` | SSL mode: `disable`, `require`, `verify-full` | `disable` locally |
+| `DATABASE_SSL_CA` | CA certificate if needed | Empty locally |
+| `DATABASE_POOL_MAX` | Maximum database connections | `10` |
+| `DATABASE_POOL_IDLE_TIMEOUT_MS` | Pool idle timeout | `30000` |
+| `DATABASE_POOL_CONNECTION_TIMEOUT_MS` | Connection timeout | `10000` |
+| `PAYLOAD_DB_PUSH` | Auto-sync schema in development | `true` locally, `false` for migration-managed environments |
+| `RESEND_API_KEY` | Resend API credential | Leave empty for local outbox mode |
+| `EMAIL_FROM_NAME` | Display sender | `Cherry Blossom Garden` (set explicitly) |
+| `EMAIL_FROM_ADDRESS` | Verified sender address | Required for real sending |
+| `EMAIL_REPLY_TO` | Reply-to address | Optional |
+| `EMAIL_SUPPORT_ADDRESS` | Support address shown in emails | Optional |
+| `EMAIL_DEV_OUTBOX` | Capture messages under `.dev-outbox/` in development | `true` |
+| `EMAIL_OVERRIDE_RECIPIENT` | Redirect outbound email to a test address | Optional staging safeguard |
+| `JOBS_AUTORUN` | Run Payload jobs in this Node process | `true` |
+| `JOBS_AUTORUN_CRON` | Job polling cron expression | `* * * * *` |
+| `CRON_SECRET` | Protect external scheduled-job endpoint | Set if triggering jobs externally |
+| `S3_ENABLED` | Enable S3-compatible media storage | `false` |
+| `S3_BUCKET` | Object-storage bucket | Required when S3 is enabled |
+| `S3_ENDPOINT` | S3-compatible endpoint (such as MinIO) | Optional for AWS S3 |
+| `S3_REGION` | Storage region | `us-east-1` |
+| `S3_ACCESS_KEY_ID` | Storage access key | Required when S3 is enabled |
+| `S3_SECRET_ACCESS_KEY` | Storage secret | Required when S3 is enabled |
+| `S3_FORCE_PATH_STYLE` | Path-style URLs, typically for MinIO | `true` |
+| `S3_PREFIX` | Optional object prefix | Empty |
+| `S3_SIGNED_DOWNLOADS` | Redirect downloads to signed URLs | `false` |
+| `S3_SIGNED_URL_EXPIRES_IN` | Signed URL lifetime, seconds | `3600` |
+| `TEST_DATABASE_URL` | **Disposable** database for integration tests | Must end in `_test` |
 
-## Commands
+The runtime also accepts `NEXT_PUBLIC_SERVER_URL` as a fallback when `APP_URL` is unset. Prefer setting `APP_URL` explicitly.
+
+### Email with Resend
+
+For actual outbound emails:
+
+1. Verify a sending domain in [Resend](https://resend.com/).
+2. Create a Resend API key and set `RESEND_API_KEY`.
+3. Set `EMAIL_FROM_ADDRESS` to an address on the verified domain.
+4. Set `EMAIL_FROM_NAME`, `EMAIL_REPLY_TO` and the correct public `APP_URL`.
+5. Turn `EMAIL_DEV_OUTBOX=false` for actual sending, then test invitation and password-reset flows.
+
+The custom adapter lives in `src/email/adapter.ts`. It uses the Resend SDK, logs message attempts in Payload and supports a local capture mode. **A provider-accepted email is not proof of final inbox delivery.**
+
+Preview email templates without sending anything:
+
+```bash
+pnpm email:preview
+```
+
+Rendered HTML and text output is stored under `.email-previews/`.
+
+### Optional media storage: S3 / MinIO
+
+For the first local run, leave `S3_ENABLED=false`. Local uploads are stored in the application's `media` directory; keep that directory persistent in deployment environments.
+
+For S3-compatible storage, create the bucket first and configure:
+
+```dotenv
+S3_ENABLED=true
+S3_BUCKET=cherry-blossom-media
+S3_ENDPOINT=https://s3.example.com
+S3_REGION=us-east-1
+S3_ACCESS_KEY_ID=YOUR_ACCESS_KEY
+S3_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
+S3_FORCE_PATH_STYLE=true
+```
+
+For AWS S3, omit the custom endpoint and configure the relevant region. Ensure the storage credentials have the required permissions. Keep credentials server-side and use a durable bucket for production uploads.
+
+## Developer commands
 
 | Command | Description |
 | --- | --- |
-| `pnpm dev` | Development server |
-| `pnpm build` / `pnpm start` | Production build and serve |
-| `pnpm generate:types` | Regenerate `src/payload-types.ts` |
-| `pnpm generate:importmap` | Regenerate the admin component import map |
-| `pnpm generate:nav-icons` | Regenerate sidebar icon CSS |
-| `pnpm migrate`, `migrate:create`, `migrate:status` | Database migrations |
-| `pnpm email:preview` | Render all email templates to `.email-previews/` |
-| `pnpm typecheck` / `pnpm lint` | TypeScript and ESLint |
-| `pnpm check` | Types, import map, typecheck, lint and integration tests |
+| `pnpm dev` | Start development server |
+| `pnpm devsafe` | Clear `.next` and start development server (Unix-like shells) |
+| `pnpm build` | Build production application |
+| `pnpm start` | Run an existing production build |
+| `pnpm typecheck` | Run TypeScript checks |
+| `pnpm lint` | Run ESLint |
+| `pnpm generate:types` | Regenerate Payload-generated TypeScript types |
+| `pnpm generate:importmap` | Rebuild Payload admin import map |
+| `pnpm generate:nav-icons` | Rebuild admin sidebar icon styles |
+| `pnpm migrate` | Apply pending database migrations |
+| `pnpm migrate:status` | Show migration status |
+| `pnpm migrate:create` | Generate a migration for schema changes |
+| `pnpm email:preview` | Render sample email HTML/text to disk |
+| `pnpm test:int` | Run integration tests |
+| `pnpm test:e2e` | Run Playwright E2E tests |
+| `pnpm test` | Run integration and E2E suites |
+| `pnpm check` | Regenerate types/import map, typecheck, lint and run integration tests |
 
 ## Testing
 
+### Integration tests (Vitest)
+
+**Warning:** integration tests **drop and recreate the `public` schema** of `TEST_DATABASE_URL` on every run. Use a disposable database whose name ends in `_test`. Never point this variable at production or any database you need to retain.
+
+When using the bundled PostgreSQL container:
+
 ```bash
-createdb arthanova_cms_test
-TEST_DATABASE_URL=postgres://localhost:5432/arthanova_cms_test pnpm test:int
-pnpm test:e2e   # starts/reuses `pnpm dev` on :3000; DATABASE_URL must point at a dev database
-# or test a server that is already running elsewhere (no dev server is started):
-E2E_BASE_URL=http://localhost:3001 pnpm test:e2e
+docker compose exec postgres createdb -U postgres arthanova_cms_test
 ```
 
-- **Integration tests** (`tests/int`) wipe and recreate the `public` schema of `TEST_DATABASE_URL` on every run. They refuse to run unless the database name ends in `_test`. The Resend SDK is **mocked**, so no email can be sent. The tests drive the real REST API and cover:
-  - bootstrap
-  - role protections
-  - invitation and activation
-  - privilege-escalation attempts
-  - global and collection permissions
-  - draft isolation
-  - last-admin safeguards and suspension
-  - the password-reset flow and failures
-  - template rendering
-  - the "not configured" adapter path
-- **E2E tests** (`tests/e2e`) seed an Administrator (emails suppressed) and check the login, dashboard, sidebar, users and frontend.
+Check `.env` includes:
 
-## Production
+```dotenv
+TEST_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/arthanova_cms_test
+```
 
-- Set `NODE_ENV=production`, a strong `PAYLOAD_SECRET`, a public `APP_URL` and `DATABASE_SSL`. Run `pnpm migrate` and then `pnpm build && pnpm start`.
-- **Media persistence**: local uploads go to `./media`. That folder is lost on redeploy unless it is mounted as a persistent volume. For durable storage, enable S3 or MinIO:
-  ```env
-  S3_ENABLED=true
-  S3_BUCKET=arthanova-media
-  S3_ENDPOINT=https://minio.yourdomain.com   # omit for AWS S3
-  S3_REGION=us-east-1
-  S3_ACCESS_KEY_ID=…
-  S3_SECRET_ACCESS_KEY=…
-  S3_FORCE_PATH_STYLE=true                    # MinIO
-  ```
-  The bucket can stay **private**. Files are proxied through `/api/media/file/*` so access control still applies. Set `S3_SIGNED_DOWNLOADS=true` to redirect to short-lived pre-signed URLs instead. Credentials stay on the server.
-- **Docker**: the included `Dockerfile` expects `output: 'standalone'` in `next.config.ts`. It also prefers `package-lock.json` when that file exists. This project uses pnpm, so remove the stale `package-lock.json` (or adjust the Dockerfile) before using it.
-- **Search indexing** is **off** by default (`SEO settings → Indexing`). Turn it on for the live site.
-- **Scheduled publishing** needs either a long-running server (`JOBS_AUTORUN=true`) or an external cron (see above).
+Then run:
+
+```bash
+pnpm test:int
+```
+
+### Browser tests (Playwright)
+
+Install the required browser, then run tests against your **development** database:
+
+```bash
+pnpm exec playwright install chromium
+pnpm test:e2e
+```
+
+Playwright starts or reuses a development server at `http://localhost:3000`. You can set `E2E_BASE_URL` to an existing server URL instead. E2E tests create and remove a test admin user, so do not run them against a production database.
+
+```bash
+pnpm typecheck
+pnpm lint
+```
+
+## Production and deployment
+
+For a **long-running Node deployment** (VPS/Dokploy, for example):
+
+1. Provision a secure PostgreSQL database and persistent storage or S3/MinIO bucket.
+2. Configure all production environment variables, especially `DATABASE_URL`, `PAYLOAD_SECRET`, `APP_URL` and an appropriate `DATABASE_SSL` mode.
+3. Generate and commit any missing database migrations, including the Homepage/Explore schema described above.
+4. Back up the database; run `pnpm install --frozen-lockfile`, then `pnpm migrate` against the production database.
+5. Build and launch the service:
+
+```bash
+pnpm build
+pnpm start
+```
+
+6. Configure HTTPS, DNS, health monitoring, backups and persistent media storage. Set `APP_URL` to the final HTTPS origin.
+7. Configure verified Resend credentials if user invitations and password-reset emails will be used.
+8. Configure scheduled jobs for the hosting model; for a persistent process `JOBS_AUTORUN=true` can run the Payload job queue. Serverless setups require a suitable external job trigger and `CRON_SECRET`.
+9. Review **SEO settings → Allow search engines to index this site** when the public site is ready; indexing defaults to off.
+10. Test login, content publishing, uploads, the public frontend, preview and account-email workflows after deployment.
+
+### Dockerfile caveat
+
+The **included production `Dockerfile` is not ready to run unchanged**: it expects Next.js `output: 'standalone'`, but that setting is absent from `next.config.ts`. It also prioritises `package-lock.json` over `pnpm-lock.yaml`, which can select npm unexpectedly. Before deploying through that Dockerfile, align its dependency-install steps with pnpm and add/test the required standalone output configuration. The development `docker-compose.yml` flow described above does **not** depend on this Dockerfile.
 
 ## Troubleshooting
 
-| Symptom | Fix |
+| Symptom | What to check |
 | --- | --- |
-| `DATABASE_URL must be a PostgreSQL connection string` | `.env` still holds a MongoDB or placeholder URL. Use `postgres://…`. |
-| `PAYLOAD_SECRET must be at least 32 characters in production` | Generate a new secret with `openssl rand -hex 32`. Changing it signs out every user. |
-| "Email delivery is not configured" when inviting a user or resetting a password | Set `RESEND_API_KEY` and `EMAIL_FROM_ADDRESS`, or use `EMAIL_DEV_OUTBOX=true` locally. |
-| Resend error *domain not verified* | Finish domain verification in Resend, or send only to your own account address while testing. |
-| Logo missing in emails | `APP_URL` must be publicly reachable. `localhost` images don't load in real inboxes. |
-| An invited user can't log in | They must activate first. Use **Resend activation email** on their user record. |
-| A scheduled publish didn't happen | The job queue isn't running. Check `JOBS_AUTORUN` or your cron. |
-| Admin shows a missing-component error | Run `pnpm generate:importmap`. |
-| The dev server pushes schema to a migrated database | Set `PAYLOAD_DB_PUSH=false`, or use separate databases. |
-| Sidebar hidden on first visit | Click the menu button. Payload remembers the open or closed state for each user. |
+| `pnpm: command not found` | Enable Corepack and activate pnpm `11.12.0`. |
+| Unsupported Node version | Match the `engines.node` requirement in `package.json`. |
+| Database connection refused | Confirm Postgres is running, credentials match and port `5432` is not blocked. |
+| Hostname `postgres` not found | Use `127.0.0.1` when Next.js runs on your computer; use `postgres` **inside Docker Compose**. |
+| Payload says `PAYLOAD_SECRET` is missing | Generate a secret and replace the placeholder in `.env`. |
+| Fresh database missing Homepage/Explore tables | In **local development**, enable `PAYLOAD_DB_PUSH=true`; for production, create/apply the missing migration. |
+| Existing migrations conflict with schema | Do not mix schema push and migrations against the same database without a carefully planned migration/baseline strategy. |
+| `/admin` shows missing custom components | Try `pnpm generate:importmap`, then restart the dev server. |
+| Changes do not appear on the public website | Check whether the content has been **published** and whether you are viewing draft/live preview. |
+| Explore pages visible but not editable in admin | Run `pnpm exec tsx scripts/seed-explore-pages.ts` once the local schema is ready. |
+| Email is not being sent | In development use `EMAIL_DEV_OUTBOX=true`; for real delivery configure Resend and a verified sender domain. |
+| Media disappears after redeploy | Persist `media/` or use configured S3/MinIO storage. |
+| `pnpm test:int` fails on database reset | Create a dedicated `_test` database and check `TEST_DATABASE_URL`. |
+| Docker build cannot find `server.js` | Fix the production Dockerfile/standalone output mismatch described above. |
+| Generic Pages preview returns an error | A catch-all Pages frontend route is not implemented; the existing preview handler is homepage-specific. |
 
 ## Project structure
 
+```text
+.
+├── public/                       # Logos, brand files, bundled photos and icons
+├── scripts/
+│   ├── seed-explore-pages.ts     # Creates the three editable floor records
+│   ├── render-emails.tsx         # Renders preview emails locally
+│   └── generate-nav-icons.mjs
+├── src/
+│   ├── access/                  # Permissions and role checks
+│   ├── app/
+│   │   ├── (frontend)/          # Website routes and preview endpoints
+│   │   ├── (payload)/           # Payload admin, REST API and GraphQL
+│   │   ├── robots.ts
+│   │   └── sitemap.ts
+│   ├── blocks/                  # Reusable CMS content block schemas
+│   ├── collections/             # ExplorePages, Pages, Media, Users, Roles, EmailLogs
+│   ├── components/
+│   │   ├── admin/               # Dashboard, branding and editor customisations
+│   │   └── frontend/            # Website sections and UI components
+│   ├── data/                    # Local menu and specials content
+│   ├── email/                   # Resend adapter and React Email templates
+│   ├── fields/                  # Common Payload fields
+│   ├── globals/                 # Homepage, Navigation, SiteSettings, SEOSettings
+│   ├── hooks/                   # Administrator role bootstrap
+│   ├── lib/                     # CMS access, defaults, env, SEO and helpers
+│   ├── migrations/              # PostgreSQL migrations
+│   ├── plugins/                 # Payload SEO plugin configuration
+│   ├── storage/                 # Optional S3/MinIO adapter
+│   ├── styles/admin/            # Custom admin styles
+│   └── payload.config.ts        # Payload application configuration
+├── tests/
+│   ├── int/                     # Vitest integration tests
+│   ├── e2e/                     # Playwright browser tests
+│   └── helpers/
+├── .env.example                 # Environment variable reference
+├── docker-compose.yml          # Local Payload + PostgreSQL (+ optional MinIO)
+├── Dockerfile                   # Production image template; see caveats above
+├── next.config.ts
+├── package.json
+└── pnpm-lock.yaml
 ```
-src/
-├─ access/              RBAC helpers (getUserRole, permissions, constants)
-├─ app/
-│  ├─ (frontend)/       starter page, [slug] renderer, preview routes, account activation
-│  ├─ (payload)/        Payload admin + API routes, custom.scss
-│  ├─ robots.ts, sitemap.ts
-├─ blocks/              reusable content blocks
-├─ collections/         Pages, Media, Users/, Roles, EmailLogs
-├─ components/
-│  ├─ admin/            branded admin components and dashboard
-│  └─ frontend/         block renderers, CMSLink, Media, LivePreviewListener…
-├─ email/               adapter, templates, auth email config, helpers
-├─ fields/              link and slug fields
-├─ globals/             SiteSettings, Navigation, SEOSettings
-├─ hooks/               seedAdministratorRole
-├─ lib/                 env, fonts, cms data access, seo, auth/activation
-├─ migrations/          PostgreSQL migrations
-├─ plugins/             SEO plugin configuration
-├─ storage/             optional S3/MinIO plugin
-└─ styles/admin/        admin design system (SCSS)
-scripts/                email previews, nav icon generator
-tests/                  int (Vitest) and e2e (Playwright)
+
+## Current implementation notes
+
+This section documents the code **as reviewed**, not a future-state roadmap:
+
+- **Template branding remains.** The package name is `arthanova-studio-backend`; admin metadata, logos, email templates, default website URL and some globals still reference Arthanova Studio. Review and rebrand these before public production use.
+- **CMS-backed frontend is selective.** Homepage and Explore Pages have explicit CMS connections and fallbacks. Menu/specials, gallery and other routes should not be described as fully CMS-driven yet.
+- **Generic Pages route is incomplete.** The reusable `pages` schema exists, but a generic route for those pages is not in the current repository; some generated sitemap links may therefore need review.
+- **Migration work remains.** The initial migration does not include the newer Homepage and Explore models. Add a versioned migration before using migration-managed deployment.
+- **Production Docker work remains.** `next.config.ts` does not enable `standalone` output, and the Dockerfile prioritises npm when both lockfiles exist.
+- **Integration verification is environment-dependent.** This README is based on source inspection; successful startup, build, database migration and test results must be confirmed in your environment.
+
+## Development workflow
+
+For normal feature work:
+
+```bash
+git pull origin main
+pnpm install --frozen-lockfile
+pnpm dev
 ```
+
+After changing Payload collections, globals or admin components, regenerate the relevant assets:
+
+```bash
+pnpm generate:types
+pnpm generate:importmap
+pnpm typecheck
+pnpm lint
+```
+
+Keep secrets out of Git, use feature branches and review database schema changes before merging. When preparing a release, test public and admin routes, permissions, previews, uploads and email flows.
+
+## Maintainer
+
+**Arthanova Studio** — design, technology and digital experiences.  
+Project repository: [Rusz01/cherry-blossom-garden-backend](https://github.com/Rusz01/cherry-blossom-garden-backend)
+
+---
+
+<div align="center">
+  <strong>Cherry Blossom Garden</strong><br />
+  <sub>Where Every Moment Blooms.</sub><br /><br />
+  <sub>Developed with care by Arthanova Studio.</sub>
+</div>
