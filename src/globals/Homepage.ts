@@ -290,6 +290,25 @@ export const Homepage: GlobalConfig = {
                     image(),
                   ],
                 },
+
+                {
+                  name: "featuredMenuItems",
+                  label: "Choose Dishes for Homepage",
+                  type: "relationship",
+                  relationTo: "menu-items",
+                  hasMany: true,
+                  filterOptions: {
+                    _status: {
+                      equals: "published",
+                    },
+                  },
+                  admin: {
+                    sortOptions: "name",
+                    description:
+                      "Select published dishes from the Menu database. Their names, prices, descriptions and images will populate the homepage carousel. If nothing is selected, the existing fallback dishes remain.",
+                  },
+                },
+
                 {
                   type: "collapsible",
                   label: "Fresh ingredients section",

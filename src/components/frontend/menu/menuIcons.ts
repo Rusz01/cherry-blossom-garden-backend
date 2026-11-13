@@ -18,7 +18,7 @@ import {
 
 import type { DietFilter, MenuCategoryId, MenuView } from "@/types/menu";
 
-export const categoryIcons: Record<MenuCategoryId, LucideIcon> = {
+export const categoryIcons: Record<string, LucideIcon> = {
     coffee: Coffee,
     breakfast: Croissant,
     "small-plates": Salad,
@@ -30,11 +30,16 @@ export const categoryIcons: Record<MenuCategoryId, LucideIcon> = {
     drinks: CupSoda,
 };
 
+
 export function viewIcon(view: MenuView): LucideIcon {
-    if (view === "all") return Flower2;
-    if (view === "signature") return Sparkles;
-    return categoryIcons[view];
+  if (view === "all") return Flower2;
+  if (view === "signature") return Sparkles;
+
+  // Existing categories retain their icons.
+  // New admin-created categories use a safe fallback.
+  return categoryIcons[view] ?? UtensilsCrossed;
 }
+
 
 export const dietFilters: { id: DietFilter; label: string; icon: LucideIcon }[] = [
     { id: "all", label: "All", icon: Flower2 },

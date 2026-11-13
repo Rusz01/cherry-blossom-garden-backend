@@ -42,10 +42,10 @@ function markSeen() {
 }
 
 type TodaySpecialsContextValue = {
-    /** Open the popup; focus returns to `opener` on close. */
-    openSpecials: (opener?: HTMLElement | null) => void;
-    isOpen: boolean;
-    dialogId: string;
+  openSpecials: (opener?: HTMLElement | null) => void;
+  isOpen: boolean;
+  dialogId: string;
+  hasSpecials: boolean;
 };
 
 const TodaySpecialsContext = createContext<TodaySpecialsContextValue | null>(null);
@@ -99,7 +99,15 @@ export default function TodaySpecialsProvider({ specials, notice, children }: To
         return () => window.clearTimeout(timer);
     }, [hasSpecials, openSpecials]);
 
-    const value = useMemo(() => ({ openSpecials, isOpen, dialogId }), [openSpecials, isOpen, dialogId]);
+  const value = useMemo(
+    () => ({
+      openSpecials,
+      isOpen,
+      dialogId,
+      hasSpecials,
+    }),
+    [openSpecials, isOpen, dialogId, hasSpecials]
+  );
 
     return (
         <TodaySpecialsContext.Provider value={value}>

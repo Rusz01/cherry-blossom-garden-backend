@@ -18,7 +18,7 @@ export const isPopular = (item: MenuItem) => item.popularity >= POPULAR_THRESHOL
 
 const priceFormatters = new Map<CurrencyCode, Intl.NumberFormat>();
 
-export function formatPrice(price: number, currency: CurrencyCode = "GBP") {
+export function formatPrice(price: number, currency: CurrencyCode = "NPR") {
     let formatter = priceFormatters.get(currency);
     if (!formatter) {
         formatter = new Intl.NumberFormat("en-GB", { style: "currency", currency });
@@ -33,22 +33,39 @@ export function normalise(text: string) {
     return text.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 }
 
-export function matchesDiet(item: MenuItem, diet: DietFilter) {
-    const d = item.dietary;
 
-    switch (diet) {
-        case "vegetarian":
-            return Boolean(d.vegetarian || d.vegan);
-        case "vegan":
-            return Boolean(d.vegan);
-        case "gluten-free":
-            return Boolean(d.glutenFree);
-        case "spicy":
-            return Boolean(d.spicy);
-        default:
-            return true;
-    }
+export function matchesDiet(item: MenuItem, diet: DietFilter) {
+  if (diet === "all") return true;
+
+  const selectedTags = item.dietaryTags?.map((tag) => tag.id) ?? [];
+
+  if (selectedTags.includes(diet)) return true;
+
+  // Vegan dishes also qualify for the vegetarian filter.
+  if (
+    diet === "vegetarian" &&
+    selectedTags.includes("vegan")
+  ) {
+    return true;
+  }
+
+  // Compatibility with existing development fixtures.
+  const d = item.dietary;
+
+  switch (diet) {
+    case "vegetarian":
+      return Boolean(d.vegetarian || d.vegan);
+    case "vegan":
+      return Boolean(d.vegan);
+    case "gluten-free":
+      return Boolean(d.glutenFree);
+    case "spicy":
+      return Boolean(d.spicy);
+    default:
+      return false;
+  }
 }
+
 
 /** Search across name, description, category and ingredients. */
 export function matchesQuery(item: MenuItem, query: string, categoryLabel: string) {

@@ -1,5 +1,9 @@
 "use client";
 
+
+import type { MenuDietaryTag } from "@/types/menu";
+import type { MenuCopy } from "@/lib/frontend/menu-copy";
+
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import { Sparkles } from "lucide-react";
 
@@ -17,11 +21,15 @@ import MenuSearch from "./menuSearch";
 import MenuSidebar, { MenuCategoryChips } from "./menuSidebar";
 import MenuSort from "./menuSort";
 
+
 type MenuExplorerProps = {
-    items: MenuItem[];
-    categories: MenuCategory[];
-    pageSize?: number;
+  items: MenuItem[];
+  categories: MenuCategory[];
+  tags: MenuDietaryTag[];
+  copy: MenuCopy;
+  pageSize?: number;
 };
+
 
 /**
  * The interactive menu: search, dietary filter, category view, sort and
@@ -29,7 +37,15 @@ type MenuExplorerProps = {
  * combination works and every count is derived from the data.
  * Only the current page renders, so the page stays fast at 500+ items.
  */
-export default function MenuExplorer({ items, categories, pageSize = MENU_PAGE_SIZE }: MenuExplorerProps) {
+
+export default function MenuExplorer({
+                                       items,
+                                       categories,
+                                       tags,
+                                       copy,
+                                       pageSize = MENU_PAGE_SIZE,
+                                     }: MenuExplorerProps) {
+
     const [query, setQuery] = useState("");
     const [diet, setDiet] = useState<DietFilter>("all");
     const [view, setView] = useState<MenuView>("all");
@@ -79,14 +95,23 @@ export default function MenuExplorer({ items, categories, pageSize = MENU_PAGE_S
         setPage(1);
     };
 
-    const category = categories.find((c) => c.id === view);
-    const title = view === "all" ? "All Menu" : view === "signature" ? "Signature Flavours" : category?.label ?? "Menu";
-    const description =
-        view === "all"
-            ? "Discover our complete selection of food and drinks."
-            : view === "signature"
-                ? "Handpicked dishes loved by our guests."
-                : category?.description ?? "";
+
+  const category = categories.find((c) => c.id === view);
+
+  const title =
+    view === "all"
+      ? copy.allTitle
+      : view === "signature"
+        ? copy.signatureTitle
+        : category?.label ?? "Menu";
+
+  const description =
+    view === "all"
+      ? copy.allDescription
+      : view === "signature"
+        ? copy.signatureDescription
+        : category?.description ?? "";
+
 
     const total = menu.ordered.length;
     const firstShown = total ? (menu.page - 1) * pageSize + 1 : 0;
@@ -107,7 +132,13 @@ export default function MenuExplorer({ items, categories, pageSize = MENU_PAGE_S
                     {/* SEARCH + DIETARY FILTERS */}
                     <div className="cbg-enter flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-5" style={{ animationDelay: "0.9s" }}>
                         <MenuSearch value={query} onChange={changeQuery} />
-                        <MenuDietaryFilters value={diet} onChange={changeDiet} />
+
+                      <MenuDietaryFilters
+                        value={diet}
+                        onChange={changeDiet}
+                        tags={tags}
+                      />
+
                     </div>
 
                     {/* Small screens: categories as chips */}

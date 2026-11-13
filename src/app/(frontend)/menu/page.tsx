@@ -1,39 +1,186 @@
-import type { Metadata } from "next";
 
-import MenuContactCTA from "@/components/frontend/menu/menuContactCTA";
-import MenuExplorer from "@/components/frontend/menu/menuExplorer";
-import MenuHero from "@/components/frontend/menu/menuHero";
-import TodaySpecialsProvider from "@/components/frontend/menu/todaySpecialsProvider";
-import { menuCategories, menuItems, SAMPLE_MENU_NOTICE } from "@/data/menu";
-import { dailySpecials, SAMPLE_SPECIALS_NOTICE } from "@/data/specials";
-import { resolveSpecials } from "@/lib/frontend/specials";
+import type { Metadata } from "next";
+import { draftMode, headers } from "next/headers";
+import { getPayload } from "payload";
+import config from "@payload-config";
+
+import MenuCMSClient from "@/components/frontend/menu/MenuCMSClient";
+
+import {
+  type CmsRecord,
+  toCategories,
+  toDietaryTags,
+  toMenuItem,
+  toSpecials,
+} from "@/lib/frontend/menu-cms";
+
+import { withMenuCopy } from "@/lib/frontend/menu-copy";
+import { getAppURL } from "@/lib/env";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-    title: "Menu | Cherry Blossom Garden",
-    description:
-        "Explore the Cherry Blossom Garden menu: handcrafted coffee, breakfast, small plates, mains, noodles, grill, sharing plates, desserts and drinks.",
+  title: "Menu | Cherry Blossom Garden",
+  description:
+    "Discover the food and drinks at Cherry Blossom Garden.",
 };
 
-export default function MenuPage() {
-    // Joined on the server; the popup picks today's (Asia/Kathmandu) on the client.
-    const specials = resolveSpecials(dailySpecials, menuItems);
+type Params = {
+  previewType?: string;
+  previewId?: string;
+};
 
-    return (
-        <div className="min-h-screen bg-midnight font-inter text-ivory">
-            <TodaySpecialsProvider specials={specials} notice={SAMPLE_SPECIALS_NOTICE}>
-                <MenuHero />
+export default async function MenuPage({
+                                         searchParams,
+                                       }: {
+  searchParams: Promise<Params>;
+}) {
+  const payload = await getPayload({ config });
+  const params = await searchParams;
 
-                <main id="main-content">
-                    <MenuExplorer items={menuItems} categories={menuCategories} />
+  const { isEnabled } = await draftMode();
 
-                    {/* Development notice — remove once real menu data is in place */}
-                    <p className="mx-auto -mt-10 mb-12 max-w-[1500px] px-5 text-center font-inter text-[11px] text-ivory/60 sm:px-8 lg:px-12 xl:px-16">
-                        {SAMPLE_MENU_NOTICE}
-                    </p>
 
-                    <MenuContactCTA />
-                </main>
-            </TodaySpecialsProvider>
-        </div>
-    );
+  let previewUser = null;
+  let canPreview = false;
+
+  if (isEnabled) {
+    const auth = await payload.auth({
+      headers: await headers(),
+    });
+
+    if (auth.user) {
+      try {
+        await payload.findGlobal({
+          slug: "menu-settings",
+          user: auth.user,
+          overrideAccess: false,
+        });
+
+        previewUser = auth.user;
+        canPreview = true;
+      } catch {
+        canPreview = false;
+      }
+    }
+  }
+
+
+  const common = {
+    depth: 2 as const,
+    overrideAccess: false as const,
+    user: previewUser ?? undefined,
+    pagination: false as const,
+  };
+
+  const [
+    categoryResult,
+    tagResult,
+    itemResult,
+    specialResult,
+    settings,
+  ] = await Promise.all([
+    payload.find({
+      collection: "menu-categories",
+      ...common,
+      sort: "sortOrder",
+    }),
+    payload.find({
+      collection: "dietary-tags",
+      ...common,
+      sort: "sortOrder",
+    }),
+    payload.find({
+      collection: "menu-items",
+      ...common,
+      draft: canPreview,
+      sort: "name",
+    }),
+    payload.find({
+      collection: "special-menus",
+      ...common,
+      draft: canPreview,
+      sort: "-updatedAt",
+    }),
+    payload.findGlobal({
+      slug: "menu-settings",
+      depth: 2,
+      draft: canPreview,
+      overrideAccess: true,
+    }),
+  ]);
+
+
+  const categories = toCategories(
+    categoryResult.docs as unknown as CmsRecord[],
+  );
+
+  const tags = toDietaryTags(
+    tagResult.docs as unknown as CmsRecord[],
+  );
+
+  const items = (
+    itemResult.docs as unknown as CmsRecord[]
+  )
+    .map((doc) => toMenuItem(doc, categories, tags))
+    .filter((item) => item !== null);
+
+  const specials = toSpecials(
+    specialResult.docs as unknown as CmsRecord[],
+    items,
+    tags,
+  );
+
+
+  let preview:
+    | { type: "settings" | "item" | "special"; doc: CmsRecord }
+    | null = null;
+
+  if (canPreview && params.previewType === "settings") {
+    preview = {
+      type: "settings",
+      doc: settings as unknown as CmsRecord,
+    };
+  }
+
+  if (
+    canPreview &&
+    params.previewId &&
+    ["item", "special"].includes(params.previewType ?? "")
+  ) {
+    const type = params.previewType as "item" | "special";
+
+    try {
+      const doc = await payload.findByID({
+        collection:
+          type === "item" ? "menu-items" : "special-menus",
+        id: /^\d+$/.test(params.previewId)
+          ? Number(params.previewId)
+          : params.previewId,
+        depth: 2,
+        draft: true,
+        user: previewUser ?? undefined,
+        overrideAccess: false,
+      });
+
+      preview = {
+        type,
+        doc: doc as unknown as CmsRecord,
+      };
+    } catch {
+      preview = null;
+    }
+  }
+
+  return (
+    <MenuCMSClient
+      copy={withMenuCopy(settings)}
+      categories={categories}
+      tags={tags}
+      items={items}
+      specials={specials}
+      serverURL={getAppURL()}
+      preview={preview}
+    />
+  );
 }

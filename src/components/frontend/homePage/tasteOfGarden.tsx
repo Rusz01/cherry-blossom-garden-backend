@@ -1,5 +1,11 @@
 "use client";
 
+
+import { useHomeContent } from "./HomeContentProvider";
+import { imageSrc, DEFAULT_HOMEPAGE } from "@/lib/homepage/defaults";
+import { formatPrice } from "@/lib/frontend/menu";
+
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -25,39 +31,39 @@ const cardVariants: Variants = {
     visible: { opacity: 1, x: 0 },
 };
 
-const dishes = [
-    {
-        title: "Sakura Roll",
-        price: "£16",
-        image: "/assets/first-floor.png",
-        description:
-            "A signature roll with fresh seafood, avocado and a touch of yuzu, inspired by cherry blossoms.",
-    },
-    {
-        title: "Miso Glazed Salmon",
-        price: "£24",
-        image: "/assets/first-floor.png",
-        description:
-            "Perfectly grilled salmon with miso glaze, seasonal vegetables and our house special sauce.",
-    },
-    {
-        title: "Matcha Blossom",
-        price: "£9",
-        image: "/assets/first-floor.png",
-        description:
-            "A delicate matcha dessert with seasonal fruits, inspired by the elegance of cherry blossom.",
-    },
-    {
-        title: "Sakura King Prawns",
-        price: "£28",
-        image: "/assets/first-floor.png",
-        description:
-            "Juicy king prawns finished with seasonal herbs, delicate blossom notes and our signature sauce.",
-    },
-];
 
 export default function TasteOfGarden() {
-    const [activeIndex, setActiveIndex] = useState(0);
+
+  const { taste } = useHomeContent();
+
+  const featuredDishes = taste.featuredMenuItems.flatMap(
+    (entry) => {
+      if (typeof entry !== "object" || entry === null) {
+        return [];
+      }
+
+      return [
+        {
+          title: entry.name,
+          description: entry.description ?? "",
+          price: formatPrice(entry.price),
+          image: imageSrc(
+            entry.image,
+            "/assets/first-floor.png",
+          ),
+        },
+      ];
+    },
+  );
+
+  const dishes =
+    featuredDishes.length > 0
+      ? featuredDishes
+      : taste.dishes.length > 0
+        ? taste.dishes
+        : DEFAULT_HOMEPAGE.taste.dishes;
+
+  const [activeIndex, setActiveIndex] = useState(0);
     const [direction, setDirection] = useState(1);
     // Cards wait for the grid to enter view, then animate on every page turn.
     const [cardsEntered, setCardsEntered] = useState(false);

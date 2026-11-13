@@ -70,6 +70,10 @@ export interface Config {
     pages: Page;
     'explore-pages': ExplorePage;
     media: Media;
+    'menu-categories': MenuCategory;
+    'dietary-tags': DietaryTag;
+    'menu-items': MenuItem;
+    'special-menus': SpecialMenu;
     users: User;
     roles: Role;
     'email-logs': EmailLog;
@@ -88,6 +92,10 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     'explore-pages': ExplorePagesSelect<false> | ExplorePagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    'menu-categories': MenuCategoriesSelect<false> | MenuCategoriesSelect<true>;
+    'dietary-tags': DietaryTagsSelect<false> | DietaryTagsSelect<true>;
+    'menu-items': MenuItemsSelect<false> | MenuItemsSelect<true>;
+    'special-menus': SpecialMenusSelect<false> | SpecialMenusSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'email-logs': EmailLogsSelect<false> | EmailLogsSelect<true>;
@@ -106,12 +114,14 @@ export interface Config {
     'site-settings': SiteSetting;
     navigation: Navigation;
     'seo-settings': SeoSetting;
+    'menu-settings': MenuSetting;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'seo-settings': SeoSettingsSelect<false> | SeoSettingsSelect<true>;
+    'menu-settings': MenuSettingsSelect<false> | MenuSettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -578,7 +588,8 @@ export interface Role {
   isSystem?: boolean | null;
   collectionPermissions?:
     | {
-        collection: 'pages' | 'explore-pages' | 'media';
+        collection:
+          'pages' | 'explore-pages' | 'media' | 'menu-categories' | 'dietary-tags' | 'menu-items' | 'special-menus';
         read?: boolean | null;
         create?: boolean | null;
         update?: boolean | null;
@@ -588,7 +599,7 @@ export interface Role {
     | null;
   globalPermissions?:
     | {
-        global: 'homepage' | 'site-settings' | 'navigation' | 'seo-settings';
+        global: 'homepage' | 'site-settings' | 'navigation' | 'seo-settings' | 'menu-settings';
         read?: boolean | null;
         update?: boolean | null;
         id?: string | null;
@@ -660,6 +671,125 @@ export interface ExplorePage {
   sideYear?: string | null;
   nextLabel?: string | null;
   dragHint?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Organise dishes into editable menu categories.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-categories".
+ */
+export interface MenuCategory {
+  id: number;
+  name: string;
+  description?: string | null;
+  sortOrder?: number | null;
+  active?: boolean | null;
+  /**
+   * URL path segment. Generated from the title when empty. Use “home” for the homepage.
+   */
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Manage vegetarian, vegan, gluten-free and other labels.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "dietary-tags".
+ */
+export interface DietaryTag {
+  id: number;
+  name: string;
+  description?: string | null;
+  sortOrder?: number | null;
+  active?: boolean | null;
+  /**
+   * URL path segment. Generated from the title when empty. Use “home” for the homepage.
+   */
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Create dishes and drinks for the menu, homepage and specials.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-items".
+ */
+export interface MenuItem {
+  id: number;
+  name: string;
+  description: string;
+  /**
+   * Use the main currency configured for the website.
+   */
+  price: number;
+  /**
+   * Select a category previously created under Menu Categories.
+   */
+  category: number | MenuCategory;
+  /**
+   * Choose multiple labels such as Vegan and Gluten Free.
+   */
+  dietaryTags?: (number | DietaryTag)[] | null;
+  ingredients?:
+    | {
+        name: string;
+        id?: string | null;
+      }[]
+    | null;
+  image?: (number | null) | Media;
+  isAvailable?: boolean | null;
+  signature?: boolean | null;
+  /**
+   * 85 or higher displays the Popular badge.
+   */
+  popularity?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Schedule reusable special-menu popups and keep past menus.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "special-menus".
+ */
+export interface SpecialMenu {
+  id: number;
+  /**
+   * For example: Dashain Special 2026. Used in the admin archive.
+   */
+  title: string;
+  enabled?: boolean | null;
+  /**
+   * Dates use Nepal's calendar day (Asia/Kathmandu). Add as many individual dates as needed.
+   */
+  showDates?:
+    | {
+        day: string;
+        id?: string | null;
+      }[]
+    | null;
+  items?:
+    | {
+        source: 'existing' | 'custom';
+        menuItem?: (number | null) | MenuItem;
+        customName?: string | null;
+        customDescription?: string | null;
+        customPrice?: number | null;
+        customDietaryTags?: (number | DietaryTag)[] | null;
+        overrideName?: string | null;
+        overrideDescription?: string | null;
+        overridePrice?: number | null;
+        chefsChoice?: boolean | null;
+        isNew?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -813,6 +943,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'menu-categories';
+        value: number | MenuCategory;
+      } | null)
+    | ({
+        relationTo: 'dietary-tags';
+        value: number | DietaryTag;
+      } | null)
+    | ({
+        relationTo: 'menu-items';
+        value: number | MenuItem;
+      } | null)
+    | ({
+        relationTo: 'special-menus';
+        value: number | SpecialMenu;
       } | null)
     | ({
         relationTo: 'users';
@@ -1171,6 +1317,89 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-categories_select".
+ */
+export interface MenuCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  sortOrder?: T;
+  active?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "dietary-tags_select".
+ */
+export interface DietaryTagsSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  sortOrder?: T;
+  active?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-items_select".
+ */
+export interface MenuItemsSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  price?: T;
+  category?: T;
+  dietaryTags?: T;
+  ingredients?:
+    | T
+    | {
+        name?: T;
+        id?: T;
+      };
+  image?: T;
+  isAvailable?: T;
+  signature?: T;
+  popularity?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "special-menus_select".
+ */
+export interface SpecialMenusSelect<T extends boolean = true> {
+  title?: T;
+  enabled?: T;
+  showDates?:
+    | T
+    | {
+        day?: T;
+        id?: T;
+      };
+  items?:
+    | T
+    | {
+        source?: T;
+        menuItem?: T;
+        customName?: T;
+        customDescription?: T;
+        customPrice?: T;
+        customDietaryTags?: T;
+        overrideName?: T;
+        overrideDescription?: T;
+        overridePrice?: T;
+        chefsChoice?: T;
+        isNew?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -1414,6 +1643,10 @@ export interface Homepage {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Select published dishes from the Menu database. Their names, prices, descriptions and images will populate the homepage carousel. If nothing is selected, the existing fallback dishes remain.
+     */
+    featuredMenuItems?: (number | MenuItem)[] | null;
     lowerEyebrow?: string | null;
     lowerTitle1?: string | null;
     lowerTitle2?: string | null;
@@ -1637,6 +1870,27 @@ export interface SeoSetting {
   createdAt?: string | null;
 }
 /**
+ * Edit menu headings and introductory text without changing the frontend.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-settings".
+ */
+export interface MenuSetting {
+  id: number;
+  eyebrow?: string | null;
+  lineOne?: string | null;
+  lineTwo?: string | null;
+  accent?: string | null;
+  description?: string | null;
+  allTitle?: string | null;
+  allDescription?: string | null;
+  signatureTitle?: string | null;
+  signatureDescription?: string | null;
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -1723,6 +1977,7 @@ export interface HomepageSelect<T extends boolean = true> {
               image?: T;
               id?: T;
             };
+        featuredMenuItems?: T;
         lowerEyebrow?: T;
         lowerTitle1?: T;
         lowerTitle2?: T;
@@ -1876,6 +2131,25 @@ export interface SeoSettingsSelect<T extends boolean = true> {
         type?: T;
         legalName?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "menu-settings_select".
+ */
+export interface MenuSettingsSelect<T extends boolean = true> {
+  eyebrow?: T;
+  lineOne?: T;
+  lineTwo?: T;
+  accent?: T;
+  description?: T;
+  allTitle?: T;
+  allDescription?: T;
+  signatureTitle?: T;
+  signatureDescription?: T;
+  _status?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

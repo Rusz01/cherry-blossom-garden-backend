@@ -24,6 +24,14 @@ import { Homepage } from "./globals/Homepage";
 import { ExplorePages } from '@/collections/ExplorePages'
 
 
+import { MenuCategories } from "@/collections/MenuCategories";
+import { DietaryTags } from "@/collections/DietaryTags";
+import { MenuItems } from "@/collections/MenuItems";
+import { SpecialMenus } from "@/collections/SpecialMenus";
+import { MenuSettings } from "@/globals/MenuSettings";
+
+
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -40,6 +48,10 @@ const contentCollections: CollectionConfig[] = [
   Pages,
   ExplorePages,
   Media,
+  MenuCategories,
+  DietaryTags,
+  MenuItems,
+  SpecialMenus
 ]
 
 
@@ -47,7 +59,8 @@ const contentGlobals: GlobalConfig[] = [
   Homepage,
   SiteSettings,
   Navigation,
-  SEOSettings
+  SEOSettings,
+  MenuSettings
 ]
 
 const labelOf = (entity: CollectionConfig | GlobalConfig, fallback: string): string => {

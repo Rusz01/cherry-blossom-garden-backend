@@ -1,7 +1,7 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import type { MenuSection } from "@/lib/frontend/menu";
-import { categoryIcons } from "./menuIcons";
+import { viewIcon } from "./menuIcons";
 import MenuItemRow from "./menuItemRow";
 
 type MenuCategorySectionProps = {
@@ -23,7 +23,7 @@ export default function MenuCategorySection({
                                                 onBackToAll,
                                             }: MenuCategorySectionProps) {
     const { category, items, total } = section;
-    const Icon = categoryIcons[category.id];
+  const Icon = viewIcon(category.id);
     const headingId = `menu-section-${category.id}`;
 
     return (

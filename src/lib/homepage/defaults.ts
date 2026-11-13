@@ -126,6 +126,18 @@ export const DEFAULT_HOMEPAGE = {
     buttonLabel: "Explore Our Menu",
     buttonHref: "/menu",
     image: "/assets/elevated-dining.png",
+
+    featuredMenuItems: [] as Array<
+      | string
+      | {
+      id: string | number;
+      name: string;
+      price: number;
+      description?: string;
+      image?: unknown;
+    }
+    >,
+
     dishes: [
       {
         title: "Sakura Roll",

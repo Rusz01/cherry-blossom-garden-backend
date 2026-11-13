@@ -7,9 +7,18 @@ import { useTodaySpecials } from "./todaySpecialsProvider";
 
 /** Opens the Today's Specials popup. Must sit inside <TodaySpecialsProvider>. */
 export default function TodaySpecialsTrigger({ className }: { className?: string }) {
-    const { openSpecials, isOpen, dialogId } = useTodaySpecials();
 
-    return (
+  const {
+    openSpecials,
+    isOpen,
+    dialogId,
+    hasSpecials,
+  } = useTodaySpecials();
+
+  if (!hasSpecials) return null;
+
+
+  return (
         <button
             type="button"
             aria-haspopup="dialog"
