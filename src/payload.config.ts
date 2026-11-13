@@ -21,6 +21,7 @@ import { seo } from './plugins/seo'
 import { storagePlugins } from './storage/s3'
 
 import { Homepage } from "./globals/Homepage";
+import { ExplorePages } from '@/collections/ExplorePages'
 
 
 const filename = fileURLToPath(import.meta.url)
@@ -35,7 +36,13 @@ const jobs = getJobsConfig()
  * automatically appears in the Roles permission editor. Users, Roles and
  * Email Logs are intentionally excluded: they are Administrator-only.
  */
-const contentCollections: CollectionConfig[] = [Pages, Media]
+const contentCollections: CollectionConfig[] = [
+  Pages,
+  ExplorePages,
+  Media,
+]
+
+
 const contentGlobals: GlobalConfig[] = [
   Homepage,
   SiteSettings,

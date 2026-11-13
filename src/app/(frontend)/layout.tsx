@@ -9,6 +9,14 @@ import "./globals.css";
 import Footer from "@/components/frontend/footer";
 import MotionProvider from "@/components/frontend/motion/motionProvider";
 
+
+import { getExploreNavigation } from
+    "@/lib/explore/get-pages";
+
+import {
+  ExploreNavigationProvider,
+} from "@/components/frontend/explore/ExploreNavigationProvider";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -30,9 +38,11 @@ export const metadata: Metadata = {
   description: "Where Every Moment Blooms",
 };
 
-export default function RootLayout({
-                                     children,
-                                   }: LayoutProps<"/">) {
+export default async function RootLayout({
+                                           children,
+                                         }: LayoutProps<"/">) {
+  const exploreNavigation =
+    await getExploreNavigation();
   return (
     <html
       lang="en"
@@ -44,10 +54,14 @@ export default function RootLayout({
     <noscript>
       <style>{`[data-reveal]{opacity:1!important;transform:none!important;clip-path:none!important}`}</style>
     </noscript>
-    <MotionProvider>
-      {children}
-      <Footer />
-    </MotionProvider>
+    <ExploreNavigationProvider
+      items={exploreNavigation}
+    >
+      <MotionProvider>
+        {children}
+        <Footer />
+      </MotionProvider>
+    </ExploreNavigationProvider>
     </body>
     </html>
   );

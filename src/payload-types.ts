@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     pages: Page;
+    'explore-pages': ExplorePage;
     media: Media;
     users: User;
     roles: Role;
@@ -85,6 +86,7 @@ export interface Config {
   };
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
+    'explore-pages': ExplorePagesSelect<false> | ExplorePagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
@@ -576,7 +578,7 @@ export interface Role {
   isSystem?: boolean | null;
   collectionPermissions?:
     | {
-        collection: 'pages' | 'media';
+        collection: 'pages' | 'explore-pages' | 'media';
         read?: boolean | null;
         create?: boolean | null;
         update?: boolean | null;
@@ -599,6 +601,68 @@ export interface Role {
   };
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * Manage the three floor experiences using one shared design.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "explore-pages".
+ */
+export interface ExplorePage {
+  id: number;
+  /**
+   * Select one floor per page. This identifier cannot be changed after creation.
+   */
+  floor: 'ground-floor' | 'first-floor' | 'rooftop';
+  /**
+   * Editable URL segment after /explore/. Changing this changes the public URL.
+   */
+  slug?: string | null;
+  title: string;
+  description?: string | null;
+  menuLabel: string;
+  menuDescription?: string | null;
+  homeEyebrow?: string | null;
+  homeTitle?: string | null;
+  homeShortTitle?: string | null;
+  homeDescription?: string | null;
+  /**
+   * Add, remove and reorder slides. The original carousel layout is preserved.
+   */
+  slides: {
+    anchor: string;
+    eyebrow: string;
+    titleTop: string;
+    titleBottom: string;
+    subtitle?: string | null;
+    description?: string | null;
+    /**
+     * Optional. Overrides the default photograph.
+     */
+    image?: (number | null) | Media;
+    /**
+     * Local fallback image. Example: /assets/hero.png
+     */
+    imagePath: string;
+    /**
+     * CSS object-position, for example 50% 50%.
+     */
+    imagePosition?: string | null;
+    tone: 'midnight' | 'charcoal' | 'walnut' | 'cream';
+    cta?: string | null;
+    href: string;
+    id?: string | null;
+  }[];
+  serialLabel?: string | null;
+  imageSignature?: string | null;
+  imageLabel?: string | null;
+  sideLabel?: string | null;
+  sideYear?: string | null;
+  nextLabel?: string | null;
+  dragHint?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * Every email the CMS attempted to send. “Submitted” means Resend accepted it — not that it reached the inbox.
@@ -741,6 +805,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'explore-pages';
+        value: number | ExplorePage;
       } | null)
     | ({
         relationTo: 'media';
@@ -992,6 +1060,49 @@ export interface PageMetaSelect<T extends boolean = true> {
   noIndex?: T;
   noFollow?: T;
   schemaType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "explore-pages_select".
+ */
+export interface ExplorePagesSelect<T extends boolean = true> {
+  floor?: T;
+  slug?: T;
+  title?: T;
+  description?: T;
+  menuLabel?: T;
+  menuDescription?: T;
+  homeEyebrow?: T;
+  homeTitle?: T;
+  homeShortTitle?: T;
+  homeDescription?: T;
+  slides?:
+    | T
+    | {
+        anchor?: T;
+        eyebrow?: T;
+        titleTop?: T;
+        titleBottom?: T;
+        subtitle?: T;
+        description?: T;
+        image?: T;
+        imagePath?: T;
+        imagePosition?: T;
+        tone?: T;
+        cta?: T;
+        href?: T;
+        id?: T;
+      };
+  serialLabel?: T;
+  imageSignature?: T;
+  imageLabel?: T;
+  sideLabel?: T;
+  sideYear?: T;
+  nextLabel?: T;
+  dragHint?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

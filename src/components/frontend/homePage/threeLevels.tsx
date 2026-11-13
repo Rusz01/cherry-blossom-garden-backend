@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { m } from "motion/react";
 
+import { useExploreNavigation } from
+    "@/components/frontend/explore/ExploreNavigationProvider";
+
 import { useHomeContent } from "./HomeContentProvider";
 import {
   DEFAULT_HOMEPAGE,
@@ -30,15 +33,42 @@ export default function ThreeLevels() {
 
   const { levels: levelContent } = useHomeContent();
 
-  const levels = levelContent.items.map((level, index) => ({
-    ...level,
-    id: index + 1,
-    image: imageSrc(
-      level.image,
-      DEFAULT_HOMEPAGE.levels.items[index]?.image ??
-      "/assets/hero.png",
-    ),
-  }));
+
+  const floorNavigation = useExploreNavigation();
+
+  const levels = levelContent.items.map(
+    (level, index) => {
+      const floor = floorNavigation[index];
+
+      return {
+        ...level,
+
+        id: index + 1,
+
+        eyebrow:
+          floor?.homeEyebrow ?? level.eyebrow,
+
+        title:
+          floor?.homeTitle ?? level.title,
+
+        shortTitle:
+          floor?.homeShortTitle ?? level.shortTitle,
+
+        description:
+          floor?.homeDescription ?? level.description,
+
+        href:
+          floor?.href ?? level.href,
+
+        image: imageSrc(
+          level.image,
+          DEFAULT_HOMEPAGE.levels.items[index]
+            ?.image ?? "/assets/hero.png",
+        ),
+      };
+    },
+  );
+
 
   const router = useRouter();
     const reduced = usePrefersReducedMotion();

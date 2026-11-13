@@ -12,6 +12,11 @@ import {
     X,
 } from "lucide-react";
 
+
+import { useExploreNavigation } from
+    "@/components/frontend/explore/ExploreNavigationProvider";
+
+
 const floorLinks = [
     {
         number: "01",
@@ -83,6 +88,8 @@ export default function Navbar({
                                }: {
     light?: boolean;
 }) {
+
+  const floorLinks = useExploreNavigation();
     const [isOpen, setIsOpen] = useState(false);
     const [exploreOpen, setExploreOpen] = useState(false);
     const [mobileExploreOpen, setMobileExploreOpen] =

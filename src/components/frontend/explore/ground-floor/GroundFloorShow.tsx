@@ -1,122 +1,37 @@
-"use client";
+'use client'
 
-import {useCallback, useRef, useState} from "react";
-import Image from "next/image";
-import Link from "next/link";
-import {ArrowDownRight, ArrowLeft, ArrowRight, Pause, Play} from "lucide-react";
-import {AnimatePresence, m, stagger, useInView, type Variants} from "motion/react";
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-import PointerParallax from "@/components/frontend/motion/pointerParallax";
-import {usePrefersReducedMotion} from "@/hooks/frontend/usePrefersReducedMotion";
-import {ease} from "@/lib/frontend/motion/tokens";
-import styles from "./GroundFloorShowcase.module.css";
+import type { ShowcaseSlide } from '@/lib/explore/defaults'
 
-type Tone = "midnight" | "charcoal" | "walnut" | "cream";
+import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowDownRight, ArrowLeft, ArrowRight, Pause, Play } from 'lucide-react'
+import { AnimatePresence, m, stagger, useInView, type Variants } from 'motion/react'
 
-type Experience = {
-    id: string;
-    eyebrow: string;
-    titleTop: string;
-    titleBottom: string;
-    subtitle: string;
-    description: string;
-    image: string;
-    imagePosition: string;
-    tone: Tone;
-    href: string;
-    cta: string;
-};
+import PointerParallax from '@/components/frontend/motion/pointerParallax'
+import { usePrefersReducedMotion } from '@/hooks/frontend/usePrefersReducedMotion'
+import { ease } from '@/lib/frontend/motion/tokens'
+import styles from './GroundFloorShowcase.module.css'
 
-const experiences: Experience[] = [
-    {
-        id: "entrance-experience",
-        eyebrow: "01 / Entrance Experience",
-        titleTop: "A Warm",
-        titleBottom: "Welcome",
-        subtitle: "Every story begins somewhere beautiful.",
-        description:
-            "Step into a garden of warm light, natural details and thoughtful hospitality. Your Cherry Blossom experience begins the moment you arrive.",
-        image: "/assets/garden-ambience.png",
-        imagePosition: "50% 50%",
-        tone: "midnight",
-        href: "#entrance-experience",
-        cta: "Discover the Entrance",
-    },
-    {
-        id: "coffee-bar",
-        eyebrow: "02 / The Coffee Bar",
-        titleTop: "Coffee,",
-        titleBottom: "Crafted",
-        subtitle: "A little pause, made extraordinary.",
-        description:
-            "Specialty coffee, freshly prepared treats and the comforting rhythm of a good café — a moment worth taking your time over.",
-        image: "/assets/hero.png",
-        imagePosition: "61% 50%",
-        tone: "charcoal",
-        href: "#coffee-bar",
-        cta: "Meet the Coffee Bar",
-    },
-    {
-        id: "cafe-seating",
-        eyebrow: "03 / Café Seating",
-        titleTop: "Stay a",
-        titleBottom: "Little Longer",
-        subtitle: "Room for conversations to bloom.",
-        description:
-            "Find your favourite corner among lush greenery, comfortable seats and warm interiors. Perfect for the everyday moments that stay with you.",
-        image: "/assets/elevated-dining.png",
-        imagePosition: "55% 50%",
-        tone: "midnight",
-        href: "#cafe-seating",
-        cta: "Explore Café Seating",
-    },
-    {
-        id: "open-kitchen",
-        eyebrow: "04 / Open Kitchen",
-        titleTop: "Food in",
-        titleBottom: "Action",
-        subtitle: "The art is in the making.",
-        description:
-            "An open view into the craft behind every plate. Fresh ingredients, care and creativity come together before your eyes.",
-        image: "/assets/story-main.png",
-        imagePosition: "49% 50%",
-        tone: "walnut",
-        href: "#open-kitchen",
-        cta: "See the Open Kitchen",
-    },
-    {
-        id: "kids-zone",
-        eyebrow: "05 / Kids Zone",
-        titleTop: "Little",
-        titleBottom: "Adventures",
-        subtitle: "For their biggest little moments.",
-        description:
-            "A cheerful world of play, imagination and discovery, thoughtfully designed for little explorers while the grown-ups unwind.",
-        image: "/assets/kids-play-area.png",
-        imagePosition: "54% 50%",
-        tone: "cream",
-        href: "/reservation?occasion=kids-party",
-        cta: "Reserve a Kids Party",
-    },
-    {
-        id: "parking-accessibility",
-        eyebrow: "06 / Parking & Accessibility",
-        titleTop: "Arrive with",
-        titleBottom: "Ease",
-        subtitle: "A welcome without the worries.",
-        description:
-            "Convenient parking and accessible spaces make it easy to gather, settle in and enjoy everything the garden has to offer.",
-        image: "/assets/ground-floor/parking.webp",
-        imagePosition: "65% 50%",
-        tone: "midnight",
-        href: "#parking-accessibility",
-        cta: "Plan Your Visit",
-    },
-];
+type GroundFloorShowcaseProps = {
+  experiences: ShowcaseSlide[]
+  title: string
 
-const formatNumber = (value: number) => String(value).padStart(2, "0");
+  serialLabel: string
+  imageSignature: string
+  imageLabel: string
 
-const AUTOPLAY_DELAY = 7000;
+  sideLabel: string
+  sideYear: string
+
+  nextLabel: string
+  dragHint: string
+}
+
+const formatNumber = (value: number) => String(value).padStart(2, '0')
+
+const AUTOPLAY_DELAY = 7000
 
 /*
  * Motion responsibilities
@@ -129,387 +44,397 @@ const AUTOPLAY_DELAY = 7000;
  *   completes the next slide plays; holding pauses the fill.
  */
 const copyVariants: Variants = {
-    enter: {},
-    center: {transition: {delayChildren: stagger(0.07, {startDelay: 0.12})}},
-    exit: {transition: {delayChildren: stagger(0.025)}},
-};
+  enter: {},
+  center: { transition: { delayChildren: stagger(0.07, { startDelay: 0.12 }) } },
+  exit: { transition: { delayChildren: stagger(0.025) } },
+}
 
 const lineVariants: Variants = {
-    enter: (direction: number) => ({opacity: 0, x: direction * 34}),
-    center: {opacity: 1, x: 0, transition: {duration: 0.75, ease: ease.out}},
-    exit: {opacity: 0, y: -10, transition: {duration: 0.22, ease: ease.inOut}},
-};
+  enter: (direction: number) => ({ opacity: 0, x: direction * 34 }),
+  center: { opacity: 1, x: 0, transition: { duration: 0.75, ease: ease.out } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.22, ease: ease.inOut } },
+}
 
-export default function GroundFloorShowcase() {
-    const [index, setIndex] = useState(0);
-    // 1 = forward, -1 = back: which side new imagery and copy arrive from.
-    const [direction, setDirection] = useState(1);
-    // The slide that just left stays beneath the incoming one until covered.
-    const [previous, setPrevious] = useState<number | null>(null);
-    const [autoplay, setAutoplay] = useState(true);
-    const [hovered, setHovered] = useState(false);
-    const [focused, setFocused] = useState(false);
-    const [touching, setTouching] = useState(false);
-    const reducedMotion = usePrefersReducedMotion();
+export default function GroundFloorShowcase({
+  experiences,
+  title,
+  serialLabel,
+  imageSignature,
+  imageLabel,
+  sideLabel,
+  sideYear,
+  nextLabel,
+  dragHint,
+}: GroundFloorShowcaseProps) {
+  const [index, setIndex] = useState(0)
+  // 1 = forward, -1 = back: which side new imagery and copy arrive from.
+  const [direction, setDirection] = useState(1)
+  // The slide that just left stays beneath the incoming one until covered.
+  const [previous, setPrevious] = useState<number | null>(null)
+  const [autoplay, setAutoplay] = useState(true)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const [touching, setTouching] = useState(false)
+  const reducedMotion = usePrefersReducedMotion()
 
-    const sectionRef = useRef<HTMLElement | null>(null);
-    const inView = useInView(sectionRef, {amount: 0.3});
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const inView = useInView(sectionRef, { amount: 0.3 })
 
-    const startX = useRef<number | null>(null);
-    const startY = useRef<number | null>(null);
-    const active = experiences[index];
-    const upcoming = experiences[(index + 1) % experiences.length];
+  useEffect(() => {
+    setIndex((current) => Math.min(current, experiences.length - 1))
 
-    // Autoplay never runs with reduced motion; hover, focus, touch and
-    // scrolling away only hold it.
-    const playing = autoplay && !reducedMotion;
-    const held = hovered || focused || touching || !inView;
+    setPrevious(null)
+  }, [experiences.length])
 
-    const goTo = useCallback((delta: number) => {
-        setDirection(delta > 0 ? 1 : -1);
-        setPrevious(index);
-        setIndex((index + delta + experiences.length) % experiences.length);
-    }, [index]);
+  const startX = useRef<number | null>(null)
+  const startY = useRef<number | null>(null)
 
-    const select = (target: number) => {
-        const total = experiences.length;
-        let delta = target - index;
+  const safeIndex = Math.min(index, experiences.length - 1)
 
-        // Shortest way round the loop decides the direction.
-        if (delta > total / 2) delta -= total;
-        if (delta < -total / 2) delta += total;
-        if (delta === 0) return;
+  const active = experiences[safeIndex]
 
-        setDirection(delta > 0 ? 1 : -1);
-        setPrevious(index);
-        setIndex(target);
-    };
+  const upcoming = experiences[(safeIndex + 1) % experiences.length]
 
-    return (
-        <section
-            ref={sectionRef}
-            className={styles.showcase}
-            data-tone={active.tone}
-            data-direction={direction > 0 ? "next" : "previous"}
-            data-changed={previous !== null}
-            aria-roledescription="carousel"
-            aria-label="Explore the ground floor"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            onFocusCapture={() => setFocused(true)}
-            onBlurCapture={(event) => {
-                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
-                    setFocused(false);
-                }
-            }}
-            onKeyDown={(event) => {
-                if (event.key === "ArrowRight") {
-                    event.preventDefault();
-                    goTo(1);
-                } else if (event.key === "ArrowLeft") {
-                    event.preventDefault();
-                    goTo(-1);
-                }
-            }}
-            onTouchStart={(event) => {
-                startX.current = event.touches[0]?.clientX ?? null;
-                startY.current = event.touches[0]?.clientY ?? null;
-                setTouching(true);
-            }}
-            onTouchCancel={() => {
-                startX.current = null;
-                startY.current = null;
-                setTouching(false);
-            }}
-            onTouchEnd={(event) => {
-                setTouching(false);
-                if (startX.current === null || startY.current === null) return;
-                const dx = event.changedTouches[0].clientX - startX.current;
-                const dy = event.changedTouches[0].clientY - startY.current;
-                if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-                    goTo(dx < 0 ? 1 : -1);
-                }
-                startX.current = null;
-                startY.current = null;
-            }}
-        >
-            {/* Full-bleed photography reaches behind the navbar and the whole showcase.
+  // Autoplay never runs with reduced motion; hover, focus, touch and
+  // scrolling away only hold it.
+  const playing = autoplay && !reducedMotion
+  const held = hovered || focused || touching || !inView
+
+  const goTo = useCallback(
+    (delta: number) => {
+      const next = (safeIndex + delta + experiences.length) % experiences.length
+
+      setDirection(delta > 0 ? 1 : -1)
+      setPrevious(safeIndex)
+      setIndex(next)
+    },
+    [safeIndex, experiences.length],
+  )
+
+  const select = (target: number) => {
+    const total = experiences.length
+
+    let delta = target - safeIndex
+
+    if (delta > total / 2) delta -= total
+    if (delta < -total / 2) delta += total
+
+    if (delta === 0) return
+
+    setDirection(delta > 0 ? 1 : -1)
+    setPrevious(safeIndex)
+    setIndex(target)
+  }
+
+  return (
+    <section
+      id={active.anchor}
+      ref={sectionRef}
+      className={styles.showcase}
+      data-tone={active.tone}
+      data-direction={direction > 0 ? 'next' : 'previous'}
+      data-changed={previous !== null}
+      aria-roledescription="carousel"
+      aria-label={title}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setFocused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setFocused(false)
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'ArrowRight') {
+          event.preventDefault()
+          goTo(1)
+        } else if (event.key === 'ArrowLeft') {
+          event.preventDefault()
+          goTo(-1)
+        }
+      }}
+      onTouchStart={(event) => {
+        startX.current = event.touches[0]?.clientX ?? null
+        startY.current = event.touches[0]?.clientY ?? null
+        setTouching(true)
+      }}
+      onTouchCancel={() => {
+        startX.current = null
+        startY.current = null
+        setTouching(false)
+      }}
+      onTouchEnd={(event) => {
+        setTouching(false)
+        if (startX.current === null || startY.current === null) return
+        const dx = event.changedTouches[0].clientX - startX.current
+        const dy = event.changedTouches[0].clientY - startY.current
+        if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+          goTo(dx < 0 ? 1 : -1)
+        }
+        startX.current = null
+        startY.current = null
+      }}
+    >
+      {/* Full-bleed photography reaches behind the navbar and the whole showcase.
           Each image crossfades with the active experience. */}
-            {/* Desktop pointer depth: the background drifts slightly. Overscanned
+      {/* Desktop pointer depth: the background drifts slightly. Overscanned
                 so the drift never reveals an edge; z-index keeps it behind the
                 canvas overlays. */}
-            <PointerParallax className={styles.backgroundStack} distance={6}>
+      <PointerParallax className={styles.backgroundStack} distance={6}>
+        {experiences.map((item, i) => (
+          <div
+            key={item.id}
+            aria-hidden="true"
+            className={styles.background}
+            data-background={item.tone}
+            data-active={i === index}
+          >
+            <Image
+              src={item.image}
+              alt=""
+              fill
+              priority={i === 0}
+              sizes="100vw"
+              style={{ objectPosition: item.imagePosition }}
+              className={styles.backgroundPhoto}
+            />
+            <div className={styles.backgroundShade} />
+          </div>
+        ))}
+      </PointerParallax>
+
+      {/* The old copy exits, then the new copy enters line by line. */}
+      <div className={`${styles.copyArea} cbg-enter`}>
+        <AnimatePresence mode="wait" initial={false} custom={direction}>
+          <m.div
+            key={active.id}
+            className={styles.copy}
+            custom={direction}
+            variants={copyVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+          >
+            <m.p className={styles.eyebrow} custom={direction} variants={lineVariants}>
+              {active.eyebrow}
+            </m.p>
+            <m.h1
+              className={`${styles.title} ${active.titleBottom.length > 11 ? styles.longTitle : ''}`}
+              custom={direction}
+              variants={lineVariants}
+            >
+              {active.titleTop}
+              <span>{active.titleBottom}</span>
+            </m.h1>
+            <m.p className={styles.subtitle} custom={direction} variants={lineVariants}>
+              {active.subtitle}
+            </m.p>
+            <m.p className={styles.description} custom={direction} variants={lineVariants}>
+              {active.description}
+            </m.p>
+            <m.div custom={direction} variants={lineVariants}>
+              <Link className={styles.cta} href={active.href}>
+                {active.cta}
+                <ArrowRight size={18} strokeWidth={1.35} aria-hidden="true" />
+              </Link>
+            </m.div>
+          </m.div>
+        </AnimatePresence>
+      </div>
+
+      <div className={styles.gallery}>
+        {/* Decorative frame behind the main image */}
+        <div className={styles.archHalo} aria-hidden="true" />
+
+        {/* Main editorial photograph */}
+        <div className={styles.featuredArch}>
+          {/* Pointer depth inside the frame (desktop only). */}
+          <PointerParallax className={styles.featuredStack} distance={10}>
             {experiences.map((item, i) => (
-                <div
-                    key={item.id}
-                    aria-hidden="true"
-                    className={styles.background}
-                    data-background={item.tone}
-                    data-active={i === index}
-                >
-                    <Image
-                        src={item.image}
-                        alt=""
-                        fill
-                        priority={i === 0}
-                        sizes="100vw"
-                        style={{objectPosition: item.imagePosition}}
-                        className={styles.backgroundPhoto}
-                    />
-                    <div className={styles.backgroundShade}/>
-                </div>
+              <div
+                key={item.id}
+                className={styles.featuredImage}
+                data-active={i === index}
+                data-state={i === index ? 'active' : i === previous ? 'leaving' : 'idle'}
+                aria-hidden={i !== index}
+              >
+                <Image
+                  src={item.image}
+                  alt={
+                    i === index
+                      ? `${item.titleTop} ${item.titleBottom} — Cherry Blossom Garden`
+                      : ''
+                  }
+                  fill
+                  priority={i === 0}
+                  sizes="(max-width: 640px) 70vw, (max-width: 1023px) 50vw, 35vw"
+                  style={{ objectPosition: item.imagePosition }}
+                  className={styles.photo}
+                />
+              </div>
             ))}
-            </PointerParallax>
+          </PointerParallax>
 
+          <div className={styles.archSheen} />
 
-            {/* The old copy exits, then the new copy enters line by line. */}
-            <div className={`${styles.copyArea} cbg-enter`}>
-                <AnimatePresence mode="wait" initial={false} custom={direction}>
-                    <m.div
-                        key={active.id}
-                        className={styles.copy}
-                        custom={direction}
-                        variants={copyVariants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                    >
-                        <m.p className={styles.eyebrow} custom={direction} variants={lineVariants}>
-                            {active.eyebrow}
-                        </m.p>
-                        <m.h1
-                            className={`${styles.title} ${active.titleBottom.length > 11 ? styles.longTitle : ""}`}
-                            custom={direction}
-                            variants={lineVariants}
-                        >
-                            {active.titleTop}
-                            <span>{active.titleBottom}</span>
-                        </m.h1>
-                        <m.p className={styles.subtitle} custom={direction} variants={lineVariants}>
-                            {active.subtitle}
-                        </m.p>
-                        <m.p className={styles.description} custom={direction} variants={lineVariants}>
-                            {active.description}
-                        </m.p>
-                        <m.div custom={direction} variants={lineVariants}>
-                            <Link className={styles.cta} href={active.href}>
-                                {active.cta}
-                                <ArrowRight size={18} strokeWidth={1.35} aria-hidden="true"/>
-                            </Link>
-                        </m.div>
-                    </m.div>
-                </AnimatePresence>
-            </div>
-
-
-            <div className={styles.gallery}>
-                {/* Decorative frame behind the main image */}
-                <div className={styles.archHalo} aria-hidden="true" />
-
-                {/* Main editorial photograph */}
-                <div className={styles.featuredArch}>
-                    {/* Pointer depth inside the frame (desktop only). */}
-                    <PointerParallax className={styles.featuredStack} distance={10}>
-                    {experiences.map((item, i) => (
-                        <div
-                            key={item.id}
-                            className={styles.featuredImage}
-                            data-active={i === index}
-                            data-state={i === index ? "active" : i === previous ? "leaving" : "idle"}
-                            aria-hidden={i !== index}
-                        >
-                            <Image
-                                src={item.image}
-                                alt={
-                                    i === index
-                                        ? `${item.titleTop} ${item.titleBottom} — Cherry Blossom Garden`
-                                        : ""
-                                }
-                                fill
-                                priority={i === 0}
-                                sizes="(max-width: 640px) 70vw, (max-width: 1023px) 50vw, 35vw"
-                                style={{ objectPosition: item.imagePosition }}
-                                className={styles.photo}
-                            />
-                        </div>
-                    ))}
-                    </PointerParallax>
-
-                    <div className={styles.archSheen} />
-
-                    <span className={styles.imageSerial}>
-            GARDEN STORIES
+          <span className={styles.imageSerial}>
+            {serialLabel}
             <span>
-                <strong className={styles.rollWindow}>
-                    <span key={index} className={styles.roll}>{formatNumber(index + 1)}</span>
-                </strong>
-                {" "}— {formatNumber(experiences.length)}
+              <strong className={styles.rollWindow}>
+                <span key={index} className={styles.roll}>
+                  {formatNumber(index + 1)}
+                </span>
+              </strong>{' '}
+              — {formatNumber(experiences.length)}
             </span>
-        </span>
+          </span>
 
-                    <span className={styles.imageSignature}>
-            Where moments bloom.
-        </span>
-                    <span className={styles.imageLabel}>
-            CHERRY BLOSSOM GARDEN
-        </span>
-                </div>
+          <span className={styles.imageSignature}>{imageSignature}</span>
+          <span className={styles.imageLabel}>{imageLabel}</span>
+        </div>
 
+        {/* Editorial vertical label */}
+        <div className={styles.gallerySideLabel} aria-hidden="true">
+          {sideLabel}
+          <span />
+          {sideYear}
+        </div>
 
-                {/* Editorial vertical label */}
-                <div className={styles.gallerySideLabel} aria-hidden="true">
-                    THE GARDEN COLLECTION
-                    <span />
-                    2026
-                </div>
+        {/* Next photograph */}
+        <button
+          type="button"
+          className={styles.nextPreview}
+          onClick={() => goTo(1)}
+          aria-label={`Next: ${upcoming.titleTop} ${upcoming.titleBottom}`}
+        >
+          <Image
+            key={upcoming.id}
+            src={upcoming.image}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 35vw, 22vw"
+            className={styles.previewPhoto}
+          />
 
-                {/* Next photograph */}
-                <button
-                    type="button"
-                    className={styles.nextPreview}
-                    onClick={() => goTo(1)}
-                    aria-label={`Next: ${upcoming.titleTop} ${upcoming.titleBottom}`}
-                >
-                    <Image
-                        key={upcoming.id}
-                        src={upcoming.image}
-                        alt=""
-                        fill
-                        sizes="(max-width: 640px) 35vw, 22vw"
-                        className={styles.previewPhoto}
-                    />
+          <span className={styles.previewShade} />
 
-                    <span className={styles.previewShade} />
-
-                    <span className={styles.previewTop}>
+          <span className={styles.previewTop}>
             <span className={styles.previewLine} />
-            UP NEXT
-        </span>
+            {nextLabel}
+          </span>
 
-                    <span key={`info-${upcoming.id}`} className={styles.previewInfo}>
+          <span key={`info-${upcoming.id}`} className={styles.previewInfo}>
             <span className={styles.previewNumber}>
-                {formatNumber(
-                    (index + 1) % experiences.length + 1
-                )}
-                <span> / {formatNumber(experiences.length)}</span>
+              {formatNumber(((index + 1) % experiences.length) + 1)}
+              <span> / {formatNumber(experiences.length)}</span>
             </span>
 
             <span className={styles.previewTitle}>
-                {upcoming.titleTop}
-                <span>{upcoming.titleBottom}</span>
+              {upcoming.titleTop}
+              <span>{upcoming.titleBottom}</span>
             </span>
 
             <span className={styles.previewArrow}>
-                <ArrowDownRight
-                    size={18}
-                    strokeWidth={1.4}
-                    aria-hidden="true"
-                />
+              <ArrowDownRight size={18} strokeWidth={1.4} aria-hidden="true" />
             </span>
-        </span>
-                </button>
-            </div>
+          </span>
+        </button>
+      </div>
 
-
-
-            <div className={styles.bottomRail}>
-                <div className={styles.progressCluster}>
-        <span className={styles.progressCount}>
+      <div className={styles.bottomRail}>
+        <div className={styles.progressCluster}>
+          <span className={styles.progressCount}>
             <strong className={styles.rollWindow}>
-                <b key={index} className={styles.roll}>{formatNumber(index + 1)}</b>
+              <b key={index} className={styles.roll}>
+                {formatNumber(index + 1)}
+              </b>
             </strong>
             <span> / {formatNumber(experiences.length)}</span>
-        </span>
+          </span>
 
-                    <div
-                        className={styles.progressSteps}
-                        role="group"
-                        aria-label="Choose ground floor experience"
-                    >
-                        {experiences.map((item, i) => (
-                            <button
-                                key={item.id}
-                                type="button"
-                                className={styles.progressStep}
-                                data-active={i === index}
-                                data-playing={playing}
-                                aria-label={`Go to ${item.titleTop} ${item.titleBottom}`}
-                                aria-current={i === index ? "true" : undefined}
-                                onClick={() => select(i)}
-                            >
-                                <span>
-                                    {i === index && playing ? (
-                                        <i
-                                            // Remounts per slide, restarting the countdown.
-                                            key={index}
-                                            aria-hidden="true"
-                                            className={styles.progressFill}
-                                            onAnimationEnd={() => goTo(1)}
-                                            style={{
-                                                animation: `cbgProgress ${AUTOPLAY_DELAY}ms linear forwards`,
-                                                animationPlayState: held ? "paused" : "running",
-                                            }}
-                                        />
-                                    ) : null}
-                                </span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
+          <div
+            className={styles.progressSteps}
+            role="group"
+            aria-label={`Choose ${title} experience`}
+          >
+            {experiences.map((item, i) => (
+              <button
+                key={item.id}
+                type="button"
+                className={styles.progressStep}
+                data-active={i === index}
+                data-playing={playing}
+                aria-label={`Go to ${item.titleTop} ${item.titleBottom}`}
+                aria-current={i === index ? 'true' : undefined}
+                onClick={() => select(i)}
+              >
+                <span>
+                  {i === index && playing ? (
+                    <i
+                      // Remounts per slide, restarting the countdown.
+                      key={index}
+                      aria-hidden="true"
+                      className={styles.progressFill}
+                      onAnimationEnd={() => goTo(1)}
+                      style={{
+                        animation: `cbgProgress ${AUTOPLAY_DELAY}ms linear forwards`,
+                        animationPlayState: held ? 'paused' : 'running',
+                      }}
+                    />
+                  ) : null}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
-                <div className={styles.controls}>
-        <span className={styles.dragHint}>
-            Discover the spaces
-        </span>
+        <div className={styles.controls}>
+          <span className={styles.dragHint}>{dragHint}</span>
 
-                    {!reducedMotion ? (
-                        <button
-                            type="button"
-                            onClick={() => setAutoplay((value) => !value)}
-                            className={styles.autoplayButton}
-                            aria-label={autoplay ? "Pause automatic slides" : "Play automatic slides"}
-                            title={autoplay ? "Pause autoplay" : "Resume autoplay"}
-                        >
-                            {autoplay ? (
-                                <Pause size={13} fill="currentColor" aria-hidden="true"/>
-                            ) : (
-                                <Play size={13} fill="currentColor" aria-hidden="true"/>
-                            )}
-                        </button>
-                    ) : null}
+          {!reducedMotion ? (
+            <button
+              type="button"
+              onClick={() => setAutoplay((value) => !value)}
+              className={styles.autoplayButton}
+              aria-label={autoplay ? 'Pause automatic slides' : 'Play automatic slides'}
+              title={autoplay ? 'Pause autoplay' : 'Resume autoplay'}
+            >
+              {autoplay ? (
+                <Pause size={13} fill="currentColor" aria-hidden="true" />
+              ) : (
+                <Play size={13} fill="currentColor" aria-hidden="true" />
+              )}
+            </button>
+          ) : null}
 
-                    <button
-                        type="button"
-                        onClick={() => goTo(-1)}
-                        className={styles.arrowButton}
-                        aria-label="Previous experience"
-                    >
-                        <ArrowLeft
-                            size={19}
-                            strokeWidth={1.4}
-                            aria-hidden="true"
-                        />
-                    </button>
+          <button
+            type="button"
+            onClick={() => goTo(-1)}
+            className={styles.arrowButton}
+            aria-label="Previous experience"
+          >
+            <ArrowLeft size={19} strokeWidth={1.4} aria-hidden="true" />
+          </button>
 
-                    <button
-                        type="button"
-                        onClick={() => goTo(1)}
-                        className={`${styles.arrowButton} ${styles.arrowNext}`}
-                        aria-label="Next experience"
-                    >
-                        <ArrowRight
-                            size={19}
-                            strokeWidth={1.4}
-                            aria-hidden="true"
-                        />
-                    </button>
-                </div>
-            </div>
+          <button
+            type="button"
+            onClick={() => goTo(1)}
+            className={`${styles.arrowButton} ${styles.arrowNext}`}
+            aria-label="Next experience"
+          >
+            <ArrowRight size={19} strokeWidth={1.4} aria-hidden="true" />
+          </button>
+        </div>
+      </div>
 
-            {/* Silent while autoplaying, so screen readers aren't interrupted every slide. */}
-            <div className={styles.announcement} aria-live={playing ? "off" : "polite"} aria-atomic="true">
-                {`Showing ${active.titleTop} ${active.titleBottom}, ${index + 1} of ${experiences.length}`}
-            </div>
-        </section>
-    );
+      {/* Silent while autoplaying, so screen readers aren't interrupted every slide. */}
+      <div
+        className={styles.announcement}
+        aria-live={playing ? 'off' : 'polite'}
+        aria-atomic="true"
+      >
+        {`Showing ${active.titleTop} ${active.titleBottom}, ${index + 1} of ${experiences.length}`}
+      </div>
+    </section>
+  )
 }
