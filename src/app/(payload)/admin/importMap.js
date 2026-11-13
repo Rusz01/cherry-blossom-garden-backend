@@ -41,6 +41,7 @@ import { NavBrand as NavBrand_eb43e5e66ba705eaf5f4295e1e31716b } from '../../../
 import { BrandFonts as BrandFonts_b7cdd90347791ef1c591c84e914db25a } from '../../../components/admin/providers/BrandFonts'
 import { Dashboard as Dashboard_af669912e06d01f0ca1b5c3178684fc9 } from '../../../components/admin/dashboard/Dashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -86,5 +87,6 @@ export const importMap = {
   "/components/admin/nav/NavBrand#NavBrand": NavBrand_eb43e5e66ba705eaf5f4295e1e31716b,
   "/components/admin/providers/BrandFonts#BrandFonts": BrandFonts_b7cdd90347791ef1c591c84e914db25a,
   "/components/admin/dashboard/Dashboard#Dashboard": Dashboard_af669912e06d01f0ca1b5c3178684fc9,
-  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

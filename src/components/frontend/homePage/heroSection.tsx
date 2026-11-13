@@ -1,3 +1,8 @@
+"use client";
+
+import { useHomeContent } from "./HomeContentProvider";
+import { imageSrc } from "@/lib/homepage/defaults";
+
 import Image from "next/image";
 import Navbar from "@/components/frontend/navbar";
 import Link from "next/link";
@@ -18,13 +23,14 @@ import { buttonClass } from "@/components/frontend/ui/button";
  */
 
 export default function HeroSection() {
+  const { hero } = useHomeContent();
     return (
         <main className="relative min-h-[100svh] overflow-hidden bg-black lg:min-h-screen">
             {/* BACKGROUND IMAGE
                 Overscanned on desktop so the pointer drift never shows an edge. */}
             <PointerParallax className="absolute inset-0 lg:-inset-4">
                 <Image
-                    src="/assets/hero.png"
+                  src={imageSrc(hero.image, "/assets/hero.png")}
                     alt="Cherry Blossom Garden"
                     fill
                     priority
@@ -114,22 +120,20 @@ export default function HeroSection() {
                         <div className="max-w-[480px]">
                             <div className="flex flex-col gap-4">
                                 <p className="cbg-enter cbg-delay-1 font-inter uppercase text-blossom font-medium tracking-wider">
-                                    A Garden Of Flavor
+                                  {hero.eyebrow}
                                 </p>
 
                                 <h1 className="font-cormorant text-8xl mb-6">
-                                    <RiseText text="Where Beautiful Moments" delay={0.3} />{" "}
+                                    <RiseText text={hero.desktopTitle} delay={0.3} />{" "}
                                     <span className="font-allura text-blossom">
-                                        <RiseText text="Bloom" delay={0.58} />
+                                        <RiseText text={hero.accent} delay={0.58} />
                                     </span>
                                 </h1>
 
                                 <hr className="cbg-draw" style={{ animationDelay: "0.72s" }} />
 
                                 <p className="cbg-enter font-inter" style={{ animationDelay: "0.78s" }}>
-                                    A garden-led dining experience where thoughtful
-                                    hospitality, seasonal flavour and beautiful
-                                    celebrations come together.
+                                    {hero.description}
                                 </p>
                             </div>
 
@@ -156,7 +160,7 @@ export default function HeroSection() {
                                 <span className="cbg-draw h-px w-8 bg-blossom sm:w-12" style={{ animationDelay: "0.2s" }} />
 
                                 <p className="font-inter text-[10px] font-medium uppercase tracking-[0.24em] text-blossom sm:text-[12px]">
-                                    A Garden Of Flavor
+                                  {hero.eyebrow}
                                 </p>
                             </div>
 
@@ -169,9 +173,9 @@ export default function HeroSection() {
                   text-ivory
                 "
                             >
-                                <RiseText text="Where Beautiful" delay={0.3} />
+                                <RiseText text={hero.mobileTitle1} delay={0.3} />
                                 <br />
-                                <RiseText text="Moments" delay={0.44} />
+                                <RiseText text={hero.mobileTitle2} delay={0.44} />
                                 <span
                                     className="
                     mt-2 block
@@ -180,7 +184,7 @@ export default function HeroSection() {
                     tracking-normal text-blossom
                   "
                                 >
-                  <RiseText text="Bloom" delay={0.56} />
+                  <RiseText text={hero.accent} delay={0.56} />
                 </span>
                             </h1>
 
@@ -202,9 +206,7 @@ export default function HeroSection() {
                 "
                                 style={{ animationDelay: "0.78s" }}
                             >
-                                A garden-led dining experience where thoughtful
-                                hospitality, seasonal flavour and beautiful
-                                celebrations come together.
+                                {hero.description}
                             </p>
 
                             {/* CTA BUTTONS */}
@@ -246,26 +248,29 @@ function HeroActions({
     className: string;
     delay: string;
 }) {
+  const { hero } = useHomeContent();
     return (
         <div className={className} style={{ animationDelay: delay }}>
-            <Link href="/reservation" className={buttonClass("primary")}>
-                Reserve a Table
+          <Link
+            href={hero.primaryHref}
+            className={buttonClass("primary")}
+          >
+            {hero.primaryLabel}
 
-                <Image
-                    src="/icons/light-flower.png"
-                    alt=""
-                    width={20}
-                    height={20}
-                    className="h-5 w-5 object-contain transition-transform duration-500 group-hover:rotate-45"
-                />
-            </Link>
+            <Image
+              src="/icons/light-flower.png"
+              alt=""
+              width={20}
+              height={20}
+              className="h-5 w-5 object-contain transition-transform duration-500 group-hover:rotate-45"
+            />
+          </Link>
 
             <Link
-                href="/#three-levels"
+              href={hero.secondaryHref}
                 className={buttonClass("secondary", "backdrop-blur-sm")}
             >
-                Explore Our Spaces
-
+              {hero.secondaryLabel}
                 <Image
                     src="/icons/pink flower.png"
                     alt=""

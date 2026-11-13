@@ -100,11 +100,13 @@ export interface Config {
   };
   fallbackLocale: null;
   globals: {
+    homepage: Homepage;
     'site-settings': SiteSetting;
     navigation: Navigation;
     'seo-settings': SeoSetting;
   };
   globalsSelect: {
+    homepage: HomepageSelect<false> | HomepageSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'seo-settings': SeoSettingsSelect<false> | SeoSettingsSelect<true>;
@@ -222,6 +224,7 @@ export interface Media {
    * Photographer or source, if attribution is required.
    */
   credit?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -583,7 +586,7 @@ export interface Role {
     | null;
   globalPermissions?:
     | {
-        global: 'site-settings' | 'navigation' | 'seo-settings';
+        global: 'homepage' | 'site-settings' | 'navigation' | 'seo-settings';
         read?: boolean | null;
         update?: boolean | null;
         id?: string | null;
@@ -998,6 +1001,7 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   credit?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1202,6 +1206,180 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Manage homepage text, images and featured content without changing the website design.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage".
+ */
+export interface Homepage {
+  id: number;
+  hero?: {
+    eyebrow?: string | null;
+    desktopTitle?: string | null;
+    mobileTitle1?: string | null;
+    mobileTitle2?: string | null;
+    accent?: string | null;
+    description?: string | null;
+    /**
+     * Optional. Leave empty to use the original website photograph.
+     */
+    image?: (number | null) | Media;
+    primaryLabel?: string | null;
+    primaryHref?: string | null;
+    secondaryLabel?: string | null;
+    secondaryHref?: string | null;
+  };
+  story?: {
+    eyebrow?: string | null;
+    title1?: string | null;
+    title2?: string | null;
+    paragraph1?: string | null;
+    paragraph2?: string | null;
+    /**
+     * Optional. Leave empty to use the original website photograph.
+     */
+    image?: (number | null) | Media;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+  };
+  levels?: {
+    eyebrow?: string | null;
+    title?: string | null;
+    description?: string | null;
+    items?:
+      | {
+          eyebrow?: string | null;
+          shortTitle?: string | null;
+          title?: string | null;
+          description?: string | null;
+          href?: string | null;
+          /**
+           * Optional. Leave empty to use the original website photograph.
+           */
+          image?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  experiences?: {
+    eyebrow?: string | null;
+    title1?: string | null;
+    title2?: string | null;
+    items?:
+      | {
+          number?: string | null;
+          eyebrow?: string | null;
+          title?: string | null;
+          description?: string | null;
+          href?: string | null;
+          /**
+           * Optional. Leave empty to use the original website photograph.
+           */
+          image?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  taste?: {
+    eyebrow?: string | null;
+    title1?: string | null;
+    title2?: string | null;
+    description?: string | null;
+    /**
+     * Optional. Leave empty to use the original website photograph.
+     */
+    image?: (number | null) | Media;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+    dishes?:
+      | {
+          title?: string | null;
+          price?: string | null;
+          description?: string | null;
+          /**
+           * Optional. Leave empty to use the original website photograph.
+           */
+          image?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+    lowerEyebrow?: string | null;
+    lowerTitle1?: string | null;
+    lowerTitle2?: string | null;
+    lowerDescription?: string | null;
+    /**
+     * Optional. Leave empty to use the original website photograph.
+     */
+    lowerImage?: (number | null) | Media;
+  };
+  kids?: {
+    eyebrow?: string | null;
+    title1?: string | null;
+    title2?: string | null;
+    titleAccent?: string | null;
+    description?: string | null;
+    /**
+     * Optional. Leave empty to use the original website photograph.
+     */
+    mainImage?: (number | null) | Media;
+    /**
+     * Optional. Leave empty to use the original website photograph.
+     */
+    topImage?: (number | null) | Media;
+    /**
+     * Optional. Leave empty to use the original website photograph.
+     */
+    bottomImage?: (number | null) | Media;
+    features?:
+      | {
+          line1?: string | null;
+          line2?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+  };
+  gallery?: {
+    eyebrow?: string | null;
+    title?: string | null;
+    buttonLabel?: string | null;
+    /**
+     * Seven photographs in the existing editorial grid order.
+     */
+    photos?:
+      | {
+          title?: string | null;
+          alt?: string | null;
+          /**
+           * Optional. Leave empty to use the original website photograph.
+           */
+          image?: (number | null) | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  journal?: {
+    eyebrow?: string | null;
+    title1?: string | null;
+    titleAccent?: string | null;
+    title2?: string | null;
+    description?: string | null;
+    prompt?: string | null;
+    placeholder?: string | null;
+    buttonLabel?: string | null;
+    privacy?: string | null;
+    footer?: string | null;
+    /**
+     * Optional. Leave empty to use the original website photograph.
+     */
+    image?: (number | null) | Media;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Brand, contact and social details used across the website.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1346,6 +1524,155 @@ export interface SeoSetting {
   };
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage_select".
+ */
+export interface HomepageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        desktopTitle?: T;
+        mobileTitle1?: T;
+        mobileTitle2?: T;
+        accent?: T;
+        description?: T;
+        image?: T;
+        primaryLabel?: T;
+        primaryHref?: T;
+        secondaryLabel?: T;
+        secondaryHref?: T;
+      };
+  story?:
+    | T
+    | {
+        eyebrow?: T;
+        title1?: T;
+        title2?: T;
+        paragraph1?: T;
+        paragraph2?: T;
+        image?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+      };
+  levels?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        items?:
+          | T
+          | {
+              eyebrow?: T;
+              shortTitle?: T;
+              title?: T;
+              description?: T;
+              href?: T;
+              image?: T;
+              id?: T;
+            };
+      };
+  experiences?:
+    | T
+    | {
+        eyebrow?: T;
+        title1?: T;
+        title2?: T;
+        items?:
+          | T
+          | {
+              number?: T;
+              eyebrow?: T;
+              title?: T;
+              description?: T;
+              href?: T;
+              image?: T;
+              id?: T;
+            };
+      };
+  taste?:
+    | T
+    | {
+        eyebrow?: T;
+        title1?: T;
+        title2?: T;
+        description?: T;
+        image?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+        dishes?:
+          | T
+          | {
+              title?: T;
+              price?: T;
+              description?: T;
+              image?: T;
+              id?: T;
+            };
+        lowerEyebrow?: T;
+        lowerTitle1?: T;
+        lowerTitle2?: T;
+        lowerDescription?: T;
+        lowerImage?: T;
+      };
+  kids?:
+    | T
+    | {
+        eyebrow?: T;
+        title1?: T;
+        title2?: T;
+        titleAccent?: T;
+        description?: T;
+        mainImage?: T;
+        topImage?: T;
+        bottomImage?: T;
+        features?:
+          | T
+          | {
+              line1?: T;
+              line2?: T;
+              id?: T;
+            };
+        buttonLabel?: T;
+        buttonHref?: T;
+      };
+  gallery?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        buttonLabel?: T;
+        photos?:
+          | T
+          | {
+              title?: T;
+              alt?: T;
+              image?: T;
+              id?: T;
+            };
+      };
+  journal?:
+    | T
+    | {
+        eyebrow?: T;
+        title1?: T;
+        titleAccent?: T;
+        title2?: T;
+        description?: T;
+        prompt?: T;
+        placeholder?: T;
+        buttonLabel?: T;
+        privacy?: T;
+        footer?: T;
+        image?: T;
+      };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

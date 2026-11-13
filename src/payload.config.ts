@@ -20,6 +20,9 @@ import { getAppURL, getDatabaseConfig, getJobsConfig, getPayloadSecret, isProduc
 import { seo } from './plugins/seo'
 import { storagePlugins } from './storage/s3'
 
+import { Homepage } from "./globals/Homepage";
+
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -33,7 +36,12 @@ const jobs = getJobsConfig()
  * Email Logs are intentionally excluded: they are Administrator-only.
  */
 const contentCollections: CollectionConfig[] = [Pages, Media]
-const contentGlobals: GlobalConfig[] = [SiteSettings, Navigation, SEOSettings]
+const contentGlobals: GlobalConfig[] = [
+  Homepage,
+  SiteSettings,
+  Navigation,
+  SEOSettings
+]
 
 const labelOf = (entity: CollectionConfig | GlobalConfig, fallback: string): string => {
   const plural = 'labels' in entity && entity.labels && typeof entity.labels.plural === 'string' ? entity.labels.plural : null
