@@ -67,6 +67,7 @@ export interface Config {
   globals: {
     homepage: Homepage;
     'experiences-page': ExperiencesPage;
+    'kids-play-page': KidsPlayPage;
     'site-settings': SiteSetting;
     navigation: Navigation;
     'seo-settings': SeoSetting;
@@ -75,6 +76,7 @@ export interface Config {
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'experiences-page': ExperiencesPageSelect<false> | ExperiencesPageSelect<true>;
+    'kids-play-page': KidsPlayPageSelect<false> | KidsPlayPageSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'seo-settings': SeoSettingsSelect<false> | SeoSettingsSelect<true>;
@@ -563,7 +565,14 @@ export interface Role {
     | null;
   globalPermissions?:
     | {
-        global: 'homepage' | 'experiences-page' | 'site-settings' | 'navigation' | 'seo-settings' | 'menu-settings';
+        global:
+          | 'homepage'
+          | 'experiences-page'
+          | 'kids-play-page'
+          | 'site-settings'
+          | 'navigation'
+          | 'seo-settings'
+          | 'menu-settings';
         read?: boolean | null;
         update?: boolean | null;
         id?: string | null;
@@ -1848,6 +1857,104 @@ export interface ExperiencesPage {
   createdAt?: string | null;
 }
 /**
+ * Manage the Kids Play Area page, family highlights, party information, photographs and SEO without changing the frontend design.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "kids-play-page".
+ */
+export interface KidsPlayPage {
+  id: number;
+  hero?: {
+    eyebrow?: string | null;
+    title1?: string | null;
+    titleAccent?: string | null;
+    paragraph1?: string | null;
+    paragraph2?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+    scrollLabel?: string | null;
+    scrollHref?: string | null;
+    photoLabel?: string | null;
+    photoCaption?: string | null;
+    /**
+     * Optional. Leave empty to retain the original website photograph.
+     */
+    image?: (number | null) | Media;
+  };
+  /**
+   * Four highlights in the existing benefits strip. Icons are retained in their original positions.
+   */
+  benefits?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  discover?: {
+    eyebrow?: string | null;
+    heading1?: string | null;
+    headingAccent?: string | null;
+    paragraph1?: string | null;
+    paragraph2?: string | null;
+    sticker?: string | null;
+    /**
+     * Optional. Leave empty to retain the original website photograph.
+     */
+    image?: (number | null) | Media;
+    /**
+     * Three mini feature cards. Existing icons and design remain unchanged.
+     */
+    features?:
+      | {
+          title?: string | null;
+          description?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  divider?: {
+    text?: string | null;
+  };
+  party?: {
+    eyebrow?: string | null;
+    heading1?: string | null;
+    heading2?: string | null;
+    accent1?: string | null;
+    accent2?: string | null;
+    paragraph1?: string | null;
+    paragraph2?: string | null;
+    feature1?: string | null;
+    feature2?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+    /**
+     * Optional. Leave empty to retain the original website photograph.
+     */
+    image?: (number | null) | Media;
+  };
+  family?: {
+    eyebrow?: string | null;
+    heading1?: string | null;
+    accent?: string | null;
+    heading2?: string | null;
+    paragraph?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+    /**
+     * Optional. Leave empty to retain the original website photograph.
+     */
+    image?: (number | null) | Media;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Brand, contact and social details used across the website.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2204,6 +2311,96 @@ export interface ExperiencesPageSelect<T extends boolean = true> {
         footerText?: T;
         footerLabel?: T;
         footerHref?: T;
+      };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "kids-play-page_select".
+ */
+export interface KidsPlayPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        title1?: T;
+        titleAccent?: T;
+        paragraph1?: T;
+        paragraph2?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+        scrollLabel?: T;
+        scrollHref?: T;
+        photoLabel?: T;
+        photoCaption?: T;
+        image?: T;
+      };
+  benefits?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  discover?:
+    | T
+    | {
+        eyebrow?: T;
+        heading1?: T;
+        headingAccent?: T;
+        paragraph1?: T;
+        paragraph2?: T;
+        sticker?: T;
+        image?: T;
+        features?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+      };
+  divider?:
+    | T
+    | {
+        text?: T;
+      };
+  party?:
+    | T
+    | {
+        eyebrow?: T;
+        heading1?: T;
+        heading2?: T;
+        accent1?: T;
+        accent2?: T;
+        paragraph1?: T;
+        paragraph2?: T;
+        feature1?: T;
+        feature2?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+        image?: T;
+      };
+  family?:
+    | T
+    | {
+        eyebrow?: T;
+        heading1?: T;
+        accent?: T;
+        heading2?: T;
+        paragraph?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+        image?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
       };
   _status?: T;
   updatedAt?: T;

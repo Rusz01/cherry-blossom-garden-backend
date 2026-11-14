@@ -34,6 +34,10 @@ import { Events } from "@/collections/Events";
 import { ExperiencesPage } from "@/globals/ExperiencesPage";
 
 
+import { KidsPlayPage } from "@/globals/KidsPlayPage";
+
+
+
 
 
 const filename = fileURLToPath(import.meta.url)
@@ -64,6 +68,7 @@ const contentCollections: CollectionConfig[] = [
 const contentGlobals: GlobalConfig[] = [
   Homepage,
   ExperiencesPage,
+  KidsPlayPage,
   SiteSettings,
   Navigation,
   SEOSettings,
