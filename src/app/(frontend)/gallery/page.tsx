@@ -4,30 +4,46 @@ import { Suspense } from "react";
 
 import Navbar from "@/components/frontend/navbar";
 import GalleryExperience from "@/components/frontend/gallery/galleryExperience";
+import GalleryContentProvider from '@/app/(frontend)/gallery/GalleryContentProvider'
 
-export const metadata: Metadata = {
-    title: "Gallery | Cherry Blossom Garden",
-    description:
-        "Explore the Cherry Blossom Garden gallery. Discover beautiful dining spaces, rooftop moments, family experiences and celebrations.",
-};
+import { getGalleryPageData } from "@/lib/gallery/server";
+import { normalizeGallery } from "@/lib/gallery/content";
+import { getAppURL } from "@/lib/env";
 
-export default function GalleryPage() {
-    return (
-        <div className="min-h-screen bg-midnight font-inter text-ivory">
-            {/* Reuse the existing dark Cherry Blossom navbar */}
-            <Navbar />
+export const dynamic = "force-dynamic";
 
-            <main className="w-full overflow-x-clip">
-                <Suspense
-                    fallback={
-                        <div className="min-h-[65vh] bg-midnight" />
-                    }
-                >
-                    <GalleryExperience />
-                </Suspense>
-            </main>
+export async function generateMetadata(): Promise<Metadata> {
+  const { raw, categories } = await getGalleryPageData();
+  const content = normalizeGallery(raw, categories);
 
-            {/* Existing layout.tsx already renders Footer */}
-        </div>
-    );
+  return {
+    title: content.seo.title,
+    description: content.seo.description,
+  };
+}
+
+export default async function GalleryPage() {
+  const { raw, categories } = await getGalleryPageData();
+
+  return (
+    <div className="min-h-screen bg-midnight font-inter text-ivory">
+      <Navbar />
+
+      <GalleryContentProvider
+        initialData={raw}
+        categories={categories}
+        serverURL={getAppURL()}
+      >
+        <main className="w-full overflow-x-clip">
+          <Suspense
+            fallback={
+              <div className="min-h-[65vh] bg-midnight" />
+            }
+          >
+            <GalleryExperience />
+          </Suspense>
+        </main>
+      </GalleryContentProvider>
+    </div>
+  );
 }

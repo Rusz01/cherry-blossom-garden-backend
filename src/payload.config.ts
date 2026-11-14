@@ -37,6 +37,11 @@ import { ExperiencesPage } from "@/globals/ExperiencesPage";
 import { KidsPlayPage } from "@/globals/KidsPlayPage";
 
 
+import { GalleryCategories } from "@/collections/GalleryCategories";
+import { GalleryPage } from "@/globals/GalleryPage";
+
+
+
 
 
 
@@ -61,6 +66,7 @@ const contentCollections: CollectionConfig[] = [
   MenuItems,
   SpecialMenus,
   Events,
+  GalleryCategories,
 
 ]
 
@@ -73,6 +79,7 @@ const contentGlobals: GlobalConfig[] = [
   Navigation,
   SEOSettings,
   MenuSettings,
+  GalleryPage,
 ]
 
 const labelOf = (entity: CollectionConfig | GlobalConfig, fallback: string): string => {

@@ -1,212 +1,183 @@
-"use client";
+'use client'
+
+import { useCallback, useMemo, useState } from 'react'
+
+import Image from 'next/image'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 import {
-    useCallback,
-    useMemo,
-    useState,
-} from "react";
+  Aperture,
+  ArrowRight,
+  ArrowUpRight,
+  Armchair,
+  CalendarDays,
+  Coffee,
+  Flower2,
+  Grid2X2,
+  Heart,
+  House,
+  Search,
+  Sun,
+  UsersRound,
+  type LucideIcon,
+} from 'lucide-react'
+import { AnimatePresence, LayoutGroup, m } from 'motion/react'
 
-import Image from "next/image";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import ImageReveal from '@/components/frontend/motion/imageReveal'
+import LayoutMotion from '@/components/frontend/motion/layoutMotion'
+import Reveal from '@/components/frontend/motion/reveal'
+import RiseText from '@/components/frontend/motion/riseText'
+import ViewCursor from '@/components/frontend/motion/viewCursor'
+import { usePrefersReducedMotion } from '@/hooks/frontend/usePrefersReducedMotion'
+import { ease } from '@/lib/frontend/motion/tokens'
+import GalleryLightbox from './galleryLightbox'
 
-import {
-    Aperture,
-    ArrowRight,
-    ArrowUpRight,
-    Armchair,
-    CalendarDays,
-    Coffee,
-    Flower2,
-    Grid2X2,
-    Heart,
-    House,
-    Search,
-    Sun,
-    UsersRound,
-    type LucideIcon,
-} from "lucide-react";
-import { AnimatePresence, LayoutGroup, m } from "motion/react";
+import { getCategoryLabel, type CategorySlug } from './galleryData'
 
-import ImageReveal from "@/components/frontend/motion/imageReveal";
-import LayoutMotion from "@/components/frontend/motion/layoutMotion";
-import Reveal from "@/components/frontend/motion/reveal";
-import RiseText from "@/components/frontend/motion/riseText";
-import ViewCursor from "@/components/frontend/motion/viewCursor";
-import { usePrefersReducedMotion } from "@/hooks/frontend/usePrefersReducedMotion";
-import { ease } from "@/lib/frontend/motion/tokens";
-import GalleryLightbox from "./galleryLightbox";
-
-import {
-    categories,
-    galleryPhotos,
-    getCategoryLabel,
-    type CategorySlug,
-} from "./galleryData";
+import { useGalleryContent } from '@/app/(frontend)/gallery/GalleryContentProvider'
 
 /* =============================================
    CATEGORY ICONS
    ============================================= */
 
-const categoryIcons: Record<CategorySlug, LucideIcon> = {
-    all: Grid2X2,
-    "food-drinks": Coffee,
-    "ground-floor": House,
-    "first-floor": Armchair,
-    rooftop: Sun,
-    "kids-family": UsersRound,
-    events: CalendarDays,
-    "private-dining": Heart,
-};
+const categoryIcons: Partial<Record<CategorySlug, LucideIcon>> = {
+  all: Grid2X2,
+  'food-drinks': Coffee,
+  'ground-floor': House,
+  'first-floor': Armchair,
+  rooftop: Sun,
+  'kids-family': UsersRound,
+  events: CalendarDays,
+  'private-dining': Heart,
+}
 
 type SearchState = {
-    category: CategorySlug;
-    value: string;
-};
+  category: CategorySlug
+  value: string
+}
 
 export default function GalleryExperience() {
-    const searchParams = useSearchParams();
+  const { hero, collection, closing, categories, photos: galleryPhotos } = useGalleryContent()
 
-    /* =============================================
+  const searchParams = useSearchParams()
+
+  /* =============================================
        URL-BASED CATEGORY
        ============================================= */
 
-    const categoryParam = searchParams.get("category");
+  const categoryParam = searchParams.get('category')
 
-    const activeCategory: CategorySlug =
-        categories.find(
-            (category) => category.slug === categoryParam
-        )?.slug ?? "all";
+  const activeCategory: CategorySlug =
+    categories.find((category) => category.slug === categoryParam)?.slug ?? 'all'
 
-    /*
-     * The search is scoped to its current category.
-     * Changing category automatically gives a clean
-     * search, including with browser back/forward.
-     */
-    const [searchState, setSearchState] =
-        useState<SearchState>({
-            category: "all",
-            value: "",
-        });
+  /*
+   * The search is scoped to its current category.
+   * Changing category automatically gives a clean
+   * search, including with browser back/forward.
+   */
+  const [searchState, setSearchState] = useState<SearchState>({
+    category: 'all',
+    value: '',
+  })
 
-    const search =
-        searchState.category === activeCategory
-            ? searchState.value
-            : "";
+  const search = searchState.category === activeCategory ? searchState.value : ''
 
-    const [openedId, setOpenedId] =
-        useState<string | null>(null);
+  const [openedId, setOpenedId] = useState<string | null>(null)
 
-    // Side the next lightbox photograph enters from (1 = next, -1 = previous).
-    const [lightboxDirection, setLightboxDirection] = useState(1);
+  // Side the next lightbox photograph enters from (1 = next, -1 = previous).
+  const [lightboxDirection, setLightboxDirection] = useState(1)
 
-    const reduced = usePrefersReducedMotion();
+  const reduced = usePrefersReducedMotion()
 
-    /* =============================================
+  /* =============================================
        FILTER PHOTOS
        ============================================= */
 
-    const filteredPhotos = useMemo(() => {
-        const query = search.trim().toLowerCase();
+  const filteredPhotos = useMemo(() => {
+    const query = search.trim().toLowerCase()
 
-        return galleryPhotos.filter((photo) => {
-            const categoryMatches =
-                activeCategory === "all" ||
-                photo.categories.includes(activeCategory);
+    return galleryPhotos.filter((photo) => {
+      const categoryMatches = activeCategory === 'all' || photo.categories.includes(activeCategory)
 
-            if (!categoryMatches) return false;
+      if (!categoryMatches) return false
 
-            if (!query) return true;
+      if (!query) return true
 
-            const searchable = [
-                photo.title,
-                photo.description,
-                photo.alt,
-                ...photo.categories.map(getCategoryLabel),
-            ]
-                .join(" ")
-                .toLowerCase();
+      const searchable = [
+        photo.title,
+        photo.description,
+        photo.alt,
+        ...photo.categories.map((slug) => getCategoryLabel(slug, categories)),
+      ]
+        .join(' ')
+        .toLowerCase()
 
-            return searchable.includes(query);
-        });
-    }, [activeCategory, search]);
+      return searchable.includes(query)
+    })
+  }, [activeCategory, search, categories, galleryPhotos])
 
-    /*
-     * Count photos per category independently.
-     * Photos with multiple categories are counted
-     * once inside each matching category.
-     */
-    const categoryCounts = useMemo(() => {
-        return Object.fromEntries(
-            categories.map((category) => [
-                category.slug,
-                category.slug === "all"
-                    ? galleryPhotos.length
-                    : galleryPhotos.filter((photo) =>
-                        photo.categories.includes(
-                            category.slug as Exclude<
-                                CategorySlug,
-                                "all"
-                            >
-                        )
-                    ).length,
-            ])
-        ) as Record<CategorySlug, number>;
-    }, []);
+  /*
+   * Count photos per category independently.
+   * Photos with multiple categories are counted
+   * once inside each matching category.
+   */
+  const categoryCounts = useMemo(() => {
+    return Object.fromEntries(
+      categories.map((category) => [
+        category.slug,
+        category.slug === 'all'
+          ? galleryPhotos.length
+          : galleryPhotos.filter((photo) =>
+            photo.categories.includes(category.slug),
+          ).length,
+      ]),
+    ) as Record<CategorySlug, number>
+  }, [categories, galleryPhotos])
 
-    /* =============================================
+  /* =============================================
        LIGHTBOX
        ============================================= */
 
-    const openedIndex = filteredPhotos.findIndex(
-        (photo) => photo.id === openedId
-    );
+  const openedIndex = filteredPhotos.findIndex((photo) => photo.id === openedId)
 
-    const openedPhoto =
-        openedIndex >= 0
-            ? filteredPhotos[openedIndex]
-            : null;
+  const openedPhoto = openedIndex >= 0 ? filteredPhotos[openedIndex] : null
 
-    const movePhoto = useCallback(
-        (direction: number) => {
-            setLightboxDirection(direction > 0 ? 1 : -1);
-            setOpenedId((currentId) => {
-                if (!filteredPhotos.length) return null;
+  const movePhoto = useCallback(
+    (direction: number) => {
+      setLightboxDirection(direction > 0 ? 1 : -1)
+      setOpenedId((currentId) => {
+        if (!filteredPhotos.length) return null
 
-                const currentIndex = filteredPhotos.findIndex(
-                    (photo) => photo.id === currentId
-                );
+        const currentIndex = filteredPhotos.findIndex((photo) => photo.id === currentId)
 
-                const nextIndex =
-                    (currentIndex + direction + filteredPhotos.length) %
-                    filteredPhotos.length;
+        const nextIndex = (currentIndex + direction + filteredPhotos.length) % filteredPhotos.length
 
-                return filteredPhotos[nextIndex].id;
-            });
-        },
-        [filteredPhotos]
-    );
+        return filteredPhotos[nextIndex].id
+      })
+    },
+    [filteredPhotos],
+  )
 
-    const categoryTitle =
-        getCategoryLabel(activeCategory);
+  const categoryTitle = getCategoryLabel(activeCategory, categories)
 
-    return (
-        <>
-            {/* ===========================================
+  return (
+    <>
+      {/* ===========================================
           01 — EDITORIAL HERO
           =========================================== */}
-            <section
-                aria-labelledby="gallery-heading"
-                className="
+      <section
+        aria-labelledby="gallery-heading"
+        className="
           relative isolate overflow-hidden
           border-b border-champagne/10
           bg-midnight
         "
-            >
-                {/* Subtle background details */}
-                <div
-                    aria-hidden="true"
-                    className="
+      >
+        {/* Subtle background details */}
+        <div
+          aria-hidden="true"
+          className="
             pointer-events-none absolute
             -right-40 -top-40
             h-[600px] w-[600px]
@@ -214,10 +185,10 @@ export default function GalleryExperience() {
             bg-blossom/[0.055]
             blur-[130px]
           "
-                />
+        />
 
-                <div
-                    className="
+        <div
+          className="
             relative mx-auto grid
             w-full max-w-[1560px]
             items-center gap-12
@@ -228,36 +199,35 @@ export default function GalleryExperience() {
             lg:gap-16 lg:px-12 lg:pb-28 lg:pt-20
             xl:px-16
           "
-                >
-                    {/* LEFT CONTENT */}
-                    <div className="relative z-10">
-                        <div className="cbg-enter cbg-delay-1 flex items-center gap-4">
-
-                            <span
-                                className="
+        >
+          {/* LEFT CONTENT */}
+          <div className="relative z-10">
+            <div className="cbg-enter cbg-delay-1 flex items-center gap-4">
+              <span
+                className="
                   text-[10px] font-semibold
                   uppercase tracking-[0.32em]
                   text-blossom
                   sm:text-[11px]
                 "
-                            >
-                The Cherry Blossom Collection
+              >
+                {hero.eyebrow}
               </span>
-                        </div>
+            </div>
 
-                        <h1
-                            id="gallery-heading"
-                            className="
+            <h1
+              id="gallery-heading"
+              className="
                 mt-8 font-cormorant
                 text-[clamp(75px,9vw,145px)]
                 font-normal leading-[0.78]
                 tracking-[-0.055em]
                 text-ivory
               "
-                        >
-                            <RiseText text="Moments" delay={0.25} />
-                            <span
-                                className="
+            >
+              <RiseText text={hero.title} delay={0.25} />
+              <span
+                className="
                   mt-4 block
                   text-[0.7em]
                    text-blossom
@@ -267,14 +237,14 @@ export default function GalleryExperience() {
                     leading-[1.1]
                     tracking-normal
                 "
-                            >
-                <RiseText text="at Cherry Blossom." delay={0.4} />
+              >
+                <RiseText text={hero.accent} delay={0.4} />
               </span>
-                        </h1>
+            </h1>
 
-                        <p
-                            style={{ animationDelay: "0.65s" }}
-                            className="
+            <p
+              style={{ animationDelay: '0.65s' }}
+              className="
                 cbg-enter
                 mt-9 max-w-[480px]
                 font-inter text-[14px]
@@ -282,25 +252,21 @@ export default function GalleryExperience() {
                 text-ivory/60
                 sm:mt-11 sm:text-[15px]
               "
-                        >
-                            A visual journey through our spaces,
-                            flavours and experiences. Discover the
-                            little details, beautiful surroundings
-                            and unforgettable moments that make
-                            Cherry Blossom Garden special.
-                        </p>
+            >
+              {hero.description}
+            </p>
 
-                        <div
-                            style={{ animationDelay: "0.8s" }}
-                            className="
+            <div
+              style={{ animationDelay: '0.8s' }}
+              className="
                 cbg-enter
                 mt-10 flex flex-wrap
                 items-center gap-6
               "
-                        >
-                            <Link
-                                href="#photo-collection"
-                                className="
+            >
+              <Link
+                href="#photo-collection"
+                className="
                   group inline-flex items-center
                   gap-3 border-b border-blossom/50
                   pb-2
@@ -310,36 +276,34 @@ export default function GalleryExperience() {
                   transition-colors duration-300
                   hover:border-ivory hover:text-ivory
                 "
-                            >
-                                Explore Our Gallery
-                                <ArrowRight
-                                    size={16}
-                                    strokeWidth={1.5}
-                                    className="
+              >
+                {hero.buttonLabel}
+                <ArrowRight
+                  size={16}
+                  strokeWidth={1.5}
+                  className="
                     transition-transform duration-300
                     group-hover:translate-x-1
                   "
-                                />
-                            </Link>
+                />
+              </Link>
 
-                            <span className="text-[11px] text-ivory/60">
-                {galleryPhotos.length} photographs
-              </span>
-                        </div>
-                    </div>
+              <span className="text-[11px] text-ivory/60">{galleryPhotos.length} photographs</span>
+            </div>
+          </div>
 
-                    {/* RIGHT EDITORIAL IMAGE */}
-                    <div
-                        className="
+          {/* RIGHT EDITORIAL IMAGE */}
+          <div
+            className="
               relative hidden
               min-h-[350px]
               sm:block
               lg:min-h-[430px]
             "
-                    >
-                        <div
-                            style={{ animationDelay: "0.2s" }}
-                            className="
+          >
+            <div
+              style={{ animationDelay: '0.2s' }}
+              className="
                 cbg-unveil
                 absolute inset-x-[6%] inset-y-0
                 overflow-hidden
@@ -347,31 +311,32 @@ export default function GalleryExperience() {
                 border border-champagne/15
                 bg-[#1a1a19]
               "
-                        >
-                            <Image
-                                src="/assets/garden-ambience.png"
-                                alt="Cherry Blossom Garden ambience"
-                                fill
-                                priority
-                                sizes="(max-width: 1023px) 90vw, 40vw"
-                                className="object-cover opacity-75"
-                            />
+            >
+              <Image
+                src={hero.imageSrc}
+                alt={hero.imageAlt}
+                unoptimized={hero.imageSrc.startsWith("http")}
+                fill
+                priority
+                sizes="(max-width: 1023px) 90vw, 40vw"
+                className="object-cover opacity-75"
+              />
 
-                            <div
-                                className="
+              <div
+                className="
                   absolute inset-0
                   bg-gradient-to-t
                   from-midnight/60
                   via-transparent
                   to-midnight/10
                 "
-                            />
-                        </div>
+              />
+            </div>
 
-                        {/* Floating detail */}
-                        <div
-                            style={{ animationDelay: "1s" }}
-                            className="
+            {/* Floating detail */}
+            <div
+              style={{ animationDelay: '1s' }}
+              className="
                 cbg-enter
                 absolute -bottom-5 left-0
                 flex h-[125px] w-[125px]
@@ -384,30 +349,26 @@ export default function GalleryExperience() {
                 backdrop-blur-xl
                 lg:h-[145px] lg:w-[145px]
               "
-                        >
-                            <Flower2
-                                size={19}
-                                strokeWidth={1.1}
-                                className="mb-3 text-blossom"
-                            />
+            >
+              <Flower2 size={19} strokeWidth={1.1} className="mb-3 text-blossom" />
 
-                            <span
-                                className="
+              <span
+                className="
                   text-[9px] uppercase
                   leading-[1.8]
                   tracking-[0.19em]
                   text-ivory/70
                 "
-                            >
-                Moments
+              >
+                {hero.badgeLineOne}
                 <br />
-                That Stay
+                {hero.badgeLineTwo}
               </span>
-                        </div>
+            </div>
 
-                        <p
-                            style={{ animationDelay: "1.2s" }}
-                            className="
+            <p
+              style={{ animationDelay: '1.2s' }}
+              className="
                 cbg-enter-fade
                 absolute bottom-2 right-0
                 rotate-[-8deg]
@@ -415,27 +376,27 @@ export default function GalleryExperience() {
                 text-blossom/80
                 lg:text-[38px]
               "
-                        >
-                            Where moments bloom
-                        </p>
-                    </div>
-                </div>
-            </section>
+            >
+              {hero.imageCaption}
+            </p>
+          </div>
+        </div>
+      </section>
 
-            {/* ===========================================
+      {/* ===========================================
           02 — CATEGORY FILTER + SEARCH
           =========================================== */}
-            <section
-                aria-label="Filter gallery photographs"
-                className="
+      <section
+        aria-label="Filter gallery photographs"
+        className="
           sticky top-0 z-30
           border-b border-champagne/15
           bg-midnight/95
           backdrop-blur-xl
         "
-            >
-                <div
-                    className="
+      >
+        <div
+          className="
             mx-auto flex w-full
             max-w-[1560px]
             flex-col gap-5
@@ -446,45 +407,43 @@ export default function GalleryExperience() {
             lg:px-12
             xl:px-16
           "
-                >
-                    {/* CATEGORY CHIPS */}
-                    <nav
-                        aria-label="Gallery categories"
-                        className="
+        >
+          {/* CATEGORY CHIPS */}
+          <nav
+            aria-label="Gallery categories"
+            className="
               min-w-0 flex-1
               overflow-x-auto
               [scrollbar-width:none]
               [&::-webkit-scrollbar]:hidden
             "
-                    >
-                        <div
-                            className="
+          >
+            <div
+              className="
                 flex w-max min-w-full
                 items-center gap-2
                 pr-4
               "
-                        >
-                            {categories.map((category) => {
-                                const Icon =
-                                    categoryIcons[category.slug];
+            >
+              {categories.map((category) => {
+                const Icon = categoryIcons[category.slug] ?? Grid2X2
 
-                                const active =
-                                    activeCategory === category.slug;
+                const active = activeCategory === category.slug
 
-                                return (
-                                    <Link
-                                        key={category.slug}
-                                        href={`/gallery?category=${category.slug}`}
-                                        scroll={false}
-                                        aria-current={active ? "page" : undefined}
-                                        onClick={() => {
-                                            setOpenedId(null);
-                                            setSearchState({
-                                                category: category.slug,
-                                                value: "",
-                                            });
-                                        }}
-                                        className={`
+                return (
+                  <Link
+                    key={category.slug}
+                    href={`/gallery?category=${encodeURIComponent(category.slug)}`}
+                    scroll={false}
+                    aria-current={active ? 'page' : undefined}
+                    onClick={() => {
+                      setOpenedId(null)
+                      setSearchState({
+                        category: category.slug,
+                        value: '',
+                      })
+                    }}
+                    className={`
                       group inline-flex min-h-[44px]
                       shrink-0 items-center
                       justify-center gap-2
@@ -496,70 +455,66 @@ export default function GalleryExperience() {
                       focus-visible:outline-offset-2
                       focus-visible:outline-blossom
                       ${
-                                            active
-                                                ? "border-blossom bg-blossom text-midnight"
-                                                : "border-champagne/20 bg-white/[0.025] text-ivory/65 hover:border-blossom/50 hover:bg-white/[0.06] hover:text-ivory"
-                                        }
+                      active
+                        ? 'border-blossom bg-blossom text-midnight'
+                        : 'border-champagne/20 bg-white/[0.025] text-ivory/65 hover:border-blossom/50 hover:bg-white/[0.06] hover:text-ivory'
+                    }
                     `}
-                                    >
-                                        <Icon
-                                            size={15}
-                                            strokeWidth={1.5}
-                                            className={
-                                                active
-                                                    ? "text-midnight"
-                                                    : "text-blossom/70"
-                                            }
-                                        />
+                  >
+                    <Icon
+                      size={15}
+                      strokeWidth={1.5}
+                      className={active ? 'text-midnight' : 'text-blossom/70'}
+                    />
 
-                                        <span>{category.label}</span>
+                    <span>{category.label}</span>
 
-                                        {active && (
-                                            <span
-                                                className="
+                    {active && (
+                      <span
+                        className="
                           ml-1 text-[10px]
                           text-midnight/70
                         "
-                                            >
+                      >
                         {categoryCounts[category.slug]}
                       </span>
-                                        )}
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </nav>
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          </nav>
 
-                    {/* SEARCH */}
-                    <div
-                        className="
+          {/* SEARCH */}
+          <div
+            className="
               relative w-full shrink-0
               lg:w-[235px] xl:w-[270px]
             "
-                    >
-                        <Search
-                            size={17}
-                            strokeWidth={1.5}
-                            className="
+          >
+            <Search
+              size={17}
+              strokeWidth={1.5}
+              className="
                 pointer-events-none absolute
                 left-4 top-1/2
                 -translate-y-1/2
                 text-ivory/45
               "
-                        />
+            />
 
-                        <input
-                            type="search"
-                            aria-label="Search gallery photos"
-                            value={search}
-                            onChange={(event) =>
-                                setSearchState({
-                                    category: activeCategory,
-                                    value: event.target.value,
-                                })
-                            }
-                            placeholder="Search photographs..."
-                            className="
+            <input
+              type="search"
+              aria-label="Search gallery photos"
+              value={search}
+              onChange={(event) =>
+                setSearchState({
+                  category: activeCategory,
+                  value: event.target.value,
+                })
+              }
+              placeholder={collection.searchPlaceholder}
+              className="
                 h-[46px] w-full
                 rounded-full border
                 border-champagne/20
@@ -572,65 +527,65 @@ export default function GalleryExperience() {
                 focus:border-blossom/70
                 focus:bg-white/[0.06]
               "
-                        />
-                    </div>
-                </div>
-            </section>
+            />
+          </div>
+        </div>
+      </section>
 
-            {/* ===========================================
+      {/* ===========================================
           03 — PHOTOGRAPH COLLECTION
           =========================================== */}
-            <section
-                id="photo-collection"
-                aria-labelledby="collection-heading"
-                className="
+      <section
+        id="photo-collection"
+        aria-labelledby="collection-heading"
+        className="
           relative scroll-mt-32
           bg-midnight
           pb-28 pt-14
           sm:pb-32 sm:pt-16
           lg:pb-40 lg:pt-20
         "
-            >
-                <div
-                    className="
+      >
+        <div
+          className="
             mx-auto w-full max-w-[1560px]
             px-5 sm:px-8 lg:px-12 xl:px-16
           "
-                >
-                    {/* COLLECTION HEADER */}
-                    <div
-                        className="
+        >
+          {/* COLLECTION HEADER */}
+          <div
+            className="
               mb-10 flex flex-col
               justify-between gap-5
               sm:mb-12
               md:flex-row md:items-end
               lg:mb-14
             "
-                    >
-                        <div>
-                            <div className="flex items-center gap-3">
+          >
+            <div>
+              <div className="flex items-center gap-3">
                 <span
-                    className="
+                  className="
                     h-px w-9 bg-blossom/70
                   "
                 />
 
-                                <p
-                                    className="
+                <p
+                  className="
                     text-[10px] font-semibold
                     uppercase tracking-[0.28em]
                     text-blossom
                   "
-                                >
-                                    The Collection
-                                </p>
-                            </div>
+                >
+                  {collection.eyebrow}
+                </p>
+              </div>
 
-                            <h2
-                                key={activeCategory}
-                                id="collection-heading"
-                                style={{ animationDuration: "700ms" }}
-                                className="
+              <h2
+                key={activeCategory}
+                id="collection-heading"
+                style={{ animationDuration: '700ms' }}
+                className="
                   cbg-enter
                   mt-4 font-cormorant
                   text-[clamp(43px,5vw,68px)]
@@ -638,87 +593,82 @@ export default function GalleryExperience() {
                   tracking-[-0.025em]
                   text-ivory
                 "
-                            >
-                                {activeCategory === "all"
-                                    ? "Every Moment."
-                                    : `${categoryTitle}.`}
-                            </h2>
-                        </div>
+              >
+                {activeCategory === 'all' ? collection.allTitle : `${categoryTitle}.`}
+              </h2>
+            </div>
 
-                        <div
-                            aria-live="polite"
-                            aria-atomic="true"
-                            className="
+            <div
+              aria-live="polite"
+              aria-atomic="true"
+              className="
                 flex items-center gap-3
                 pb-1
                 text-[11px] text-ivory/60
               "
-                        >
-                            <Aperture
-                                size={17}
-                                strokeWidth={1.4}
-                                className="text-blossom"
-                            />
+            >
+              <Aperture size={17} strokeWidth={1.4} className="text-blossom" />
+              Showing {filteredPhotos.length}{' '}
+              {filteredPhotos.length === 1 ? 'photograph' : 'photographs'}
+            </div>
+          </div>
 
-                            Showing {filteredPhotos.length}{" "}
-                            {filteredPhotos.length === 1
-                                ? "photograph"
-                                : "photographs"}
-                        </div>
-                    </div>
-
-                    {/* THE MASONRY GALLERY */}
-                    {/*
-                     * Filtering: cards keep their key, so images never remount
-                     * or flash. Leaving cards fade out in place first; then the
-                     * staying cards glide to their new masonry slots
-                     * (layout="position": no size distortion) and new cards rise
-                     * in. The closing note shares the LayoutGroup so it glides
-                     * with the grid instead of jumping.
-                     */}
-                    <LayoutMotion>
-                    <LayoutGroup>
-                    {filteredPhotos.length > 0 ? (
-                        <ViewCursor>
-                        <div
-                            className="
+          {/* THE MASONRY GALLERY */}
+          {/*
+           * Filtering: cards keep their key, so images never remount
+           * or flash. Leaving cards fade out in place first; then the
+           * staying cards glide to their new masonry slots
+           * (layout="position": no size distortion) and new cards rise
+           * in. The closing note shares the LayoutGroup so it glides
+           * with the grid instead of jumping.
+           */}
+          <LayoutMotion>
+            <LayoutGroup>
+              {filteredPhotos.length > 0 ? (
+                <ViewCursor>
+                  <div
+                    className="
                 columns-1 gap-4
                 sm:columns-2 sm:gap-5
                 lg:columns-3
                 xl:columns-4
                 xl:gap-6
               "
-                        >
-                            <AnimatePresence>
-                            {filteredPhotos.map((photo, index) => (
-                                <m.article
-                                    key={photo.id}
-                                    layout="position"
-                                    data-reveal=""
-                                    initial={{ opacity: 0, y: 28 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.3, ease: ease.inOut } }}
-                                    viewport={{ once: true, amount: 0.15 }}
-                                    transition={{
-                                        layout: { duration: reduced ? 0 : 0.65, ease: ease.out },
-                                        default: {
-                                            duration: reduced ? 0.2 : 0.8,
-                                            ease: ease.out,
-                                            delay: reduced ? 0 : (index % 4) * 0.08,
-                                        },
-                                    }}
-                                    className="
+                  >
+                    <AnimatePresence>
+                      {filteredPhotos.map((photo, index) => (
+                        <m.article
+                          key={photo.id}
+                          layout="position"
+                          data-reveal=""
+                          initial={{ opacity: 0, y: 28 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          exit={{
+                            opacity: 0,
+                            scale: 0.94,
+                            transition: { duration: 0.3, ease: ease.inOut },
+                          }}
+                          viewport={{ once: true, amount: 0.15 }}
+                          transition={{
+                            layout: { duration: reduced ? 0 : 0.65, ease: ease.out },
+                            default: {
+                              duration: reduced ? 0.2 : 0.8,
+                              ease: ease.out,
+                              delay: reduced ? 0 : (index % 4) * 0.08,
+                            },
+                          }}
+                          className="
                     mb-4 break-inside-avoid
                     sm:mb-5 xl:mb-6
                   "
-                                >
-                                    <button
-                                        type="button"
-                                        data-cursor=""
-                                        data-photo-id={photo.id}
-                                        onClick={() => setOpenedId(photo.id)}
-                                        aria-label={`View ${photo.title} in full screen`}
-                                        className="
+                        >
+                          <button
+                            type="button"
+                            data-cursor=""
+                            data-photo-id={photo.id}
+                            onClick={() => setOpenedId(photo.id)}
+                            aria-label={`View ${photo.title} in full screen`}
+                            className="
                       group relative block
                       w-full overflow-hidden
                       rounded-[5px]
@@ -729,30 +679,27 @@ export default function GalleryExperience() {
                       focus-visible:outline-offset-4
                       focus-visible:outline-blossom
                     "
-                                        style={{
-                                            aspectRatio: photo.ratio,
-                                        }}
-                                    >
-                                        {/* PHOTO — opens with a rising mask as it arrives */}
-                                        <ImageReveal
-                                            fill
-                                            delay={(index % 4) * 0.08 + 0.1}
-                                        >
-                                            <Image
-                                                src={photo.src}
-                                                alt={photo.alt}
-                                                fill
-                                                sizes="
+                            style={{
+                              aspectRatio: photo.ratio,
+                            }}
+                          >
+                            {/* PHOTO — opens with a rising mask as it arrives */}
+                            <ImageReveal fill delay={(index % 4) * 0.08 + 0.1}>
+                              <Image
+                                src={photo.src}
+                                alt={photo.alt}
+                                unoptimized={photo.src.startsWith("http")}
+                                fill
+                                sizes="
                           (max-width: 639px) 100vw,
                           (max-width: 1023px) 50vw,
                           (max-width: 1279px) 33vw,
                           25vw
                         "
-                                                style={{
-                                                    objectPosition:
-                                                        photo.position ?? "center",
-                                                }}
-                                                className="
+                                style={{
+                                  objectPosition: photo.position ?? 'center',
+                                }}
+                                className="
                           object-cover
                           transition-transform
                           duration-[1200ms]
@@ -760,13 +707,13 @@ export default function GalleryExperience() {
                           group-hover:scale-[1.06]
                           group-focus-visible:scale-[1.06]
                         "
-                                            />
-                                        </ImageReveal>
+                              />
+                            </ImageReveal>
 
-                                        {/* IMAGE OVERLAY */}
-                                        <span
-                                            aria-hidden="true"
-                                            className="
+                            {/* IMAGE OVERLAY */}
+                            <span
+                              aria-hidden="true"
+                              className="
                         pointer-events-none
                         absolute inset-0
                         bg-gradient-to-t
@@ -778,12 +725,12 @@ export default function GalleryExperience() {
                         group-hover:opacity-100
                         group-focus-visible:opacity-100
                       "
-                                        />
+                            />
 
-                                        {/* TOP RIGHT ARROW */}
-                                        <span
-                                            aria-hidden="true"
-                                            className="
+                            {/* TOP RIGHT ARROW */}
+                            <span
+                              aria-hidden="true"
+                              className="
                         absolute right-4 top-4
                         flex h-10 w-10
                         translate-y-1 items-center
@@ -799,23 +746,20 @@ export default function GalleryExperience() {
                         group-hover:opacity-100
                         group-focus-visible:opacity-100
                       "
-                                        >
-                      <ArrowUpRight
-                          size={18}
-                          strokeWidth={1.5}
-                      />
-                    </span>
+                            >
+                              <ArrowUpRight size={18} strokeWidth={1.5} />
+                            </span>
 
-                                        {/* IMAGE CAPTION */}
-                                        <span
-                                            className="
+                            {/* IMAGE CAPTION */}
+                            <span
+                              className="
                         absolute inset-x-0 bottom-0
                         block p-5
                         sm:p-6
                       "
-                                        >
-                      <span
-                          className="
+                            >
+                              <span
+                                className="
                           mb-2 block text-[9px]
                           font-medium
                           uppercase tracking-[0.18em]
@@ -825,14 +769,12 @@ export default function GalleryExperience() {
                           group-hover:tracking-[0.24em]
                           group-hover:opacity-100
                         "
-                      >
-                        {getCategoryLabel(
-                            photo.categories[0]
-                        )}
-                      </span>
+                              >
+                                {getCategoryLabel(photo.categories[0], categories)}
+                              </span>
 
-                      <span
-                          className="
+                              <span
+                                className="
                           block font-cormorant
                           text-[28px] font-medium
                           leading-none
@@ -843,14 +785,14 @@ export default function GalleryExperience() {
                           group-focus-visible:-translate-y-1
                           sm:text-[31px]
                         "
-                      >
-                        {photo.title}
-                      </span>
+                              >
+                                {photo.title}
+                              </span>
 
-                      {/* Hairline that draws under the title on hover */}
-                      <span
-                          aria-hidden="true"
-                          className="
+                              {/* Hairline that draws under the title on hover */}
+                              <span
+                                aria-hidden="true"
+                                className="
                           mt-3 block h-px w-12
                           origin-left scale-x-0
                           bg-blossom
@@ -858,19 +800,19 @@ export default function GalleryExperience() {
                           group-hover:scale-x-100
                           group-focus-visible:scale-x-100
                         "
-                      />
-                    </span>
-                                    </button>
-                                </m.article>
-                            ))}
-                            </AnimatePresence>
-                        </div>
-                        </ViewCursor>
-                    ) : (
-                        /* EMPTY SEARCH RESULT */
-                        <div
-                            style={{ animationDuration: "500ms" }}
-                            className="
+                              />
+                            </span>
+                          </button>
+                        </m.article>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </ViewCursor>
+              ) : (
+                /* EMPTY SEARCH RESULT */
+                <div
+                  style={{ animationDuration: '500ms' }}
+                  className="
                 cbg-enter-fade
                 flex min-h-[350px]
                 flex-col items-center
@@ -879,44 +821,39 @@ export default function GalleryExperience() {
                 bg-white/[0.015]
                 px-6 text-center
               "
-                        >
-                            <Search
-                                size={30}
-                                strokeWidth={1}
-                                className="text-blossom/70"
-                            />
+                >
+                  <Search size={30} strokeWidth={1} className="text-blossom/70" />
 
-                            <h3
-                                className="
+                  <h3
+                    className="
                   mt-6 font-cormorant
                   text-[35px]
                   text-ivory
                 "
-                            >
-                                No photographs found.
-                            </h3>
+                  >
+                    {collection.emptyTitle}
+                  </h3>
 
-                            <p
-                                className="
+                  <p
+                    className="
                   mt-3 max-w-sm
                   text-[13px] leading-7
                   text-ivory/45
                 "
-                            >
-                                Try another search or explore all
-                                the moments in our collection.
-                            </p>
+                  >
+                    {collection.emptyDescription}
+                  </p>
 
-                            <Link
-                                href="/gallery?category=all"
-                                scroll={false}
-                                onClick={() =>
-                                    setSearchState({
-                                        category: "all",
-                                        value: "",
-                                    })
-                                }
-                                className="
+                  <Link
+                    href="/gallery?category=all"
+                    scroll={false}
+                    onClick={() =>
+                      setSearchState({
+                        category: 'all',
+                        value: '',
+                      })
+                    }
+                    className="
                   mt-7 inline-flex
                   items-center gap-3
                   text-[11px] font-semibold
@@ -924,64 +861,60 @@ export default function GalleryExperience() {
                   text-blossom
                   hover:text-ivory
                 "
-                            >
-                                View All Photos
-                                <ArrowRight size={16} />
-                            </Link>
-                        </div>
-                    )}
+                  >
+                    {collection.emptyButtonLabel}
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
+              )}
 
-                    {/* BOTTOM COLLECTION NOTE */}
-                    {filteredPhotos.length > 0 && (
-                        <m.div
-                            layout="position"
-                            transition={{ layout: { duration: reduced ? 0 : 0.65, ease: ease.out } }}
-                            className="
+              {/* BOTTOM COLLECTION NOTE */}
+              {filteredPhotos.length > 0 && (
+                <m.div
+                  layout="position"
+                  transition={{ layout: { duration: reduced ? 0 : 0.65, ease: ease.out } }}
+                  className="
                 mt-16 flex flex-col
                 items-center gap-4
                 border-t border-champagne/15
                 pt-10 text-center
                 sm:mt-20
               "
-                        >
-                            <Flower2
-                                size={20}
-                                strokeWidth={1.2}
-                                className="text-blossom/70"
-                            />
+                >
+                  <Flower2 size={20} strokeWidth={1.2} className="text-blossom/70" />
 
-                            <p
-                                className="
+                  <p
+                    className="
                   font-cormorant
                   text-[26px] italic
                   text-ivory/60
                   sm:text-[31px]
                 "
-                            >
-                                Every picture tells a story.
-                            </p>
+                  >
+                    {collection.bottomMessage}
+                  </p>
 
-                            <p
-                                className="
+                  <p
+                    className="
                   text-[11px]
                   tracking-[0.06em]
                   text-ivory/60
                 "
-                            >
-                                Cherry Blossom Garden
-                            </p>
-                        </m.div>
-                    )}
-                    </LayoutGroup>
-                    </LayoutMotion>
-                </div>
-            </section>
+                  >
+                    {collection.bottomBrand}
+                  </p>
+                </m.div>
+              )}
+            </LayoutGroup>
+          </LayoutMotion>
+        </div>
+      </section>
 
-            {/* ===========================================
+      {/* ===========================================
           04 — FINAL INVITATION
           =========================================== */}
-            <section
-                className="
+      <section
+        className="
           relative overflow-hidden
           border-t border-champagne/15
           bg-charcoal
@@ -989,57 +922,55 @@ export default function GalleryExperience() {
           sm:px-8 sm:py-24
           lg:px-12 lg:py-28
         "
-            >
-                <div
-                    className="
+      >
+        <div
+          className="
             pointer-events-none absolute
             -right-32 top-0
             h-[350px] w-[350px]
             rounded-full bg-blossom/[0.06]
             blur-[100px]
           "
-                />
+        />
 
-                <Reveal
-                    className="
+        <Reveal
+          className="
             relative mx-auto flex
             max-w-[1300px]
             flex-col items-start
             justify-between gap-10
             lg:flex-row lg:items-center
           "
-                >
-                    <div>
-                        <p
-                            className="
+        >
+          <div>
+            <p
+              className="
                 text-[10px] font-semibold
                 uppercase tracking-[0.28em]
                 text-blossom
               "
-                        >
-                            Beyond the photographs
-                        </p>
+            >
+              {closing.eyebrow}
+            </p>
 
-                        <h2
-                            className="
+            <h2
+              className="
                 mt-5 font-cormorant
                 text-[clamp(42px,5vw,72px)]
                 font-normal leading-[0.95]
                 tracking-[-0.03em]
                 text-ivory
               "
-                        >
-                            Experience the
-                            <br />
-                            <span className="italic text-blossom">
-                beauty in person.
-              </span>
-                        </h2>
-                    </div>
+            >
+              {closing.title}
+              <br />
+              <span className="italic text-blossom">{closing.accent}</span>
+            </h2>
+          </div>
 
-                    <Link
-                        href="/reservation"
-                        className="
+          <Link
+            href={closing.buttonHref}
+            className="
               group inline-flex min-h-[53px]
               shrink-0 items-center
               justify-center gap-5
@@ -1054,36 +985,37 @@ export default function GalleryExperience() {
               focus-visible:outline-offset-4
               focus-visible:outline-blossom
             "
-                    >
-                        Reserve a Table
-                        <ArrowUpRight
-                            size={17}
-                            strokeWidth={1.5}
-                            className="
+          >
+            {closing.buttonLabel}
+            <ArrowUpRight
+              size={17}
+              strokeWidth={1.5}
+              className="
                 transition-transform duration-300
                 group-hover:-translate-y-1
                 group-hover:translate-x-1
               "
-                        />
-                    </Link>
-                </Reveal>
-            </section>
+            />
+          </Link>
+        </Reveal>
+      </section>
 
-            {/* ===========================================
+      {/* ===========================================
           05 — FULL SCREEN LIGHTBOX
           =========================================== */}
-            <AnimatePresence>
-                {openedPhoto ? (
-                    <GalleryLightbox
-                        key="lightbox"
-                        photos={filteredPhotos}
-                        index={openedIndex}
-                        direction={lightboxDirection}
-                        onMove={movePhoto}
-                        onClose={() => setOpenedId(null)}
-                    />
-                ) : null}
-            </AnimatePresence>
-        </>
-    );
+      <AnimatePresence>
+        {openedPhoto ? (
+          <GalleryLightbox
+            key="lightbox"
+            photos={filteredPhotos}
+            categories={categories}
+            index={openedIndex}
+            direction={lightboxDirection}
+            onMove={movePhoto}
+            onClose={() => setOpenedId(null)}
+          />
+        ) : null}
+      </AnimatePresence>
+    </>
+  )
 }

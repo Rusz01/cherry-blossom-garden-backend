@@ -28,6 +28,7 @@ export interface Config {
     'menu-items': MenuItem;
     'special-menus': SpecialMenu;
     events: Event;
+    'gallery-categories': GalleryCategory;
     users: User;
     roles: Role;
     'email-logs': EmailLog;
@@ -51,6 +52,7 @@ export interface Config {
     'menu-items': MenuItemsSelect<false> | MenuItemsSelect<true>;
     'special-menus': SpecialMenusSelect<false> | SpecialMenusSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
+    'gallery-categories': GalleryCategoriesSelect<false> | GalleryCategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'email-logs': EmailLogsSelect<false> | EmailLogsSelect<true>;
@@ -72,6 +74,7 @@ export interface Config {
     navigation: Navigation;
     'seo-settings': SeoSetting;
     'menu-settings': MenuSetting;
+    'gallery-page': GalleryPage;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
@@ -81,6 +84,7 @@ export interface Config {
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'seo-settings': SeoSettingsSelect<false> | SeoSettingsSelect<true>;
     'menu-settings': MenuSettingsSelect<false> | MenuSettingsSelect<true>;
+    'gallery-page': GalleryPageSelect<false> | GalleryPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -555,7 +559,8 @@ export interface Role {
           | 'dietary-tags'
           | 'menu-items'
           | 'special-menus'
-          | 'events';
+          | 'events'
+          | 'gallery-categories';
         read?: boolean | null;
         create?: boolean | null;
         update?: boolean | null;
@@ -572,7 +577,8 @@ export interface Role {
           | 'site-settings'
           | 'navigation'
           | 'seo-settings'
-          | 'menu-settings';
+          | 'menu-settings'
+          | 'gallery-page';
         read?: boolean | null;
         update?: boolean | null;
         id?: string | null;
@@ -845,6 +851,28 @@ export interface Event {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Create and manage categories for Gallery photographs.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery-categories".
+ */
+export interface GalleryCategory {
+  id: number;
+  name: string;
+  /**
+   * URL path segment. Generated from the title when empty. Use “home” for the homepage.
+   */
+  slug: string;
+  description?: string | null;
+  /**
+   * Lower numbers appear first in the Gallery filters.
+   */
+  sortOrder?: number | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Every email the CMS attempted to send. “Submitted” means Resend accepted it — not that it reached the inbox.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1013,6 +1041,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'events';
         value: number | Event;
+      } | null)
+    | ({
+        relationTo: 'gallery-categories';
+        value: number | GalleryCategory;
       } | null)
     | ({
         relationTo: 'users';
@@ -1482,6 +1514,19 @@ export interface EventsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery-categories_select".
+ */
+export interface GalleryCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  description?: T;
+  sortOrder?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2122,6 +2167,79 @@ export interface MenuSetting {
   createdAt?: string | null;
 }
 /**
+ * Manage Gallery photographs, categories, headings and SEO while preserving the existing website design.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery-page".
+ */
+export interface GalleryPage {
+  id: number;
+  hero?: {
+    eyebrow?: string | null;
+    title?: string | null;
+    accent?: string | null;
+    description?: string | null;
+    buttonLabel?: string | null;
+    badgeLineOne?: string | null;
+    badgeLineTwo?: string | null;
+    imageCaption?: string | null;
+    /**
+     * Optional. The original Garden photograph is used when no image is selected.
+     */
+    image?: (number | null) | Media;
+  };
+  collection?: {
+    eyebrow?: string | null;
+    allTitle?: string | null;
+    searchPlaceholder?: string | null;
+    emptyTitle?: string | null;
+    emptyDescription?: string | null;
+    emptyButtonLabel?: string | null;
+    bottomMessage?: string | null;
+    bottomBrand?: string | null;
+  };
+  /**
+   * Add, remove or reorder photographs. Select at least one Gallery category for every new photograph.
+   */
+  photos?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        alt?: string | null;
+        /**
+         * Upload a new image or choose an existing image from Media. Seeded photographs initially use their original website files.
+         */
+        image?: (number | null) | Media;
+        /**
+         * Used only for the original seeded photographs until an uploaded image replaces them.
+         */
+        fallbackSrc?: string | null;
+        /**
+         * Choose one or more categories. Create new categories under Gallery → Gallery Categories.
+         */
+        categories: (number | GalleryCategory)[];
+        ratio?: ('4 / 5' | '3 / 4' | '5 / 4' | '3 / 2' | '1 / 1' | '2 / 3') | null;
+        position?: ('center' | 'top' | 'bottom' | 'left' | 'right') | null;
+        visible?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  closing?: {
+    eyebrow?: string | null;
+    title?: string | null;
+    accent?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -2516,6 +2634,70 @@ export interface MenuSettingsSelect<T extends boolean = true> {
   allDescription?: T;
   signatureTitle?: T;
   signatureDescription?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gallery-page_select".
+ */
+export interface GalleryPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        accent?: T;
+        description?: T;
+        buttonLabel?: T;
+        badgeLineOne?: T;
+        badgeLineTwo?: T;
+        imageCaption?: T;
+        image?: T;
+      };
+  collection?:
+    | T
+    | {
+        eyebrow?: T;
+        allTitle?: T;
+        searchPlaceholder?: T;
+        emptyTitle?: T;
+        emptyDescription?: T;
+        emptyButtonLabel?: T;
+        bottomMessage?: T;
+        bottomBrand?: T;
+      };
+  photos?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        alt?: T;
+        image?: T;
+        fallbackSrc?: T;
+        categories?: T;
+        ratio?: T;
+        position?: T;
+        visible?: T;
+        id?: T;
+      };
+  closing?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        accent?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   _status?: T;
   updatedAt?: T;
   createdAt?: T;

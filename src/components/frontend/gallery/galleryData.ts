@@ -34,11 +34,9 @@ export const categories = [
     },
 ] as const;
 
-export type CategorySlug =
-    (typeof categories)[number]["slug"];
+export type CategorySlug = string;
 
-export type PhotoCategory =
-    Exclude<CategorySlug, "all">;
+export type PhotoCategory = string;
 
 export type GalleryPhoto = {
     id: string;
@@ -144,11 +142,17 @@ export const galleryPhotos: GalleryPhoto[] = [
     },
 ];
 
+
 export function getCategoryLabel(
-    slug: CategorySlug | PhotoCategory
+  slug: string,
+  availableCategories: ReadonlyArray<{
+    slug: string;
+    label: string;
+  }> = categories,
 ): string {
-    return (
-        categories.find((category) => category.slug === slug)
-            ?.label ?? slug
-    );
+  return (
+    availableCategories.find(
+      (category) => category.slug === slug,
+    )?.label ?? slug
+  );
 }
