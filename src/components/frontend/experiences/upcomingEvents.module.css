@@ -798,3 +798,22 @@
         animation: none !important;
     }
 }
+
+
+
+.card:hover .cardArrow,
+.card:focus-within .cardArrow {
+    color: var(--event-bg);
+    background: var(--event-pink);
+    transform: rotate(45deg);
+}
+
+.card:focus-within {
+    border-color: var(--event-pink);
+}
+
+.card:focus-within > a:focus-visible {
+    outline: 2px solid var(--event-pink);
+    outline-offset: -3px;
+}
+

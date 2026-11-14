@@ -30,6 +30,10 @@ import { MenuItems } from "@/collections/MenuItems";
 import { SpecialMenus } from "@/collections/SpecialMenus";
 import { MenuSettings } from "@/globals/MenuSettings";
 
+import { Events } from "@/collections/Events";
+import { ExperiencesPage } from "@/globals/ExperiencesPage";
+
+
 
 
 const filename = fileURLToPath(import.meta.url)
@@ -51,16 +55,19 @@ const contentCollections: CollectionConfig[] = [
   MenuCategories,
   DietaryTags,
   MenuItems,
-  SpecialMenus
+  SpecialMenus,
+  Events,
+
 ]
 
 
 const contentGlobals: GlobalConfig[] = [
   Homepage,
+  ExperiencesPage,
   SiteSettings,
   Navigation,
   SEOSettings,
-  MenuSettings
+  MenuSettings,
 ]
 
 const labelOf = (entity: CollectionConfig | GlobalConfig, fallback: string): string => {
@@ -102,6 +109,18 @@ export default buildConfig({
       },
       robots: 'noindex, nofollow',
     },
+
+    timezones: {
+      defaultTimezone: "Asia/Kathmandu",
+      supportedTimezones: [
+        {
+          label: "Nepal Standard Time (NPT, UTC+05:45)",
+          value: "Asia/Kathmandu",
+        },
+      ],
+    },
+
+
     dateFormat: 'd MMM yyyy, HH:mm',
     components: {
       graphics: {

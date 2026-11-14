@@ -12,54 +12,7 @@
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "supportedTimezones".
  */
-export type SupportedTimezones =
-  | 'Pacific/Midway'
-  | 'Pacific/Niue'
-  | 'Pacific/Honolulu'
-  | 'Pacific/Rarotonga'
-  | 'America/Anchorage'
-  | 'Pacific/Gambier'
-  | 'America/Los_Angeles'
-  | 'America/Tijuana'
-  | 'America/Denver'
-  | 'America/Phoenix'
-  | 'America/Chicago'
-  | 'America/Guatemala'
-  | 'America/New_York'
-  | 'America/Bogota'
-  | 'America/Caracas'
-  | 'America/Santiago'
-  | 'America/Buenos_Aires'
-  | 'America/Sao_Paulo'
-  | 'Atlantic/South_Georgia'
-  | 'Atlantic/Azores'
-  | 'Atlantic/Cape_Verde'
-  | 'Europe/London'
-  | 'Europe/Berlin'
-  | 'Africa/Lagos'
-  | 'Europe/Athens'
-  | 'Africa/Cairo'
-  | 'Europe/Moscow'
-  | 'Asia/Riyadh'
-  | 'Asia/Dubai'
-  | 'Asia/Baku'
-  | 'Asia/Karachi'
-  | 'Asia/Tashkent'
-  | 'Asia/Calcutta'
-  | 'Asia/Dhaka'
-  | 'Asia/Almaty'
-  | 'Asia/Jakarta'
-  | 'Asia/Bangkok'
-  | 'Asia/Shanghai'
-  | 'Asia/Singapore'
-  | 'Asia/Tokyo'
-  | 'Asia/Seoul'
-  | 'Australia/Brisbane'
-  | 'Australia/Sydney'
-  | 'Pacific/Guam'
-  | 'Pacific/Noumea'
-  | 'Pacific/Auckland'
-  | 'Pacific/Fiji';
+export type SupportedTimezones = 'Asia/Kathmandu';
 
 export interface Config {
   auth: {
@@ -74,6 +27,7 @@ export interface Config {
     'dietary-tags': DietaryTag;
     'menu-items': MenuItem;
     'special-menus': SpecialMenu;
+    events: Event;
     users: User;
     roles: Role;
     'email-logs': EmailLog;
@@ -96,6 +50,7 @@ export interface Config {
     'dietary-tags': DietaryTagsSelect<false> | DietaryTagsSelect<true>;
     'menu-items': MenuItemsSelect<false> | MenuItemsSelect<true>;
     'special-menus': SpecialMenusSelect<false> | SpecialMenusSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'email-logs': EmailLogsSelect<false> | EmailLogsSelect<true>;
@@ -111,6 +66,7 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     homepage: Homepage;
+    'experiences-page': ExperiencesPage;
     'site-settings': SiteSetting;
     navigation: Navigation;
     'seo-settings': SeoSetting;
@@ -118,6 +74,7 @@ export interface Config {
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    'experiences-page': ExperiencesPageSelect<false> | ExperiencesPageSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'seo-settings': SeoSettingsSelect<false> | SeoSettingsSelect<true>;
@@ -589,7 +546,14 @@ export interface Role {
   collectionPermissions?:
     | {
         collection:
-          'pages' | 'explore-pages' | 'media' | 'menu-categories' | 'dietary-tags' | 'menu-items' | 'special-menus';
+          | 'pages'
+          | 'explore-pages'
+          | 'media'
+          | 'menu-categories'
+          | 'dietary-tags'
+          | 'menu-items'
+          | 'special-menus'
+          | 'events';
         read?: boolean | null;
         create?: boolean | null;
         update?: boolean | null;
@@ -599,7 +563,7 @@ export interface Role {
     | null;
   globalPermissions?:
     | {
-        global: 'homepage' | 'site-settings' | 'navigation' | 'seo-settings' | 'menu-settings';
+        global: 'homepage' | 'experiences-page' | 'site-settings' | 'navigation' | 'seo-settings' | 'menu-settings';
         read?: boolean | null;
         update?: boolean | null;
         id?: string | null;
@@ -795,6 +759,83 @@ export interface SpecialMenu {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * Create, schedule, publish and manage events displayed at Cherry Blossom Garden. All event dates and times use Nepal Standard Time (NPT, UTC+05:45).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number;
+  /**
+   * Public event URL. Changing this will change the event's URL.
+   */
+  slug?: string | null;
+  title: string;
+  category:
+    | 'LIVE ENTERTAINMENT'
+    | 'ROOFTOP EXPERIENCE'
+    | 'FAMILY & LIFESTYLE'
+    | 'GARDEN & LOUNGE'
+    | 'PRIVATE DINING'
+    | 'SPECIAL EVENT'
+    | 'OTHER';
+  /**
+   * Displayed on the upcoming-event card and event details page.
+   */
+  description: string;
+  /**
+   * Detailed information about the event. Use blank lines to separate paragraphs.
+   */
+  details?: string | null;
+  /**
+   * Add special features or highlights of the event.
+   */
+  highlights?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Select the event start date and time in Nepal Standard Time (NPT, UTC+05:45).
+   */
+  startsAt: string;
+  startsAt_tz: SupportedTimezones;
+  /**
+   * Optional. Select the event end date and time in Nepal Standard Time (NPT, UTC+05:45).
+   */
+  endsAt?: string | null;
+  endsAt_tz?: SupportedTimezones;
+  /**
+   * Example: Second Floor - Rooftop BBQ & Events.
+   */
+  location: string;
+  /**
+   * Optional meeting point, floor information or event-specific venue instructions.
+   */
+  address?: string | null;
+  /**
+   * Upload the main event photograph. It appears on the event card and details page.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Default photograph when no image is uploaded.
+   */
+  imagePath?: string | null;
+  /**
+   * Describe the image for accessibility and SEO.
+   */
+  imageAlt?: string | null;
+  bookingLabel?: string | null;
+  /**
+   * Optional. Enter an internal reservation page or external HTTPS booking link. Leave empty when booking is unavailable.
+   */
+  bookingUrl?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * Every email the CMS attempted to send. “Submitted” means Resend accepted it — not that it reached the inbox.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -959,6 +1000,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'special-menus';
         value: number | SpecialMenu;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: number | Event;
       } | null)
     | ({
         relationTo: 'users';
@@ -1400,6 +1445,37 @@ export interface SpecialMenusSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  slug?: T;
+  title?: T;
+  category?: T;
+  description?: T;
+  details?: T;
+  highlights?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  startsAt?: T;
+  startsAt_tz?: T;
+  endsAt?: T;
+  endsAt_tz?: T;
+  location?: T;
+  address?: T;
+  image?: T;
+  imagePath?: T;
+  imageAlt?: T;
+  bookingLabel?: T;
+  bookingUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
@@ -1724,6 +1800,54 @@ export interface Homepage {
   createdAt?: string | null;
 }
 /**
+ * Manage the experience carousel, headings and upcoming-events section without modifying the website design.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiences-page".
+ */
+export interface ExperiencesPage {
+  id: number;
+  hero?: {
+    eyebrow?: string | null;
+    title?: string | null;
+    accent?: string | null;
+    description?: string | null;
+  };
+  /**
+   * Add, edit, remove and reorder experiences. The existing carousel layout is retained.
+   */
+  slides: {
+    key?: string | null;
+    label?: string | null;
+    category?: string | null;
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Optional. Overrides the default image.
+     */
+    image?: (number | null) | Media;
+    imagePath?: string | null;
+    alt?: string | null;
+    linkLabel?: string | null;
+    href?: string | null;
+    id?: string | null;
+  }[];
+  upcoming?: {
+    eyebrow?: string | null;
+    title?: string | null;
+    accent?: string | null;
+    description?: string | null;
+    emptyTitle?: string | null;
+    emptyDescription?: string | null;
+    footerText?: string | null;
+    footerLabel?: string | null;
+    footerHref?: string | null;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Brand, contact and social details used across the website.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2034,6 +2158,52 @@ export interface HomepageSelect<T extends boolean = true> {
         privacy?: T;
         footer?: T;
         image?: T;
+      };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiences-page_select".
+ */
+export interface ExperiencesPageSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        accent?: T;
+        description?: T;
+      };
+  slides?:
+    | T
+    | {
+        key?: T;
+        label?: T;
+        category?: T;
+        title?: T;
+        description?: T;
+        image?: T;
+        imagePath?: T;
+        alt?: T;
+        linkLabel?: T;
+        href?: T;
+        id?: T;
+      };
+  upcoming?:
+    | T
+    | {
+        eyebrow?: T;
+        title?: T;
+        accent?: T;
+        description?: T;
+        emptyTitle?: T;
+        emptyDescription?: T;
+        footerText?: T;
+        footerLabel?: T;
+        footerHref?: T;
       };
   _status?: T;
   updatedAt?: T;
