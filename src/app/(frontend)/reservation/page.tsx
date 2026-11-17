@@ -1,25 +1,48 @@
+import type { Metadata } from 'next'
+import { draftMode, headers } from 'next/headers'
+import { cache, Suspense } from 'react'
+import Navbar from '@/components/frontend/navbar'
+import ReservationContact from '@/components/frontend/reservation/reservationContact'
+import { getPayloadClient } from '@/lib/cms/payload'
+import { getAppURL } from '@/lib/env'
+import { normalizeReservationContent } from '@/lib/reservation/config'
 
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import Navbar from "@/components/frontend/navbar";
-import ReservationContact from "@/components/frontend/reservation/reservationContact";
+export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-    title: "Reservation & Contact | Cherry Blossom Garden",
-    description:
-        "Plan your visit to Cherry Blossom Garden. Request a table in our café, restaurant, garden balcony, private dining or rooftop, and get in touch with our team.",
-};
+const getContent = cache(async () => {
+  const payload = await getPayloadClient()
+  const { isEnabled } = await draftMode()
+  let canPreview = false
+  if (isEnabled) {
+    const { user } = await payload.auth({ headers: await headers() })
+    if (user) {
+      try {
+        await payload.findGlobal({ slug: 'reservation-page', user, overrideAccess: false, depth: 0 })
+        canPreview = true
+      } catch { canPreview = false }
+    }
+  }
+  const page = await payload.findGlobal({
+    slug: 'reservation-page', draft: canPreview, depth: 0, overrideAccess: true,
+  })
+  return normalizeReservationContent(canPreview || page._status === 'published' ? page : null)
+})
 
-export default function ReservationPage() {
-    return (
-        <div className="min-h-screen bg-midnight font-inter text-ivory">
-            <Navbar />
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getContent()
+  return { title: page.seoTitle, description: page.seoDescription }
+}
 
-            <main>
-                <Suspense fallback={<div className="min-h-[650px]" />}>
-                    <ReservationContact />
-                </Suspense>
-            </main>
-        </div>
-    );
+export default async function ReservationPage() {
+  const page = await getContent()
+  return (
+    <div className="min-h-screen bg-midnight font-inter text-ivory">
+      <Navbar />
+      <main>
+        <Suspense fallback={<div className="min-h-[650px]" />}>
+          <ReservationContact initialData={page} serverURL={getAppURL()} />
+        </Suspense>
+      </main>
+    </div>
+  )
 }

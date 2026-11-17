@@ -3,6 +3,8 @@ export const EMAIL_CATEGORIES = [
   { label: 'Account invitation', value: 'account-invitation' },
   { label: 'Email verification', value: 'email-verification' },
   { label: 'Password reset', value: 'password-reset' },
+  { label: 'Reservation', value: 'reservation' },
+  { label: 'Contact enquiry', value: 'contact' },
   { label: 'System', value: 'system' },
 ] as const
 

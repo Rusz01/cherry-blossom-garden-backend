@@ -34,15 +34,8 @@ import LayoutMotion from "@/components/frontend/motion/layoutMotion";
 import Reveal from "@/components/frontend/motion/reveal";
 import RiseText from "@/components/frontend/motion/riseText";
 import { ease } from "@/lib/frontend/motion/tokens";
-
-const contact = {
-    // Replace these with verified business information.
-    email: "",
-    phone: "",
-    address: "",
-    mapsUrl: "",
-    hours: "",
-};
+import { useLivePreview } from "@payloadcms/live-preview-react";
+import { bookingDateError, getNepalTime, getNepalToday, normalizeReservationContent, type ReservationRules, type ReservationView } from "@/lib/reservation/config";
 
 const experiences = [
     {
@@ -85,20 +78,6 @@ const occasions = [
     "Family",
     "Other",
 ] as const;
-
-// Preferred times only. These are not live availability.
-// Replace with slots supplied by your reservation backend.
-const timePreferences = [
-    "11:00",
-    "12:00",
-    "13:00",
-    "14:00",
-    "15:00",
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-];
 
 const steps = [
     "Date",
@@ -240,13 +219,15 @@ function SmallLabel({ children }: { children: ReactNode }) {
 function Calendar({
                       value,
                       onChange,
+                      rules,
                   }: {
     value: string;
     onChange: (value: string) => void;
+    rules: ReservationRules;
 }) {
-    const today = useMemo(() => new Date(), []);
+    const todayKey = useMemo(() => getNepalToday(), []);
     const [month, setMonth] = useState(() => {
-        const d = value ? new Date(`${value}T12:00:00`) : new Date();
+        const d = new Date(`${value || todayKey}T12:00:00`);
         return new Date(d.getFullYear(), d.getMonth(), 1);
     });
     const [monthDirection, setMonthDirection] = useState(1);
@@ -285,8 +266,8 @@ function Calendar({
     };
 
     const currentMonth =
-        month.getFullYear() === today.getFullYear() &&
-        month.getMonth() === today.getMonth();
+        month.getFullYear() === Number(todayKey.slice(0, 4)) &&
+        month.getMonth() === Number(todayKey.slice(5, 7)) - 1;
 
     return (
         <div className="w-full max-w-[440px]">
@@ -364,7 +345,7 @@ function Calendar({
                     );
 
                     const key = dateKey(d);
-                    const disabled = key < dateKey(today);
+                    const disabled = Boolean(bookingDateError(key, rules));
                     const selected = value === key;
 
                     return (
@@ -409,7 +390,12 @@ function Calendar({
     );
 }
 
-export default function ReservationContact() {
+export default function ReservationContact({ initialData, serverURL }: { initialData: ReservationView; serverURL: string }) {
+    const { data } = useLivePreview<ReservationView>({ initialData, serverURL, depth: 0 });
+    const content = useMemo(() => normalizeReservationContent(data), [data]);
+    const contact = content.contact;
+    const timePreferences = content.booking.timeSlots;
+    const [website, setWebsite] = useState("");
     const searchParams = useSearchParams();
     const initialOccasion =
         searchParams.get("occasion") === "kids-party"
@@ -486,14 +472,13 @@ export default function ReservationContact() {
     const validStep = () => {
         switch (step) {
             case 0:
-                return Boolean(booking.date) &&
-                    booking.date >= dateKey(new Date());
+                return !bookingDateError(booking.date, content.booking);
             case 1:
-                return booking.guests >= 1 && booking.guests <= 20;
+                return booking.guests >= 1 && booking.guests <= content.booking.maxGuests;
             case 2:
                 return Boolean(booking.experience);
             case 3:
-                return Boolean(booking.time);
+                return Boolean(booking.time) && content.booking.timeSlots.includes(booking.time) && !(booking.date === getNepalToday() && booking.time <= getNepalTime());
             case 4:
                 return true;
             case 5:
@@ -520,6 +505,7 @@ export default function ReservationContact() {
                 body: JSON.stringify({
                     type: "reservation",
                     ...booking,
+                    website,
                 }),
             });
 
@@ -562,6 +548,7 @@ export default function ReservationContact() {
                 body: JSON.stringify({
                     type: "contact",
                     ...enquiry,
+                    website,
                 }),
             });
 
@@ -612,23 +599,24 @@ export default function ReservationContact() {
 
                     <div className="relative px-5 pb-20 pt-16 sm:px-10 lg:px-12 lg:pt-20 xl:px-20">
                         <div className="cbg-enter cbg-delay-1">
-                            <SmallLabel>Make a Reservation</SmallLabel>
+                            <SmallLabel>{content.reservationLabel}</SmallLabel>
                         </div>
 
                         <h1 className="mt-7 max-w-[800px] font-cormorant text-[clamp(54px,5.8vw,96px)] font-normal leading-[0.89] tracking-[-0.04em]">
-                            <RiseText text="A Beautiful" delay={0.2} />
+                            <RiseText text={content.reservationHeading1} delay={0.2} />
                             <br />
-                            <RiseText text="Experience" delay={0.34} />{" "}
+                            <RiseText text={content.reservationHeading2} delay={0.34} />{" "}
                             <span className="                    mt-2
                     font-allura font-normal
                     leading-[1.1]
-                    tracking-normal text-blossom"><RiseText text="Awaits." delay={0.44} /></span>
+                    tracking-normal text-blossom"><RiseText text={content.reservationAccent} delay={0.44} /></span>
                         </h1>
 
                         <p className="cbg-enter mt-7 max-w-[450px] text-[13px] leading-7 text-ivory/55 sm:text-[14px]" style={{ animationDelay: "0.6s" }}>
-                            Good food, beautiful spaces and memorable moments.
-                            We look forward to welcoming you.
+                            {content.reservationDescription}
                         </p>
+
+                        {!content.booking.enabled && (<p role="status" className="mt-6 text-sm text-blossom">Online reservations are temporarily unavailable. Please contact our team instead.</p>)}
 
                         {/* STEPPER */}
                         <div
@@ -744,6 +732,7 @@ export default function ReservationContact() {
                                         <LayoutMotion>
                                             <Calendar
                                                 value={booking.date}
+                                                rules={content.booking}
                                                 onChange={(value) => updateBooking("date", value)}
                                             />
                                         </LayoutMotion>
@@ -813,7 +802,7 @@ export default function ReservationContact() {
                                         <button
                                             type="button"
                                             aria-label="Add guest"
-                                            disabled={booking.guests >= 20}
+                                            disabled={booking.guests >= content.booking.maxGuests}
                                             onClick={() => changeGuests(1)}
                                             className={guestButton}
                                         >
@@ -822,13 +811,13 @@ export default function ReservationContact() {
                                     </div>
                                     {/* Turns to an accent note once the online limit is reached. */}
                                     <p
-                                        role={booking.guests >= 20 ? "status" : undefined}
+                                        role={booking.guests >= content.booking.maxGuests ? "status" : undefined}
                                         className={`mt-5 text-[11px] leading-6 transition-colors duration-500 ${
-                                            booking.guests >= 20 ? "text-blossom" : "text-ivory/40"
+                                            booking.guests >= content.booking.maxGuests ? "text-blossom" : "text-ivory/40"
                                         }`}
                                     >
-                                        {booking.guests >= 20
-                                            ? "20 guests is the most we can take online. "
+                                        {booking.guests >= content.booking.maxGuests
+                                            ? `${content.booking.maxGuests} guests is the most we can take online. `
                                             : null}
                                         For larger gatherings, please contact our team
                                         directly.
@@ -911,6 +900,7 @@ export default function ReservationContact() {
                                                 key={time}
                                                 type="button"
                                                 aria-pressed={booking.time === time}
+                                                disabled={booking.date === getNepalToday() && time <= getNepalTime()}
                                                 onClick={() => updateBooking("time", time)}
                                                 className={`focus-ring min-h-[51px] rounded-md border text-[12px] transition-[background-color,border-color,color,scale] duration-300 active:scale-[0.97] ${
                                                     booking.time === time
@@ -1021,6 +1011,7 @@ export default function ReservationContact() {
                         }
                     />
                                     </Field>
+                                    <input type="text" name="website" value={website} onChange={(e) => setWebsite(e.target.value)} autoComplete="off" tabIndex={-1} aria-hidden="true" className="absolute -left-[9999px] opacity-0" />
                                     <p className="text-[11px] leading-6 text-ivory/60">
                                         By submitting, you agree to be contacted about your
                                         reservation request. This is not a confirmed booking.
@@ -1111,17 +1102,16 @@ export default function ReservationContact() {
 
                     <div className="px-6 pb-20 pt-9 sm:px-12 lg:px-10 xl:px-16">
                         <Reveal intensity="subtle">
-                        <SmallLabel>Contact Us</SmallLabel>
+                        <SmallLabel>{content.contactLabel}</SmallLabel>
 
                         <h2 className="mt-5 font-cormorant text-[clamp(55px,5.2vw,82px)] leading-[0.85] tracking-[-0.04em]">
-                            We&apos;re Here
+                            {content.contactHeading1}
                             <br />
-                            <span className="italic text-blossom">for You.</span>
+                            <span className="italic text-blossom">{content.contactHeading2}</span>
                         </h2>
 
                         <p className="mt-7 max-w-[420px] text-[13px] leading-7 text-ivory/55">
-                            Planning a celebration, have a question or looking for
-                            something special? Our team would love to hear from you.
+                            {content.contactDescription}
                         </p>
                         </Reveal>
 
@@ -1190,16 +1180,17 @@ export default function ReservationContact() {
                         <div className="mt-14">
                             <SmallLabel>General Enquiries</SmallLabel>
                             <h3 className="mt-4 font-cormorant text-[38px] leading-none">
-                                Send Us a Message.
+                                {content.enquiryTitle}
                             </h3>
                             <p className="mt-4 text-[12px] leading-6 text-ivory/60">
-                                Not making a reservation? Send us your enquiry here.
+                                {content.enquiryDescription}
                             </p>
 
                             <form
                                 onSubmit={submitEnquiry}
                                 className="mt-7 space-y-4"
                             >
+                                <input type="text" name="website" value={website} onChange={(e) => setWebsite(e.target.value)} autoComplete="off" tabIndex={-1} aria-hidden="true" className="absolute -left-[9999px] opacity-0" />
                                 <div className="grid gap-4 sm:grid-cols-2">
                                     <Field label="Your Name">
                                         <input

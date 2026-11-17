@@ -29,6 +29,8 @@ export interface Config {
     'special-menus': SpecialMenu;
     events: Event;
     'gallery-categories': GalleryCategory;
+    reservations: Reservation;
+    'contact-messages': ContactMessage;
     users: User;
     roles: Role;
     'email-logs': EmailLog;
@@ -53,6 +55,8 @@ export interface Config {
     'special-menus': SpecialMenusSelect<false> | SpecialMenusSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     'gallery-categories': GalleryCategoriesSelect<false> | GalleryCategoriesSelect<true>;
+    reservations: ReservationsSelect<false> | ReservationsSelect<true>;
+    'contact-messages': ContactMessagesSelect<false> | ContactMessagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'email-logs': EmailLogsSelect<false> | EmailLogsSelect<true>;
@@ -75,6 +79,8 @@ export interface Config {
     'seo-settings': SeoSetting;
     'menu-settings': MenuSetting;
     'gallery-page': GalleryPage;
+    'reservation-page': ReservationPage;
+    'form-notifications': FormNotification;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
@@ -85,6 +91,8 @@ export interface Config {
     'seo-settings': SeoSettingsSelect<false> | SeoSettingsSelect<true>;
     'menu-settings': MenuSettingsSelect<false> | MenuSettingsSelect<true>;
     'gallery-page': GalleryPageSelect<false> | GalleryPageSelect<true>;
+    'reservation-page': ReservationPageSelect<false> | ReservationPageSelect<true>;
+    'form-notifications': FormNotificationsSelect<false> | FormNotificationsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -560,7 +568,9 @@ export interface Role {
           | 'menu-items'
           | 'special-menus'
           | 'events'
-          | 'gallery-categories';
+          | 'gallery-categories'
+          | 'reservations'
+          | 'contact-messages';
         read?: boolean | null;
         create?: boolean | null;
         update?: boolean | null;
@@ -578,7 +588,8 @@ export interface Role {
           | 'navigation'
           | 'seo-settings'
           | 'menu-settings'
-          | 'gallery-page';
+          | 'gallery-page'
+          | 'reservation-page';
         read?: boolean | null;
         update?: boolean | null;
         id?: string | null;
@@ -873,6 +884,52 @@ export interface GalleryCategory {
   createdAt: string;
 }
 /**
+ * Table requests only. A request is not a confirmed booking until the team confirms it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations".
+ */
+export interface Reservation {
+  id: number;
+  status: 'pending' | 'confirmed' | 'declined' | 'cancelled';
+  name: string;
+  email: string;
+  phone: string;
+  /**
+   * YYYY-MM-DD in Nepal
+   */
+  date: string;
+  /**
+   * 24-hour Nepal time
+   */
+  time: string;
+  guests: number;
+  experience: 'cafe' | 'restaurant' | 'garden-balcony' | 'private-dining' | 'rooftop';
+  occasion?: string | null;
+  message?: string | null;
+  emailStatus?: ('pending' | 'submitted' | 'partial' | 'failed' | 'captured') | null;
+  internalNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * General contact enquiries. Kept separate from table reservations.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-messages".
+ */
+export interface ContactMessage {
+  id: number;
+  status: 'new' | 'read' | 'replied' | 'closed';
+  name: string;
+  email: string;
+  message: string;
+  emailStatus?: ('pending' | 'submitted' | 'partial' | 'failed' | 'captured') | null;
+  internalNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Every email the CMS attempted to send. “Submitted” means Resend accepted it — not that it reached the inbox.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -881,7 +938,17 @@ export interface GalleryCategory {
 export interface EmailLog {
   id: number;
   subject?: string | null;
-  category?: ('welcome' | 'account-invitation' | 'email-verification' | 'password-reset' | 'system') | null;
+  category?:
+    | (
+        | 'welcome'
+        | 'account-invitation'
+        | 'email-verification'
+        | 'password-reset'
+        | 'reservation'
+        | 'contact'
+        | 'system'
+      )
+    | null;
   status?: ('submitted' | 'failed' | 'not-configured' | 'captured') | null;
   recipient?: string | null;
   relatedUserId?: string | null;
@@ -1045,6 +1112,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'gallery-categories';
         value: number | GalleryCategory;
+      } | null)
+    | ({
+        relationTo: 'reservations';
+        value: number | Reservation;
+      } | null)
+    | ({
+        relationTo: 'contact-messages';
+        value: number | ContactMessage;
       } | null)
     | ({
         relationTo: 'users';
@@ -1525,6 +1600,40 @@ export interface GalleryCategoriesSelect<T extends boolean = true> {
   description?: T;
   sortOrder?: T;
   active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations_select".
+ */
+export interface ReservationsSelect<T extends boolean = true> {
+  status?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  date?: T;
+  time?: T;
+  guests?: T;
+  experience?: T;
+  occasion?: T;
+  message?: T;
+  emailStatus?: T;
+  internalNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-messages_select".
+ */
+export interface ContactMessagesSelect<T extends boolean = true> {
+  status?: T;
+  name?: T;
+  email?: T;
+  message?: T;
+  emailStatus?: T;
+  internalNotes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2240,6 +2349,97 @@ export interface GalleryPage {
   createdAt?: string | null;
 }
 /**
+ * Edit both sides of the page and control dates, days, times and guest limits. Publish changes to make them public.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservation-page".
+ */
+export interface ReservationPage {
+  id: number;
+  reservationLabel?: string | null;
+  reservationHeading1?: string | null;
+  reservationHeading2?: string | null;
+  reservationAccent?: string | null;
+  reservationDescription?: string | null;
+  contactLabel?: string | null;
+  contactHeading1?: string | null;
+  contactHeading2?: string | null;
+  contactDescription?: string | null;
+  enquiryTitle?: string | null;
+  enquiryDescription?: string | null;
+  contact?: {
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+    hours?: string | null;
+    mapsUrl?: string | null;
+  };
+  booking: {
+    enabled?: boolean | null;
+    maxGuests: number;
+    maxDaysAhead: number;
+    blockedWeekdays?: ('0' | '1' | '2' | '3' | '4' | '5' | '6')[] | null;
+    blockedDates?:
+      | {
+          date: string;
+          date_tz: SupportedTimezones;
+          reason?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    blockedRanges?:
+      | {
+          startDate: string;
+          startDate_tz: SupportedTimezones;
+          endDate: string;
+          endDate_tz: SupportedTimezones;
+          reason?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    timeSlots?:
+      | {
+          time: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Administrator-only email lists. Add or remove recipients independently for reservation and contact notifications.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-notifications".
+ */
+export interface FormNotification {
+  id: number;
+  /**
+   * Add at least one address to receive new reservation requests.
+   */
+  reservationRecipients?:
+    | {
+        email: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Add at least one address to receive general enquiries.
+   */
+  contactRecipients?:
+    | {
+        email: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -2699,6 +2899,91 @@ export interface GalleryPageSelect<T extends boolean = true> {
         description?: T;
       };
   _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservation-page_select".
+ */
+export interface ReservationPageSelect<T extends boolean = true> {
+  reservationLabel?: T;
+  reservationHeading1?: T;
+  reservationHeading2?: T;
+  reservationAccent?: T;
+  reservationDescription?: T;
+  contactLabel?: T;
+  contactHeading1?: T;
+  contactHeading2?: T;
+  contactDescription?: T;
+  enquiryTitle?: T;
+  enquiryDescription?: T;
+  contact?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+        address?: T;
+        hours?: T;
+        mapsUrl?: T;
+      };
+  booking?:
+    | T
+    | {
+        enabled?: T;
+        maxGuests?: T;
+        maxDaysAhead?: T;
+        blockedWeekdays?: T;
+        blockedDates?:
+          | T
+          | {
+              date?: T;
+              date_tz?: T;
+              reason?: T;
+              id?: T;
+            };
+        blockedRanges?:
+          | T
+          | {
+              startDate?: T;
+              startDate_tz?: T;
+              endDate?: T;
+              endDate_tz?: T;
+              reason?: T;
+              id?: T;
+            };
+        timeSlots?:
+          | T
+          | {
+              time?: T;
+              id?: T;
+            };
+      };
+  seoTitle?: T;
+  seoDescription?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-notifications_select".
+ */
+export interface FormNotificationsSelect<T extends boolean = true> {
+  reservationRecipients?:
+    | T
+    | {
+        email?: T;
+        id?: T;
+      };
+  contactRecipients?:
+    | T
+    | {
+        email?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

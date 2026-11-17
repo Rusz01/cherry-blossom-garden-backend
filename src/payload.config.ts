@@ -39,6 +39,10 @@ import { KidsPlayPage } from "@/globals/KidsPlayPage";
 
 import { GalleryCategories } from "@/collections/GalleryCategories";
 import { GalleryPage } from "@/globals/GalleryPage";
+import { ReservationPage } from "@/globals/ReservationPage";
+import { FormNotifications } from "@/globals/FormNotifications";
+import { Reservations } from "@/collections/Reservations";
+import { ContactMessages } from "@/collections/ContactMessages";
 
 
 
@@ -67,6 +71,8 @@ const contentCollections: CollectionConfig[] = [
   SpecialMenus,
   Events,
   GalleryCategories,
+  Reservations,
+  ContactMessages,
 
 ]
 
@@ -80,6 +86,7 @@ const contentGlobals: GlobalConfig[] = [
   SEOSettings,
   MenuSettings,
   GalleryPage,
+  ReservationPage,
 ]
 
 const labelOf = (entity: CollectionConfig | GlobalConfig, fallback: string): string => {
@@ -152,7 +159,7 @@ export default buildConfig({
   },
 
   collections: [...contentCollections, Users, Roles, EmailLogs],
-  globals: contentGlobals,
+  globals: [...contentGlobals, FormNotifications],
 
   editor: lexicalEditor(),
 
