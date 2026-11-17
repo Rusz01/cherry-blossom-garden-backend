@@ -4,7 +4,7 @@ import { useState, type MouseEvent } from "react";
 import { ArrowUp } from "lucide-react";
 import { useMotionValueEvent, useScroll } from "motion/react";
 
-import styles from "@/app/privacy-policy/privacyPolicy.module.css";
+import styles from "@/app/(frontend)/privacy-policy/privacyPolicy.module.css";
 
 /**
  * Floating "Back to top" link, shown once the reader is well into the page.

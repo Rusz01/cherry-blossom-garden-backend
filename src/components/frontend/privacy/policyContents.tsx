@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import styles from "@/app/privacy-policy/privacyPolicy.module.css";
+import styles from "@/app/(frontend)/privacy-policy/privacyPolicy.module.css";
 
 type ContentsItem = {
     id: string;

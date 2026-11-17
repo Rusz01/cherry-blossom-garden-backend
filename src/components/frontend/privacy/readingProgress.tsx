@@ -3,7 +3,7 @@
 import { m, useScroll, useSpring } from "motion/react";
 
 import { usePrefersReducedMotion } from "@/hooks/frontend/usePrefersReducedMotion";
-import styles from "@/app/privacy-policy/privacyPolicy.module.css";
+import styles from "@/app/(frontend)/privacy-policy/privacyPolicy.module.css";
 
 /**
  * A hairline at the top of the viewport that fills as the page is read.
