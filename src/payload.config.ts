@@ -46,6 +46,7 @@ import { ContactMessages } from "@/collections/ContactMessages";
 
 
 import { Footer as FooterGlobal } from "@/globals/Footer";
+import { PrivacyPolicyPage } from "@/globals/PrivacyPolicyPage";
 
 
 
@@ -88,6 +89,7 @@ const contentGlobals: GlobalConfig[] = [
   GalleryPage,
   ReservationPage,
   FooterGlobal,
+  PrivacyPolicyPage,
 ]
 
 const labelOf = (entity: CollectionConfig | GlobalConfig, fallback: string): string => {

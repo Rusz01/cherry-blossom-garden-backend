@@ -81,6 +81,7 @@ export interface Config {
     'gallery-page': GalleryPage;
     'reservation-page': ReservationPage;
     footer: Footer;
+    'privacy-policy-page': PrivacyPolicyPage;
     'form-notifications': FormNotification;
   };
   globalsSelect: {
@@ -94,6 +95,7 @@ export interface Config {
     'gallery-page': GalleryPageSelect<false> | GalleryPageSelect<true>;
     'reservation-page': ReservationPageSelect<false> | ReservationPageSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'privacy-policy-page': PrivacyPolicyPageSelect<false> | PrivacyPolicyPageSelect<true>;
     'form-notifications': FormNotificationsSelect<false> | FormNotificationsSelect<true>;
   };
   locale: null;
@@ -592,7 +594,8 @@ export interface Role {
           | 'menu-settings'
           | 'gallery-page'
           | 'reservation-page'
-          | 'footer';
+          | 'footer'
+          | 'privacy-policy-page';
         read?: boolean | null;
         update?: boolean | null;
         id?: string | null;
@@ -2490,6 +2493,91 @@ export interface Footer {
   createdAt?: string | null;
 }
 /**
+ * Edit, add, remove and reorder legal sections. Draft changes remain private until published.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy-page".
+ */
+export interface PrivacyPolicyPage {
+  id: number;
+  /**
+   * Add, remove, or drag to reorder. Each section appears automatically in the mobile and desktop table of contents. To remove all sections, remove every row.
+   */
+  sections?:
+    | {
+        /**
+         * Lowercase letters, numbers and hyphens. Existing anchors should be kept to preserve shared URLs.
+         */
+        anchor: string;
+        eyebrow?: string | null;
+        title: string;
+        /**
+         * Add paragraphs, bold text, headings, lists and links in the rich-text editor.
+         */
+        body: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  hero?: {
+    eyebrow?: string | null;
+    titleMain?: string | null;
+    titleAccent?: string | null;
+    description?: string | null;
+    lastUpdated?: string | null;
+    metaLabel?: string | null;
+    documentNumber?: string | null;
+  };
+  glance?: {
+    eyebrow?: string | null;
+    titleMain?: string | null;
+    titleAccent?: string | null;
+    firstTitle?: string | null;
+    firstText?: string | null;
+    secondTitle?: string | null;
+    secondText?: string | null;
+    thirdTitle?: string | null;
+    thirdText?: string | null;
+  };
+  contact?: {
+    businessName?: string | null;
+    privacyEmail?: string | null;
+    businessAddress?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+    sidebarQuestion?: string | null;
+    sidebarButtonLabel?: string | null;
+  };
+  closing?: {
+    eyebrow?: string | null;
+    titleMain?: string | null;
+    titleAccent?: string | null;
+    description?: string | null;
+    buttonLabel?: string | null;
+    buttonHref?: string | null;
+  };
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Administrator-only email lists. Add or remove recipients independently for reservation and contact notifications.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3114,6 +3202,76 @@ export interface FooterSelect<T extends boolean = true> {
         rightsText?: T;
         privacyLabel?: T;
         privacyHref?: T;
+      };
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "privacy-policy-page_select".
+ */
+export interface PrivacyPolicyPageSelect<T extends boolean = true> {
+  sections?:
+    | T
+    | {
+        anchor?: T;
+        eyebrow?: T;
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        titleMain?: T;
+        titleAccent?: T;
+        description?: T;
+        lastUpdated?: T;
+        metaLabel?: T;
+        documentNumber?: T;
+      };
+  glance?:
+    | T
+    | {
+        eyebrow?: T;
+        titleMain?: T;
+        titleAccent?: T;
+        firstTitle?: T;
+        firstText?: T;
+        secondTitle?: T;
+        secondText?: T;
+        thirdTitle?: T;
+        thirdText?: T;
+      };
+  contact?:
+    | T
+    | {
+        businessName?: T;
+        privacyEmail?: T;
+        businessAddress?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+        sidebarQuestion?: T;
+        sidebarButtonLabel?: T;
+      };
+  closing?:
+    | T
+    | {
+        eyebrow?: T;
+        titleMain?: T;
+        titleAccent?: T;
+        description?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+      };
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
       };
   _status?: T;
   updatedAt?: T;
