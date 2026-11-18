@@ -1,4 +1,6 @@
+
 import type { Metadata } from "next";
+
 import {
   Inter,
   Cormorant_Garamond,
@@ -6,16 +8,18 @@ import {
 } from "next/font/google";
 
 import "./globals.css";
+
 import Footer from "@/components/frontend/footer";
 import MotionProvider from "@/components/frontend/motion/motionProvider";
 
-
-import { getExploreNavigation } from
-    "@/lib/explore/get-pages";
+import { getExploreNavigation } from "@/lib/explore/get-pages";
 
 import {
   ExploreNavigationProvider,
 } from "@/components/frontend/explore/ExploreNavigationProvider";
+
+import { getFooterContent } from "@/lib/footer/server";
+import { getAppURL } from "@/lib/env";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -41,8 +45,12 @@ export const metadata: Metadata = {
 export default async function RootLayout({
                                            children,
                                          }: LayoutProps<"/">) {
-  const exploreNavigation =
-    await getExploreNavigation();
+  const [exploreNavigation, footerContent] =
+    await Promise.all([
+      getExploreNavigation(),
+      getFooterContent(),
+    ]);
+
   return (
     <html
       lang="en"
@@ -50,16 +58,26 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
     >
     <body className="min-h-full flex flex-col">
-    {/* Without JavaScript, Motion's initial hidden styles would never clear. */}
     <noscript>
-      <style>{`[data-reveal]{opacity:1!important;transform:none!important;clip-path:none!important}`}</style>
+      <style>{`
+            [data-reveal] {
+              opacity: 1 !important;
+              transform: none !important;
+              clip-path: none !important;
+            }
+          `}</style>
     </noscript>
+
     <ExploreNavigationProvider
       items={exploreNavigation}
     >
       <MotionProvider>
         {children}
-        <Footer />
+
+        <Footer
+          initialData={footerContent}
+          serverURL={getAppURL()}
+        />
       </MotionProvider>
     </ExploreNavigationProvider>
     </body>

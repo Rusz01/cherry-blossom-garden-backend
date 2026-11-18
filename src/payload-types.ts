@@ -80,6 +80,7 @@ export interface Config {
     'menu-settings': MenuSetting;
     'gallery-page': GalleryPage;
     'reservation-page': ReservationPage;
+    footer: Footer;
     'form-notifications': FormNotification;
   };
   globalsSelect: {
@@ -92,6 +93,7 @@ export interface Config {
     'menu-settings': MenuSettingsSelect<false> | MenuSettingsSelect<true>;
     'gallery-page': GalleryPageSelect<false> | GalleryPageSelect<true>;
     'reservation-page': ReservationPageSelect<false> | ReservationPageSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
     'form-notifications': FormNotificationsSelect<false> | FormNotificationsSelect<true>;
   };
   locale: null;
@@ -589,7 +591,8 @@ export interface Role {
           | 'seo-settings'
           | 'menu-settings'
           | 'gallery-page'
-          | 'reservation-page';
+          | 'reservation-page'
+          | 'footer';
         read?: boolean | null;
         update?: boolean | null;
         id?: string | null;
@@ -2411,6 +2414,82 @@ export interface ReservationPage {
   createdAt?: string | null;
 }
 /**
+ * Edit the website footer while keeping its original design, layout and animations.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  brand?: {
+    /**
+     * Optional. Uses the original Cherry Blossom Garden logo when empty.
+     */
+    logo?: (number | null) | Media;
+    description?: string | null;
+    tagline?: string | null;
+  };
+  social?: {
+    heading?: string | null;
+    /**
+     * Manage the social profiles shown in the footer.
+     */
+    links?:
+      | {
+          platform: 'facebook' | 'instagram' | 'tiktok';
+          url: string;
+          visible?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  explore?: {
+    title?: string | null;
+    /**
+     * Add, remove or drag links to change their order.
+     */
+    links?:
+      | {
+          label: string;
+          href: string;
+          visible?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  discover?: {
+    title?: string | null;
+    /**
+     * Add, remove or drag links to change their order.
+     */
+    links?:
+      | {
+          label: string;
+          href: string;
+          visible?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  contact: {
+    eyebrow?: string | null;
+    headingLine1?: string | null;
+    headingLine2?: string | null;
+    description?: string | null;
+    buttonLabel?: string | null;
+    buttonHref: string;
+  };
+  legal: {
+    siteName?: string | null;
+    rightsText?: string | null;
+    privacyLabel?: string | null;
+    privacyHref: string;
+  };
+  _status?: ('draft' | 'published') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Administrator-only email lists. Add or remove recipients independently for reservation and contact notifications.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2962,6 +3041,80 @@ export interface ReservationPageSelect<T extends boolean = true> {
       };
   seoTitle?: T;
   seoDescription?: T;
+  _status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  brand?:
+    | T
+    | {
+        logo?: T;
+        description?: T;
+        tagline?: T;
+      };
+  social?:
+    | T
+    | {
+        heading?: T;
+        links?:
+          | T
+          | {
+              platform?: T;
+              url?: T;
+              visible?: T;
+              id?: T;
+            };
+      };
+  explore?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              visible?: T;
+              id?: T;
+            };
+      };
+  discover?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+              visible?: T;
+              id?: T;
+            };
+      };
+  contact?:
+    | T
+    | {
+        eyebrow?: T;
+        headingLine1?: T;
+        headingLine2?: T;
+        description?: T;
+        buttonLabel?: T;
+        buttonHref?: T;
+      };
+  legal?:
+    | T
+    | {
+        siteName?: T;
+        rightsText?: T;
+        privacyLabel?: T;
+        privacyHref?: T;
+      };
   _status?: T;
   updatedAt?: T;
   createdAt?: T;
